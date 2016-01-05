@@ -1,0 +1,97 @@
+[comment encoding = UTF-8 /]
+[**
+ * The documentation of the module generateMarkDown.
+ */]
+[module generateMarkDown('http://www.eclipse.org/uml2/5.0.0/UML')]
+
+[import de::urszeidler::eclipse::solidity::util::um2service /]
+
+[**
+ * The documentation of the template generateMarkDown.
+ * @param aModel
+ */]
+[template public generateMarkDown(aModel : Model)]
+[comment @main/]
+[file (aModel.name+'.md', false, 'UTF-8')]
+# [aModel.name/]
+
+[aModel.printDoc()/]
+[for (	aClass : Class | aModel.allContracts())]
+
+## contract: [aClass.name/]
+
+[aClass.printDoc()/]
+[if (not aClass.superClass->isEmpty())]
+inherites: [for (c : Class | aClass.superClass)separator (',')][c.name/][/for]
+[/if]
+[for (ne : NamedElement | aClass.ownedMember->filter(Enumeration))]
+
+### [aClass.name/] enums: [ne.name/]
+
+[ne.printDoc()/]
+name|doc
+[for (l : EnumerationLiteral | ne.oclAsType(Enumeration).ownedLiteral)]
+[l.name/]|[l.printDoc()/]
+[/for]
+[/for]
+[for (ne : NamedElement | aClass.allStructs())]
+
+### [aClass.name/] structs:  [ne.name/]
+
+[ne.printDoc()/]
+[printPropperties(ne.oclAsType(Class))/]
+[/for]
+
+
+[printPropperties(aClass)/]
+[printMapping(aClass)/]
+[for (op : Operation | aClass.allFunctions())]
+
+#### [aClass.name/].[op.name/] [op.visibility/]
+
+[op.printDoc()/]
+
+[if (not op.ownedParameter->isEmpty())]
+name|type|direction|doc
+----|----|----|----
+[for (p : Parameter | op.ownedParameter)]
+[p.name/]|[p.type.name/]|[p.direction/]|[p.printDoc()/]
+[/for]
+[/if]
+[/for]
+[/for]
+
+[/file]
+[/template]
+
+[template public printMapping (c : Class)?(not c.allMappingProperties()->isEmpty())]
+### [c.name/] mappings
+
+name|type|mapsTo|visiblity|doc
+----|----|----|----|----
+[for (p : Property | c.allMappingProperties())]
+[p.name/]|[p.type.name/]|[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/]|[p.visibility/]|[p.printDoc()/]
+[/for]
+
+[/template]
+
+[template public printPropperties (c : Class)?(not c.allCProperties()->isEmpty()) ]
+### [c.name/] properties
+
+name|type|visiblity|delegate|doc
+----|----|----|----|----
+[for (p : Property | c.allCProperties())]
+[p.name/]|[p.type.name/]|[p.visibility/]|[if (p.hasStereotype('Delegate'))]X[/if]|[p.printDoc()/]
+[/for]
+[/template]
+
+[template public printCommentDoc (comments : Set(Comment)) ? (not comments->isEmpty()) ]
+[for (c : Comment | comments)]
+[c._body/]
+[/for]
+[/template]
+
+
+[template public printDoc (ne : NamedElement)  ? (not ne.ownedComment->isEmpty()) ]
+[printCommentDoc(ne.ownedComment)/]
+[/template]

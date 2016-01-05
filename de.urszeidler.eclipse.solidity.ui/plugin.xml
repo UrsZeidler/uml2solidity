@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IFile"
+            nameFilter="*.uml"
+            id="de.urszeidler.eclipse.solidity.ui.popupMenus.contribution.IFile">
+         <menu id="org.eclipse.acceleo.module.menu" label="Acceleo Model to Text" path="additionsAcceleo">
+               <groupMarker name="acceleo"/> 
+         </menu>
+         <action
+               class="de.urszeidler.eclipse.solidity.ui.popupMenus.AcceleoGenerateSolidityAction"
+               enablesFor="+"
+               id="de.urszeidler.eclipse.solidity.ui.popupMenus.acceleoGenerateSolidityAction"
+               icon="icons/solidity16.png"
+               label="Generate Solidity"
+               menubarPath="org.eclipse.acceleo.module.menu/acceleo"/>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.emf.ecore.uri_mapping">
+      <mapping
+            source="pathmap://UML_LIBRARIES/solidity_types.uml"
+            target="platform:/plugin/de.urszeidler.eclipse.solidity.ui/model/types.uml">
+      </mapping>
+      <mapping
+            source="pathmap://UML_PROFILE/solidity_profiles.uml"
+            target="platform:/plugin/de.urszeidler.eclipse.solidity.ui/model/contracts.profile.uml">
+      </mapping>
+      <mapping
+            source="pathmap://UML_LIBRARIES/StandardizedContractAPI.uml"
+            target="platform:/plugin/de.urszeidler.eclipse.solidity.ui/model/StandardizedContractAPI.uml">
+      </mapping>
+   </extension>
+   <extension
+         point="org.eclipse.papyrus.uml.extensionpoints.UMLProfile">
+      <profile
+            description="Profile to define solidity based smart contracts."
+            iconpath="icons/solidity16.png"
+            name="solidity profile"
+            path="pathmap://UML_PROFILE/solidity_profiles.uml"
+            provider="Urs Zeidler">
+      </profile>
+   </extension>
+   <extension
+         point="org.eclipse.papyrus.uml.extensionpoints.UMLLibrary">
+      <library
+            description="Basic types for Solidity."
+            iconpath="icons/solidity16.png"
+            name="solidity types"
+            path="pathmap://UML_LIBRARIES/solidity_types.uml"
+            provider="Urs Zeidler">
+      </library>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="de.urszeidler.eclipse.solidity.ui.preferences.SolidityGenerationPreferencePage"
+            id="de.urszeidler.eclipse.solidity.ui.preferences.SolidityGenerationPreferencePage"
+            name="Solidity generation Preferences">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="de.urszeidler.eclipse.solidity.ui.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.eclipse.papyrus.uml.diagram.ui.toolbar">
+         <toolbar
+               id="de.urszeidler.eclipse.solidity.ui.toolbar1">
+            <command
+                  commandId="de.urszeidler.eclipse.solidity.ui.command1"
+                  icon="icons/solidity16.png"
+                  label="Generate Solidity"
+                  style="push">
+               <visibleWhen>
+            <with
+                  variable="activeEditorId">
+               <equals
+                     value="org.eclipse.papyrus.infra.core.papyrusEditor">
+               </equals>
+            </with>
+               </visibleWhen>
+            </command>
+            <visibleWhen>
+            <and>
+              <with
+                  variable="activeEditorId">
+               <equals
+                     value="org.eclipse.papyrus.infra.core.papyrusEditor">
+               </equals>
+            </with>
+               <with
+                     variable="selection">
+                      <iterate>
+                        <instanceof
+                              value="org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart">
+                        </instanceof>
+                     </iterate>
+               </with>
+            
+            </and>
+            </visibleWhen>
+         </toolbar>
+         <!--
+         <toolbar
+               id="de.urszeidler.eclipse.solidity.ui.toolbar1">
+            <command
+                  commandId="de.urszeidler.eclipse.solidity.ui.command1"
+                  icon="icons/solidity16.png"
+                  style="push">
+            </command>
+         </toolbar>
+         -->
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="de.urszeidler.eclipse.solidity.ui.common.GenerateSolidityCommand"
+            id="de.urszeidler.eclipse.solidity.ui.command1"
+            name="Generate Solidity">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.papyrus.uml.extensionpoints.UMLLibrary">
+      <library
+            name="StandardizedContractAPI"
+            path="pathmap://UML_LIBRARIES/StandardizedContractAPI.uml"
+            provider="Urs Zeidler">
+      </library>
+   </extension>
+</plugin>

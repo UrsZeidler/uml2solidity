@@ -1,0 +1,133 @@
+[comment encoding = UTF-8 /]
+[module generateHtml('http://www.eclipse.org/uml2/5.0.0/UML')]
+
+[import de::urszeidler::eclipse::solidity::util::um2service /]
+
+[template public generateHtmlInterface(aModel : Model)]
+[comment @main/]
+[file (aModel.name+'.html', false, 'UTF-8')]
+<!doctype>
+<html>
+<head>
+<script type='text/javascript'>
+[printJavaScript(aModel)/]
+</script>
+<style>
+.contract {
+	border-style: solid;
+	border-width: 1px;
+	} 
+.contract_attributes{
+	border-style: solid;
+	border-width: 1px;
+	} 
+</style>
+</head>
+<body bgcolor='#E6E6FA'>
+	<h1>Sample Interface for [aModel.name/]</h1>
+[printHtmlInterface(aModel)/]
+</body>
+</html>
+[/file]
+[/template]
+
+
+[query public allSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
+	->select(not hasStereotype('Mapping'))
+	->select(visibility=VisibilityKind::public)
+ /]
+
+[query public allSubAttributes1(aClass : Class) : OrderedSet(Property) = aClass.generalization
+	->collect(general.attribute)
+	->flatten()
+	->select(visibility<>VisibilityKind::private)
+	->asOrderedSet() /]
+
+[query public allSubFunctions1(aClass : Class) : OrderedSet(Operation) = aClass.generalization
+	->collect(general.oclAsType(Class).ownedOperation)
+	->flatten()
+	->select(hasStereotype('Function'))
+	->asOrderedSet() /]
+
+[query public allSubFunctions(aClass : Class) : OrderedSet(Operation) = aClass.getAllOperations()
+->select(hasStereotype('Function'))
+->select(visibility<>VisibilityKind::private)
+->asOrderedSet()
+ /]
+
+
+[template public printHtmlInterface (aModel : Model) ]
+[for (	aClass : Class | aModel.allContracts())]
+<div class="contract">
+[aClass.name/]:
+  <div class="contract_attributes"> attributes:
+[for (p : Property | aClass.allSubAttributes())]
+    <div class="contract_attribute"> [p.name/]:
+      <div class="contract_attribute_value" id="[aClass.name/]_[p.name/]_value"> </div>
+    </div>
+[/for]
+    <button onclick='[aClass.name/]_updateAttributes()'>update [aClass.name/] attributes</button>
+  </div>
+
+[printOperationsUi(aClass,'')/]
+[for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
+[printOperationsUi(prop.type.oclAsType(Class),'delegate_')/]
+[/for]
+</div>
+[/for]
+[/template]
+
+[template public printOperationsUi (aClass : Class,prefix:String) ]
+[for (op : Operation | aClass.allSubFunctions())]
+  <div class="function_execution">
+[aClass.name/]_[op.name/]:
+[for (p : Parameter | op.allInParameters())]
+	<input type='[p.type.toHtmlType()/]' id='[prefix/][op.functionName()/]_[p.name/]'>
+[/for]
+	<button onclick='[prefix/][op.functionName()/]()'>execute [aClass.name/]_[op.name/]</button>
+	<div class="function_result" id="[prefix/][op.functionName()/]_res"></div>
+  </div>
+[/for]
+[/template]
+
+[template public functionName(op : Operation)]
+[op.owner.oclAsType(NamedElement).name/]_[op.name/][for (p : Parameter | op.allInParameters())]_[p.type.name/][/for][/template]
+
+[template public printJavaScript (aModel : Model) ]
+[for (	aClass : Class | aModel.allContracts())]
+// script for [aClass.name/]
+function [aClass.name/]_updateAttributes() {
+// update attributes
+[for (p : Property | aClass.allSubAttributes())]
+var [p.name/]_res = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract.[p.name/]();
+	if([p.name/]_res!=null)
+		document.getElementById('[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
+[/for]
+}
+[printCallFunction(aClass,aClass,'')/]
+//delegated calls
+[for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
+[printCallFunction(prop.type.oclAsType(Class),aClass,'delegate_')/]
+[/for]
+[/for]
+[/template]
+
+[template printCallFunction(aClass : Class,aContractClass : Class, prefix:String)]
+//call functions
+[for (op : Operation | aClass.allSubFunctions())]
+//function [prefix/][aClass.name/]_[op.name/]
+function [prefix/][op.functionName()/]() {
+[for (p : Parameter | op.allInParameters())]
+	var param_[p.name/] = document.getElementById('[prefix/][op.functionName()/]_[p.name/]').value;
+[/for]
+	var res = contracts[ '[' /]'[aContractClass.name/]'[ ']' /].contract.[op.name/]([for (p : Parameter | op.allInParameters())separator (', ')]param_[p.name/][/for]);
+[if (op.hasReturnValue())]
+	if(res!=null)
+		document.getElementById('[prefix/][op.functionName()/]_res').innerText = res;
+[/if]
+}
+[/for]
+[/template]
+
+[query public toHtmlType (t : Type) : String = 'text' /]
+

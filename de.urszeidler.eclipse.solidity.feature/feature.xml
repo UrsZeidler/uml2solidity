@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="de.urszeidler.eclipse.solidity.feature"
+      label="Solidity modeling and generating Feature"
+      version="1.0.0.qualifier"
+      provider-name="Urs Zeidler">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.eclipse.ocl"/>
+      <import plugin="org.eclipse.ocl.ecore"/>
+      <import plugin="org.eclipse.acceleo.model"/>
+      <import plugin="org.eclipse.acceleo.engine"/>
+      <import plugin="org.eclipse.uml2" version="5.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.uml2.common" version="2.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.uml2.common.edit" version="2.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.uml2.uml" version="5.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.uml2.uml.edit" version="5.1.1" match="greaterOrEqual"/>
+      <import plugin="com.google.guava" version="15.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.papyrus.uml.extensionpoints" version="1.1.2" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="de.urszeidler.eclipse.solidity.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

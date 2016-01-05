@@ -1,0 +1,351 @@
+[comment encoding = UTF-8 /]
+[**
+ * The documentation of the module generateContracts.
+ */]
+[module generateContracts('http://www.eclipse.org/uml2/5.0.0/UML')]
+
+[import de::urszeidler::eclipse::solidity::util::um2service /]
+
+[**
+ * The documentation of the template generateElement.
+ * @param aClass
+ */]
+[template public generateElement(aModel : Model)]
+[comment @main/]
+[file (aModel.name+'.sol', false, 'UTF-8')]
+[printCommentDoc(aModel.ownedComment)/]
+[for (pi : PackageImport | aModel.packageImport->select(hasStereotype('Import')))]
+import "[pi.target.oclAsType(NamedElement).name/]";
+[/for]
+
+[printLibrary(aModel)/]
+[for (	i : Interface | aModel.allInterfaces())]
+[printContractInterface(i)/]
+[/for]
+[for (	aClass : Class | aModel.allContracts())]
+[printContract(aClass)/]
+[/for]
+[/file]
+[/template]
+
+[template public printContractInterface (aInterface : Interface)?(not hasStereotype('StandardizedContractAPI')) ]
+[printCommentDoc(aInterface.ownedComment)/]
+contract [aInterface.name/][contractIs(aInterface)/] {
+[for (ne : NamedElement | aInterface.ownedMember->filter(Enumeration))]
+[if (oclIsTypeOf(Enumeration))]
+    [printEnum(ne.oclAsType(Enumeration))/]
+[/if][/for]
+[for (ne : NamedElement | aInterface.allStructs())]
+    [printStruct(ne.oclAsType(Class))/]
+[/for]
+
+[for (op : Operation | aInterface.ownedOperation->select(hasStereotype('Event')))]
+	[printEventDefinition(op)/]
+[/for]
+[for (op : Operation | aInterface.ownedOperation->select(hasStereotype('Function')))]
+	[printCommentDoc(op.ownedComment)/]
+	function [printFunctionDeclaration(op)/]
+[/for]
+}
+
+[/template]
+
+[template public printLibrary (aModel : Model)?(not aModel.allLibrarys()->isEmpty()) ]
+[for (	aClass : Class | aModel.allLibrarys())]
+[printCommentDoc(aClass.ownedComment)/]
+library [aClass.name/] {
+[for (op : Operation | aClass.allFunctions())]
+	[printOperation(op)/]
+[/for]
+}
+[/for]
+
+[/template]
+
+[**
+ * print a structure
+*/]
+[template public printStruct (aClass : Class) ]
+[printCommentDoc(aClass.ownedComment)/]
+struct [aClass.name/] {
+[for (t : Property | aClass.attribute)]
+	[t.type.name/][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement)) /][/if] [t.name/];
+[/for]
+}
+[/template]
+
+[**
+ * print a contract 
+*/]
+[template public printContract (aClass : Class) ]
+[printCommentDoc(aClass.ownedComment)/]
+contract [aClass.name/][contractIs(aClass)/] {
+[for (ne : NamedElement | aClass.ownedMember->filter(Enumeration))]
+[if (oclIsTypeOf(Enumeration))]
+    [printEnum(ne.oclAsType(Enumeration))/]
+[/if][/for]
+[for (ne : NamedElement | aClass.allStructs())]
+    [printStruct(ne.oclAsType(Class))/]
+[/for]
+
+[for (prop : Property | aClass.allCProperties())]
+	[printProperty(prop)/]
+[/for]
+[for (prop : Property | aClass.allMappingProperties())]
+	[printPropertyMapping(prop)/]
+[/for]
+    // [protected (aClass.name+'.attributes')]
+	// TODO implement
+    // [/protected]
+
+[for (c : Constraint | Constraint.allInstances()->select(_context=aClass) )]
+	[c.printContraintDefinition(aClass)/]
+[/for]
+[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+	[printEventDefinition(op)/]
+[/for]
+	[printConstructor(aClass)/]
+[for (op : Operation | aClass.allAbstractFunctions())]
+	[printFunctionImplementation(op)/]
+[/for]
+[for (op : Operation | aClass.allFunctions())]
+	[printOperation(op)/]
+[/for]
+[for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
+	[printDelegateOperations(prop)/]
+[/for]
+[for (prop : Property | aClass.allGetterProperties())]
+	[printGetterSetter(prop)/]
+[/for]
+
+    // [protected (aClass.name+'.operations')]
+	// TODO implement
+    // [/protected]
+
+}
+
+[/template]
+
+[template public printGetterSetter (aProperty : Property) ]
+[if (aProperty.getStereotypeValue('GetterSetter', 'getter').oclAsType(Boolean))]
+// get[aProperty.name/]
+function get[aProperty.name/]() returns([aProperty.type.name/]) {
+	return [aProperty.name/];
+}
+[/if]
+[if (aProperty.getStereotypeValue('GetterSetter', 'setter').oclAsType(Boolean))]
+// set[aProperty.name/]
+function set[aProperty.name/] ([aProperty.externalType()/] a[aProperty.name/]) {
+	[aProperty.name/] = [if (hasStereotype(aProperty.type, 'Contract'))][aProperty.type.name/](a[aProperty.name/]);[else]a[aProperty.name/];[/if]
+}
+ 
+[/if]
+
+[/template]
+
+[query public externalType(t : TypedElement) : String = if t.type.hasStereotype('Contract') then
+'address'
+else
+t.name
+endif
+ /]
+
+[template public contractIs (aClass : Class) ?(not aClass.allSuperTypesWithoutContractApi()->isEmpty())]
+ is [for (c : Classifier | aClass.allSuperTypesWithoutContractApi())separator (',')][c.name/][/for][/template]
+
+[template public contractIs (aClass : Interface)?(not aClass.general->isEmpty())]
+ is [for (c : Classifier | aClass.general)separator (',')][c.name/][/for][/template]
+
+[template public printEnum (en : Enumeration) ]
+enum [en.name/] { [for (l : EnumerationLiteral | en.ownedLiteral)separator (',')][l.name/][/for] }
+[/template]
+
+
+[template public printContraintDefinition (aConstraint : Constraint, aClass : Class) ? (aConstraint._context=aClass) ]
+modifier [aConstraint.name/]
+{
+    [aConstraint.specification.oclAsType(LiteralString).value/]
+    _
+}
+[/template]
+
+[template public printEventDefinition (aOperation : Operation)? (hasStereotype(aOperation, 'Event')) ]
+[printCommentDoc(aOperation.ownedComment)/]
+event [aOperation.name/]([printParameters(aOperation)/]);
+[/template]
+
+[template public printConstructor (aClass : Class) ? (not aClass.getStereotypeValue('Contract', 'ConstructorCode').oclIsUndefined()) ]
+//
+// constructor for [aClass.name/]
+//
+function [aClass.name/]([printContructorArgs(aClass)/]){
+    [aClass.getStereotypeValue('Contract', 'ConstructorCode')/]
+    //[protected ('Constructor.'+aClass.name)]
+	// TODO implement
+    //[/protected]
+}
+[/template]
+
+[template public printContructorArgs (aClass : Class) ? (not aClass.getStereotypeValue('Contract', 'ConstructorArgs').oclIsUndefined()) ]
+[aClass.getStereotypeValue('Contract', 'ConstructorArgs')/][/template]
+
+[template public printProperty (p : Property)?(not hasStereotype(p, 'Mapping')) ]
+[if (p.defaultValue.oclIsUndefined())]
+[printPropertyDeclaration(p)/];[else]
+[printPropertyDeclaration(p)/] = [printDefaultValue(p.defaultValue)/];[/if]
+[/template]
+
+[template public printPropertyDeclaration(p : Property)]
+[p.type.name/][if (p.oclIsKindOf(MultiplicityElement))][printTypeM(p.oclAsType(MultiplicityElement)) /][/if] [p.visibility()/] [p.name/][/template]
+
+[template public printDefaultValue (v : ValueSpecification) ]
+[v.name/]
+[/template]
+[template public printDefaultValue (v : LiteralString) ]
+"[v.value/]"
+[/template]
+[template public printDefaultValue (v : LiteralInteger) ]
+[v.value/]
+[/template]
+[template public printDefaultValue (v : LiteralBoolean) ]
+[v.value/]
+[/template]
+
+
+[template public printPropertyMapping (t : Property)?( hasStereotype(t, 'Mapping')) ]
+mapping ([t.type.name/]=>[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/])[t.visibility()/] [t.name/];
+[/template]
+
+
+[template public printOperation (aOperation : Operation) ? (hasStereotype(aOperation, 'Function'))]
+[if (aOperation.isAbstract)]
+[printCommentDoc(aOperation.ownedComment)/]
+function [printFunctionDeclaration(aOperation)/]
+[else]
+[printFunctionImplementation(aOperation)/]
+[/if]
+[/template]
+
+[template public printFunctionImplementation(aOperation : Operation)]
+[printCommentDoc(aOperation.ownedComment)/]
+function [printFunctionDeclaration(aOperation)/] {
+    [aOperation.printCode()/]
+        // [protected (aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name)]
+	// TODO implement
+    // [/protected]
+}
+	
+[/template]
+
+[template public printCode(op : Operation) ? (op.hasStereotype('Function') and not op.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]
+[op.getStereotypeValue('Function', 'functionCode').oclAsType(String).printLines()/][/template]
+
+[template public printFunctionDeclarationA(aOperation : Operation)]
+[aOperation.name/]([printParameters(aOperation,ParameterDirectionKind::_in)/]) [aOperation.visibility()/] [printModifier(aOperation)/] [printReturn(aOperation)/][/template]
+
+[template public printFunctionDeclaration(aOperation : Operation) ? (hasStereotype(aOperation, 'Function')) ]
+[printFunctionDeclarationA(aOperation)/][/template]
+
+[template public printDelegateOperations (aProperty : Property)]
+// delegate functions from [aProperty.name/]
+[for (aOperation : Operation | aProperty.type.oclAsType(Class).allFunctions()->select(visibility=VisibilityKind::public))]
+function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [printReturn(aOperation)/] {
+[if (hasReturnValue(aOperation))]
+[if (not aOperation.allReturnParameters()->any(name.oclIsUndefined()).oclIsUndefined())]
+	return [printDelegateCall(aProperty, aOperation)/]
+[else]
+	var ([for (p : Parameter | aOperation.allReturnParameters())separator (',')][p.name/][/for]) = [printDelegateCall(aProperty, aOperation)/]
+[/if]
+[else]
+	[printDelegateCall(aProperty, aOperation)/]    
+[/if]
+    // [protected (aOperation.owner.oclAsType(NamedElement).name+'.delegate.function.'+aOperation.name)]
+	// TODO implement
+    // [/protected]
+}
+[/for]
+
+[/template]
+
+[template public printDelegateCall(aProperty : Property, aOperation : Operation)]
+[aProperty.name/].[aOperation.name/]([for (p : Parameter | aOperation.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )separator (',')][p.name/][/for]);
+[/template]
+
+[template public printReturn (aOperation : Operation)?(aOperation.hasReturnValue())]
+[if(aOperation.getStereotypeValue('Function', 'returnType').oclAsType(NamedElement).name<>'default')] constant [/if] returns ([aOperation.printParameters(ParameterDirectionKind::return)/])
+[/template]
+
+[template public printModifier (aOperation : Operation) ]
+[for (c : Constraint |  aOperation.allModifier())]
+[c.name/]
+[/for]
+[/template]
+
+[query public allModifier(op : Operation) : Set(Constraint) = if op.hasStereotype('Function')  then
+ Constraint.allInstances()
+	->select(constrainedElement->includes(op))  
+	-> union( op.appliedModifier() )
+else
+ Constraint.allInstances()
+	->select(constrainedElement->includes(op))  
+endif
+ /]
+
+[query public appliedModifier(op : Operation) : Set(Constraint) =
+op.getStereotypeListValue('Function','modifier') 
+/]
+
+
+[template public printParameters (aOperation : Operation) ]
+[for (p : Parameter | aOperation.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )separator (',')]
+[p.printType()/][/for][/template]
+
+[template public printParameters (aOperation : Operation,pdk : ParameterDirectionKind) ]
+[for (p : Parameter | aOperation.ownedParameter->select(oclAsType(Parameter).direction=pdk) )separator (',')]
+[p.printType()/][/for][/template]
+
+[comment print the comments on the element /]
+[template public printCommentDoc (comments : Set(Comment)) ? (not comments->isEmpty()) ]
+/*
+[for (c : Comment | comments)]
+ * [c._body.printLines()/][/for]
+*/[/template]
+
+[template public printLines(aString : String)]
+[for (line : String | aString.tokenizeLine())]
+[line/]
+[/for]
+[/template]
+
+
+[template private printType(t : TypedElement)]
+[t.type.name/][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if] [t.name/]
+[/template]
+
+[template private printTypeM(t : MultiplicityElement) ? (t.oclIsKindOf(MultiplicityElement))]
+[if (t.getUpper()=-1)][ '[' /][ ']' /][elseif (t.getUpper()>1)][ '[' /][t.getUpper()/][ ']' /][/if][/template]
+
+[query public visibility(v : Property) : String = if v.visibility = VisibilityKind::public then 'public'
+else if v.visibility = VisibilityKind::private then 'private'
+else if v.visibility = VisibilityKind::protected then 'protected'
+else '' 
+endif
+endif
+endif
+ /]
+
+[query public visibility(v : Operation) : String = if v.visibility = VisibilityKind::public then 'public'
+else if v.visibility = VisibilityKind::private then 'private'
+else if v.visibility = VisibilityKind::protected then 'inheritable'
+else if v.visibility = VisibilityKind::_package then 'external'
+else '' 
+endif
+endif
+endif
+endif
+ /]
+
+[query public printParameterModifier(aP : Parameter) : String = if aP.hasStereotype('Const') then 'constant' else '' endif /]
+
+
+

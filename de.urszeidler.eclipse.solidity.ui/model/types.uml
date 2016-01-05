@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_N0uwUKKsEeWvY9GWZZMftw" name="types">
+  <packagedElement xmi:type="uml:DataType" xmi:id="_W0LXkKKsEeWvY9GWZZMftw" name="string"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_Ym7uoKKsEeWvY9GWZZMftw" name="int"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_Z66fAKKsEeWvY9GWZZMftw" name="uint"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_bcZf4KKsEeWvY9GWZZMftw" name="address"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_LedxoKKuEeWvY9GWZZMftw" name="bool"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_h-DfgKMvEeWyXvjE6XZ9yw" name="uint8"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_kRFSEKMvEeWyXvjE6XZ9yw" name="uint16"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_wXNWYKMvEeWyXvjE6XZ9yw" name="bytes"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_x7cwUKMvEeWyXvjE6XZ9yw" name="bytes32"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_EeAG0KQzEeWYuoEqWzdF8g" name="real"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_IzVUYKyvEeWQpqJCIBcpzQ" name="uint256"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_PjJ7MK9IEeWOlKIyNzzzDg" name="uint32"/>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_RH32QK9IEeWOlKIyNzzzDg" name="uint64"/>
+</uml:Model>

@@ -1,0 +1,87 @@
+[comment encoding = UTF-8 /]
+[module um2service('http://www.eclipse.org/uml2/5.0.0/UML')/]
+
+[query public indexInContainer(class : NamedElement) : Integer
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getIndexInContainer(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public hasStereotype(class : NamedElement, name : String) : Boolean
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'hasStereotype(org.eclipse.uml2.uml.NamedElement, java.lang.String)', Sequence{class, name})
+/]
+[query public getStereotype(class : NamedElement, name : String) : Stereotype
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getStereotype(org.eclipse.uml2.uml.NamedElement, java.lang.String)', Sequence{class, name})
+/]
+[query public getStereotypeValue(class : NamedElement, name : String,propertyname : String) : OclAny
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getStereotypeValue(org.eclipse.uml2.uml.NamedElement, java.lang.String, java.lang.String)', Sequence{class, name,propertyname})
+/]
+[query public getStereotypeListValue(class : NamedElement, name : String,propertyname : String) : Sequence(OclAny)
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getStereotypeListValue(org.eclipse.uml2.uml.NamedElement, java.lang.String, java.lang.String)', Sequence{class, name,propertyname})
+/]
+
+
+[query public allContracts(aModel : Model) : OrderedSet(Class) = aModel.allOwnedElements()
+	->selectByType(Class)
+	->select(hasStereotype('Contract')) 
+	->sortedBy( indexInContainer(oclAsType(Class)) ) /]
+
+[query public allInterfaces(aModel : Model) : OrderedSet(Interface) = aModel.allOwnedElements()
+	->selectByType(Interface)
+	->sortedBy( indexInContainer(oclAsType(Interface)) ) /]
+
+[query public allLibrarys(aModel : Model) : OrderedSet(Class) = aModel.allOwnedElements()
+	->selectByType(Class)
+	->select(hasStereotype('Library')) 
+	->sortedBy( indexInContainer(oclAsType(Class)) ) /]
+
+[query public allStructs(aClass : Class) : OrderedSet(Class) = aClass.ownedMember
+	->select(hasStereotype('Struct'))
+	->sortedBy( indexInContainer(oclAsType(Class)) ) /]
+
+[query public allStructs(aClass : Interface) : OrderedSet(Class) = aClass.ownedMember
+	->select(hasStereotype('Struct'))
+	->sortedBy( indexInContainer(oclAsType(Class)) ) /]
+
+[query public allFunctions(aClass : Class) : OrderedSet(Operation) = aClass.allOwnedElements()
+	->selectByType(Operation)
+	->select(hasStereotype('Function')) 
+	->sortedBy(indexInContainer(oclAsType(Operation))) /]
+
+[query public allAbstractFunctions(aClass : Class) : Sequence(Operation) = aClass.allSuperTypes()
+	->collect(ownedElement)
+	->selectByKind(Operation)
+	->select(hasStereotype('Function'))
+	->select(owner.oclIsTypeOf(Interface) or isAbstract)
+	->sortedBy(indexInContainer(oclAsType(Operation))) /]
+
+[query public allAbstractFunctions1(aClass : Class) : OrderedSet(Operation) = aClass.getAllOperations()
+	->selectByType(Operation)
+	->select(hasStereotype('Function'))
+	->select(owner.oclIsTypeOf(Interface) or isAbstract)
+	->select( aClass.allSuperTypes()->includes(owner) )
+	->sortedBy(indexInContainer(oclAsType(Operation))) /]
+
+[query public allCProperties(c : Class) : OrderedSet(Property) = c.attribute 
+	-> select(not hasStereotype('Mapping')) /]
+
+[query public allMappingProperties(c : Class) : OrderedSet(Property) = c.attribute 
+	-> select(hasStereotype('Mapping')) /]
+
+[query public allGetterProperties(c : Class) : OrderedSet(Property) = c.attribute 
+	-> select(hasStereotype('GetterSetter')) /]
+
+[query public allSuperTypes(aClass : Class) : Sequence(Classifier) = aClass.general
+	->union(aClass.interfaceRealization->collect(contract))
+	->sortedBy( indexInContainer(oclAsType(Classifier)) ) /]
+
+[query public allSuperTypesWithoutContractApi(aClass : Class) : Sequence(Classifier) = aClass.allSuperTypes()
+	->select(not hasStereotype('StandardizedContractAPI')) /]
+
+[query public allInParameters(aOp : Operation) : OrderedSet(Parameter) = aOp.ownedParameter->
+select(oclAsType(Parameter).direction=ParameterDirectionKind::_in) /]
+
+[query public allReturnParameters(aOp : Operation) : OrderedSet(Parameter) = aOp.ownedParameter->
+select(oclAsType(Parameter).direction=ParameterDirectionKind::return) /]
+
+[query public hasReturnValue(aOperation : Operation) : Boolean = aOperation.allReturnParameters()->size()>0 /]
+[query public inherites(aClass : Class,superE : Element) : Boolean = not aClass.allSuperTypes()->includes(superE) /]
+
+[comment][query public firstReturnParameter(aOperation : Operation) : Parameter = aOperation.ownedParameter->select(oclAsType(Parameter).direction=ParameterDirectionKind::return)->first() /][/comment]

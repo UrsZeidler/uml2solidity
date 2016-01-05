@@ -1,0 +1,44 @@
+[comment encoding = UTF-8 /]
+[module generateWeb3Contract('http://www.eclipse.org/uml2/5.0.0/UML')]
+
+[import de::urszeidler::eclipse::solidity::util::um2service /]
+
+[template public generateWeb3Contract(aModel : Model)]
+[comment @main/]
+[file (aModel.name+'Web3.js', false, 'UTF-8')]
+
+[for (	aClass : Class | aModel.allContracts())]
+var [aClass.name/]Contract = web3.eth.contract([ '[' /]
+[printMethodSignature(aClass)/] [if (not aClass.ownedOperation->select(hasStereotype('Event'))->isEmpty())],[/if]
+[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+[printEventSignature(op)/]
+[/for]
+[ ']' /] );   
+
+[/for]
+
+
+[/file]
+[/template]
+
+[template public printMethodSignature (aClass : Class) ]
+[for (op : Operation | aClass.allFunctions())separator (',')]
+  {
+    "constant": true,
+    "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[p.type.name/]"}[/for][']'/],    
+    "name": "[op.name/]",
+    "outputs": ['['/][for (p : Parameter | op.allReturnParameters())separator (',')]{"name": "[p.name/]","type": "[p.type.name/]"}[/for][']'/],
+    "type": "function"
+  }
+[/for]
+[/template]
+
+[template public printEventSignature (op : Operation) ]
+  {
+    "constant": true,
+    "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[p.type.name/]"}[/for][']'/],    
+    "name": "[op.name/]",
+    "type": "event"
+  }
+
+[/template]

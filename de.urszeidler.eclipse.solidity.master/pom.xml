@@ -1,0 +1,140 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.urszeidler.eclipse.solidity.master</groupId>
+	<artifactId>de.urszeidler.eclipse.solidity.master</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>../de.urszeidler.eclipse.solidity.ui</module>
+		<module>../de.urszeidler.eclipse.solidity.feature</module>
+		<module>../de.urszeidler.eclipse.solidity.p2</module>
+	</modules>
+
+	<properties>
+		<tycho.version>0.24.0</tycho.version>
+	</properties>
+
+	<repositories>
+		<!-- add Mars repository to resolve dependencies -->
+		<repository>
+			<id>Mars</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/mars/</url>
+		</repository>
+		<repository>
+			<id>Eclipse - Acceleo Release</id>
+			<url>https://repo.eclipse.org/content/repositories/acceleo-releases</url>
+		</repository>
+
+	</repositories>
+
+	<pluginRepositories>
+		<!-- <pluginRepository> -->
+		<!-- <id>codehaus.snapshots</id> -->
+		<!-- <url>http://snapshots.repository.codehaus.org/</url> -->
+		<!-- </pluginRepository> -->
+		<pluginRepository>
+			<id>Eclipse - Acceleo Release</id>
+			<url>https://repo.eclipse.org/content/repositories/acceleo-releases</url>
+		</pluginRepository>
+
+		<pluginRepository>
+			<id>Eclipse - Acceleo Snapshots</id>
+			<url>https://repo.eclipse.org/content/repositories/acceleo-snapshots</url>
+		</pluginRepository>
+
+	</pluginRepositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.acceleo</groupId>
+			<artifactId>org.eclipse.acceleo.maven</artifactId>
+			<version>3.5.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.acceleo</groupId>
+			<artifactId>org.eclipse.acceleo.engine</artifactId>
+			<version>3.5.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.uml2</groupId>
+			<artifactId>org.eclipse.uml2.uml</artifactId>
+			<version>5.0.1.v20140910-1354</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.uml2</groupId>
+			<artifactId>org.eclipse.uml2.types</artifactId>
+			<version>2.0.0.v20140910-1354</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.uml2</groupId>
+			<artifactId>org.eclipse.uml2.common</artifactId>
+			<version>2.0.1.v20140910-1354</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.6.4</version>
+		</dependency>
+	</dependencies>
+
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- enable tycho build extension -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<environments>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+				</configuration>
+
+			</plugin>
+
+			<!-- <plugin> -->
+			<!-- <groupId>org.eclipse.acceleo</groupId> -->
+			<!-- <artifactId>org.eclipse.acceleo.maven</artifactId> -->
+			<!-- <version>3.5.0-SNAPSHOT</version> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <phase>compile</phase> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- <configuration> -->
+			<!-- <useBinaryResources>false</useBinaryResources> -->
+			<!-- <usePlatformResourcePath>true</usePlatformResourcePath> -->
+			<!-- <acceleoProject> -->
+			<!-- <root>${project.basedir}</root> -->
+			<!-- <entries> -->
+			<!-- <entry> -->
+			<!-- <input>src</input> -->
+			<!-- <output>target/classes</output> -->
+			<!-- </entry> -->
+			<!-- </entries> -->
+			<!-- </acceleoProject> -->
+			<!-- <packagesToRegister> -->
+			<!-- <packageToRegister>org.eclipse.uml2.uml.UMLPackage</packageToRegister> -->
+			<!-- </packagesToRegister> -->
+			<!-- <uriHandler>org.eclipse.acceleo.maven.AcceleoURIHandler</uriHandler> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
+
+		</plugins>
+	</build>
+</project>

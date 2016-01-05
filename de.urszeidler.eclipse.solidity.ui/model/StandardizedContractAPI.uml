@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Contracts="http:///schemas/Contracts/_0mWFYKyoEeW9NtGJMu_Maw/16" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/Contracts/_0mWFYKyoEeW9NtGJMu_Maw/16 pathmap://UML_PROFILE/solidity_profiles.uml#_0mlV8KyoEeW9NtGJMu_Maw">
+  <uml:Model xmi:id="_DT8wAKyuEeWQpqJCIBcpzQ" name="Standardized_Contract_API">
+    <packagedElement xmi:type="uml:Interface" xmi:id="_rPn-4KyuEeWQpqJCIBcpzQ" name="TransferableFungible">
+      <ownedComment xmi:type="uml:Comment" xmi:id="_dsrFUKywEeWQpqJCIBcpzQ">
+        <body>Also known as tokens, coins and sub-currencies.</body>
+      </ownedComment>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_4VRmgKyuEeWQpqJCIBcpzQ" name="totalSupply" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_gZB94KywEeWQpqJCIBcpzQ">
+          <body>Get the total token supply.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_BbzGIKyvEeWQpqJCIBcpzQ" name="supply" direction="return">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_IzVUYKyvEeWQpqJCIBcpzQ"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_5FIgsKyvEeWQpqJCIBcpzQ" name="balanceOf">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_l8fmcKywEeWQpqJCIBcpzQ">
+          <body>Get the account balance of another account with address _owner.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_ALKIMKywEeWQpqJCIBcpzQ" name="_owner">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_bcZf4KKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_ElF84KywEeWQpqJCIBcpzQ" name="balance" direction="return">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_IzVUYKyvEeWQpqJCIBcpzQ"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_Gn5iIKywEeWQpqJCIBcpzQ" name="transfer">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_pqx2EKywEeWQpqJCIBcpzQ">
+          <body>Send _value amount of tokens to address _to.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_Reml8KywEeWQpqJCIBcpzQ" name="_to">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_bcZf4KKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_UmOeMKywEeWQpqJCIBcpzQ" name="_value">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_IzVUYKyvEeWQpqJCIBcpzQ"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_Xf9EYKywEeWQpqJCIBcpzQ" name="success">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_LedxoKKuEeWvY9GWZZMftw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_t1SusKywEeWQpqJCIBcpzQ" name="transferFrom">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_nHKNUKyxEeWQpqJCIBcpzQ">
+          <body>Send _value amount of tokens from address _from to address _to.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_yjotIKywEeWQpqJCIBcpzQ" name="_from">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_bcZf4KKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_11DakKywEeWQpqJCIBcpzQ" name="_to">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_bcZf4KKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_5WruQKywEeWQpqJCIBcpzQ" name="_value">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_IzVUYKyvEeWQpqJCIBcpzQ"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_GytOgKyxEeWQpqJCIBcpzQ" name="success" direction="return">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_LedxoKKuEeWvY9GWZZMftw"/>
+        </ownedParameter>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Interface" xmi:id="_pF_4kKyxEeWQpqJCIBcpzQ" name="Registry">
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_39FBkKyxEeWQpqJCIBcpzQ" name="reserve">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_7Jh10Ky5EeWQpqJCIBcpzQ">
+          <body>Reserves a name and sets its owner to you if it is not yet reserved.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_-5GYgKyxEeWQpqJCIBcpzQ" name="_name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_EJTt4KyyEeWQpqJCIBcpzQ" name="_success" direction="return">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_LedxoKKuEeWvY9GWZZMftw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_HeVI8KyyEeWQpqJCIBcpzQ" name="owner" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_867iAKy5EeWQpqJCIBcpzQ">
+          <body>Get the owner of a particular name.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_MX11kKyyEeWQpqJCIBcpzQ" name="_name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_Qr_LUKyyEeWQpqJCIBcpzQ" name="_r" direction="return">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_bcZf4KKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_jym24KyyEeWQpqJCIBcpzQ" name="transfer">
+        <ownedComment xmi:type="uml:Comment" xmi:id="__MdfwKy5EeWQpqJCIBcpzQ">
+          <body>Transfer ownership of a name.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_p9CY0KyyEeWQpqJCIBcpzQ" name="_name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_tk6ecKyyEeWQpqJCIBcpzQ" name="_newOwner">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_bcZf4KKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_73cI4KyyEeWQpqJCIBcpzQ" name="setAddr">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_BtUS8Ky6EeWQpqJCIBcpzQ">
+          <body>Set the primary address associated with a name (similar to an A record in traditional DNS.)</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="___m4IKyyEeWQpqJCIBcpzQ" name="_name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_CsyQEKyzEeWQpqJCIBcpzQ" name="_address">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_bcZf4KKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_v0GygKy1EeWQpqJCIBcpzQ" name="addr">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_D5tSAKy6EeWQpqJCIBcpzQ">
+          <body>Get the primary address associated with a name.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_0s7ioKy1EeWQpqJCIBcpzQ" name="_name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_3rC5kKy1EeWQpqJCIBcpzQ" name="_r" direction="return">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_bcZf4KKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_AS1OwKy2EeWQpqJCIBcpzQ" name="setContent">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_F3cKAKy6EeWQpqJCIBcpzQ">
+          <body>If you are the owner of a name, sets its associated content.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_H3Ax4Ky2EeWQpqJCIBcpzQ" name=" _name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_LHRowKy2EeWQpqJCIBcpzQ" name="_content">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_x7cwUKMvEeWyXvjE6XZ9yw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_DwCDgKy4EeWQpqJCIBcpzQ" name="content">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_IEQm4Ky6EeWQpqJCIBcpzQ">
+          <body>Get the content associated with a name.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_Ibr6UKy4EeWQpqJCIBcpzQ" name="_name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_LD5SsKy4EeWQpqJCIBcpzQ" name="_r" direction="return">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_x7cwUKMvEeWyXvjE6XZ9yw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_UO8F8Ky4EeWQpqJCIBcpzQ" name="setSubRegistrar">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_SbgukKy6EeWQpqJCIBcpzQ">
+          <body>Records the name as referring to a sub-registrar at the given address.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_awUvUKy4EeWQpqJCIBcpzQ" name="_name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_eC8WoKy4EeWQpqJCIBcpzQ" name="_subRegistrar">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_bcZf4KKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_gAoyYKy4EeWQpqJCIBcpzQ" name="subRegistrar">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_LQCmYKy6EeWQpqJCIBcpzQ">
+          <body>Gets the sub-registrar associated with the given name.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_0osbgKy4EeWQpqJCIBcpzQ" name="_name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_te__gKy5EeWQpqJCIBcpzQ" name="_r" direction="return">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_bcZf4KKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_xRuqQKy5EeWQpqJCIBcpzQ" name="disown">
+        <ownedComment xmi:type="uml:Comment" xmi:id="_VQeJgKy6EeWQpqJCIBcpzQ">
+          <body>Relinquishes control over a name that you currently control.</body>
+        </ownedComment>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_18r9gKy5EeWQpqJCIBcpzQ" name="_name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_joHkgKy6EeWQpqJCIBcpzQ" name="Changed">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_p3po4Ky6EeWQpqJCIBcpzQ" name="name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_W0LXkKKsEeWvY9GWZZMftw"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_yxYCoKy6EeWQpqJCIBcpzQ" name="__hash_name">
+          <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_x7cwUKMvEeWyXvjE6XZ9yw"/>
+        </ownedParameter>
+      </ownedOperation>
+    </packagedElement>
+    <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_DlrZMKyuEeWQpqJCIBcpzQ">
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_DlzVAKyuEeWQpqJCIBcpzQ" source="PapyrusVersion">
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_DlzVAayuEeWQpqJCIBcpzQ" key="Version" value="0.0.17"/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_DlzVAqyuEeWQpqJCIBcpzQ" key="Comment" value=""/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_DlzVA6yuEeWQpqJCIBcpzQ" key="Copyright" value=""/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_DlzVBKyuEeWQpqJCIBcpzQ" key="Date" value="2015-12-27"/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_DlzVBayuEeWQpqJCIBcpzQ" key="Author" value=""/>
+      </eAnnotations>
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_DlucgKyuEeWQpqJCIBcpzQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILE/solidity_profiles.uml#_0mlV8KyoEeW9NtGJMu_Maw"/>
+      </eAnnotations>
+      <appliedProfile xmi:type="uml:Profile" href="pathmap://UML_PROFILE/solidity_profiles.uml#_uCE5EKHREeWjOZ0I8ilEXA"/>
+    </profileApplication>
+  </uml:Model>
+  <Contracts:StandardizedContractAPI xmi:id="_yiNbsKyuEeWQpqJCIBcpzQ" base_Interface="_rPn-4KyuEeWQpqJCIBcpzQ"/>
+  <Contracts:Function xmi:id="_6JEfYKyuEeWQpqJCIBcpzQ" base_Operation="_4VRmgKyuEeWQpqJCIBcpzQ" returnType="constant"/>
+  <Contracts:Function xmi:id="_JElnAKywEeWQpqJCIBcpzQ" base_Operation="_5FIgsKyvEeWQpqJCIBcpzQ" returnType="constant"/>
+  <Contracts:Function xmi:id="_MmckMKywEeWQpqJCIBcpzQ" base_Operation="_Gn5iIKywEeWQpqJCIBcpzQ" returnType="constant"/>
+  <Contracts:Function xmi:id="_JYe98KyxEeWQpqJCIBcpzQ" base_Operation="_t1SusKywEeWQpqJCIBcpzQ"/>
+  <Contracts:StandardizedContractAPI xmi:id="_rOpnIKyxEeWQpqJCIBcpzQ" base_Interface="_pF_4kKyxEeWQpqJCIBcpzQ"/>
+  <Contracts:Function xmi:id="_5r1CYKyxEeWQpqJCIBcpzQ" base_Operation="_39FBkKyxEeWQpqJCIBcpzQ" returnType="constant"/>
+  <Contracts:Function xmi:id="_grgjEKyyEeWQpqJCIBcpzQ" base_Operation="_HeVI8KyyEeWQpqJCIBcpzQ" returnType="constant"/>
+  <Contracts:Function xmi:id="_ny1LEKyyEeWQpqJCIBcpzQ" base_Operation="_jym24KyyEeWQpqJCIBcpzQ"/>
+  <Contracts:Function xmi:id="_jiblgKy1EeWQpqJCIBcpzQ" base_Operation="_73cI4KyyEeWQpqJCIBcpzQ"/>
+  <Contracts:Function xmi:id="_6khBEKy1EeWQpqJCIBcpzQ" base_Operation="_v0GygKy1EeWQpqJCIBcpzQ" returnType="constant"/>
+  <Contracts:Function xmi:id="_AEwroKy4EeWQpqJCIBcpzQ" base_Operation="_AS1OwKy2EeWQpqJCIBcpzQ"/>
+  <Contracts:Function xmi:id="_OwncEKy4EeWQpqJCIBcpzQ" base_Operation="_DwCDgKy4EeWQpqJCIBcpzQ" returnType="constant"/>
+  <Contracts:Function xmi:id="_WF3yYKy4EeWQpqJCIBcpzQ" base_Operation="_UO8F8Ky4EeWQpqJCIBcpzQ"/>
+  <Contracts:Function xmi:id="_WuzIsKy6EeWQpqJCIBcpzQ" base_Operation="_xRuqQKy5EeWQpqJCIBcpzQ"/>
+  <Contracts:Function xmi:id="_XuENUKy6EeWQpqJCIBcpzQ" base_Operation="_gAoyYKy4EeWQpqJCIBcpzQ" returnType="constant"/>
+  <Contracts:Event xmi:id="_k85mIKy6EeWQpqJCIBcpzQ" base_Operation="_joHkgKy6EeWQpqJCIBcpzQ"/>
+</xmi:XMI>

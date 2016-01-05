@@ -1,0 +1,112 @@
+[comment encoding = UTF-8 /]
+[**
+ * The documentation of the module generateMixConfig.
+ */]
+[module generateMixConfig('http://www.eclipse.org/uml2/5.0.0/UML')]
+
+
+[**
+ * The documentation of the template generateMixConfig.
+ * @param aModel
+ */]
+[template public generateMixConfig(aModel : Model)]
+[comment @main/]
+[file ('.mix', false, 'UTF-8')]
+{
+	"applicationUrlEth": "",
+	"applicationUrlHttp": "",
+	"deployBlockNumber": "",
+	"deploymentAddresses": {},
+	"deploymentDir": "",
+	"deploymentTrHashes": "{}",
+	"files": [ '[' /]
+		{
+			"fileName": "[aModel.name/].sol",
+			"title": "[aModel.name/].sol"
+		},
+		{
+			"fileName": "[aModel.name/].html",
+			"title": "[aModel.name/].html"
+		},
+		{
+			"fileName": "[aModel.name/]Web3.js",
+			"title": "[aModel.name/]Web3.js"
+		}
+	[ ']' /] ,
+	"lastPackageDate": "",
+	"packageBase64": "",
+	"packageHash": "",
+	"registerContentHashBlockNumber": -1,
+	"registerContentHashTrHash": "",
+	"registerUrlBlockNumber": -1,
+	"registerUrlTrHash": "",
+	"title": "[aModel.name/]",
+	"states": [ '[' /]
+		{
+			"accounts": [ '[' /]
+				{
+					"address": "38f388fadf4a6a35c61c3f88194ec5ae162c8944",
+					"balance": {
+						"unit": 12,
+						"value": "1000000"
+					},
+					"name": "user1",
+					"secret": "cb73d9408c4720e230387d956eb0f829d8a4dd2c1055f96257167e14e7169074"
+				},
+				{
+					"address": "06400992be45bc64a52b5c55d3df84596d6cb4a1",
+					"balance": {
+						"unit": 12,
+						"value": "1000000"
+					},
+					"name": "user2",
+					"secret": "db95780d2f30ca8211eec37cc110cc58a2d4f9308dea00ede6717a585efa2eb7"
+				},
+				{
+					"address": "fa4b795b491cc1975e89f3c78972c3e2e827c882",
+					"balance": {
+						"unit": 12,
+						"value": "1000000"
+					},
+					"name": "user3",
+					"secret": "090f51d202f847d2468fc87fb06f92c469b8a1927b4aecea796b6831f1331382"
+				},
+				{
+					"address": "b0dcdc575ef06dc30aaea069d8043c9d463c931c",
+					"balance": {
+						"unit": 12,
+						"value": "1000000"
+					},
+					"name": "user4",
+					"secret": "e9bf58b523b4c94255cad51b3f7efdc85a0c970bf42f1d191c126bb6f49bfb9d"
+				}
+			[ ']' /] ,
+			"blocks": [ '[' /]
+				{
+					"hash": "",
+					"number": -1,
+					"status": "pending",
+					"transactions": [ '[' /][ ']' /] 					
+				}
+			[ ']' /] ,
+			"contracts": [ '[' /][ ']' /] ,
+			"miner": {
+				"address": "38f388fadf4a6a35c61c3f88194ec5ae162c8944",
+				"balance": {
+					"objectName": "",
+					"value": "1000000",
+					"unit": 12,
+					"value": "1000000",
+					"unit": 12
+				},
+				"name": "user1",
+				"secret": "cb73d9408c4720e230387d956eb0f829d8a4dd2c1055f96257167e14e7169074"
+			},
+			"title": "Default",
+			"transactions": [ '[' /][ ']' /]
+		}
+	[ ']' /] ,
+	"defaultStateIndex": 0
+}
+[/file]
+[/template]
