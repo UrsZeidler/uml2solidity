@@ -49,12 +49,12 @@
     <dependency>
       <groupId>org.eclipse.acceleo</groupId>
       <artifactId>org.eclipse.acceleo.maven</artifactId>
-      <version>3.5.0-SNAPSHOT</version>
+      <version>3.5.2</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.acceleo</groupId>
       <artifactId>org.eclipse.acceleo.engine</artifactId>
-      <version>3.5.0-SNAPSHOT</version>
+      <version>3.5.1.201409021433</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.uml2</groupId>
@@ -98,10 +98,14 @@
       <plugin>
        <groupId>org.eclipse.acceleo</groupId>
        <artifactId>org.eclipse.acceleo.maven</artifactId>
-       <version>3.5.0-SNAPSHOT</version>
+       <version>3.5.2</version>
        <executions>
           <execution>
-            <phase>compile</phase>
+            <phase>compile</phase>           
+            <goals>
+              <goal>acceleo-compile</goal>
+            </goals>
+            
           </execution>
         </executions>
         <configuration>
@@ -118,6 +122,7 @@
           </acceleoProject>
           <packagesToRegister>
             <packageToRegister>org.eclipse.uml2.uml.UMLPackage</packageToRegister>
+<!--           <packageToRegister>org.eclipse.emf.ecore.EcorePackage</packageToRegister> -->
             
           </packagesToRegister>
           <uriHandler>org.eclipse.acceleo.maven.AcceleoURIHandler</uriHandler>
