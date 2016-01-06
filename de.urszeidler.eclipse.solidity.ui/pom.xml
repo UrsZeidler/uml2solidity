@@ -72,6 +72,11 @@
       <version>2.0.1.v20140910-1354</version>
     </dependency>
     <dependency>
+      <groupId>org.eclipse.emf</groupId>
+      <artifactId>org.eclipse.emf.ecore</artifactId>
+      <version>2.9.2.v20131212-0545</version>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>1.6.4</version>
@@ -95,39 +100,41 @@
           <pomDependencies>consider</pomDependencies>
         </configuration>
       </plugin>
-      <plugin>
-       <groupId>org.eclipse.acceleo</groupId>
-       <artifactId>org.eclipse.acceleo.maven</artifactId>
-       <version>3.5.2</version>
-       <executions>
-          <execution>
-            <phase>compile</phase>           
-            <goals>
-              <goal>acceleo-compile</goal>
-            </goals>
+<!--       <plugin> -->
+<!--        <groupId>org.eclipse.acceleo</groupId> -->
+<!--        <artifactId>org.eclipse.acceleo.maven</artifactId> -->
+<!--        <version>3.5.2</version> -->
+<!--        <executions> -->
+<!--           <execution> -->
+<!--             <phase>compile</phase>            -->
+<!--             <goals> -->
+<!--               <goal>acceleo-compile</goal> -->
+<!--             </goals> -->
             
-          </execution>
-        </executions>
-        <configuration>
-          <useBinaryResources>false</useBinaryResources>
-          <usePlatformResourcePath>true</usePlatformResourcePath>
-          <acceleoProject>
-            <root>${project.basedir}</root>
-            <entries>
-              <entry>
-                <input>src</input>
-                <output>target/classes</output>
-              </entry>
-            </entries>
-          </acceleoProject>
-          <packagesToRegister>
-            <packageToRegister>org.eclipse.uml2.uml.UMLPackage</packageToRegister>
+<!--           </execution> -->
+<!--         </executions> -->
+<!--         <configuration> -->
+<!--           <useBinaryResources>false</useBinaryResources> -->
+<!--           <usePlatformResourcePath>true</usePlatformResourcePath> -->
+<!--           <acceleoProject> -->
+<!--             <root>${project.basedir}</root> -->
+<!--             <entries> -->
+<!--               <entry> -->
+<!--                 <input>src</input> -->
+<!--                 <output>target/classes</output> -->
+<!--               </entry> -->
+<!--             </entries> -->
+<!--           </acceleoProject> -->
+<!--           <packagesToRegister> -->
+<!--             <packageToRegister>org.eclipse.uml2.uml.UMLPackage</packageToRegister> -->
 <!--           <packageToRegister>org.eclipse.emf.ecore.EcorePackage</packageToRegister> -->
             
-          </packagesToRegister>
-          <uriHandler>org.eclipse.acceleo.maven.AcceleoURIHandler</uriHandler>
-        </configuration>
-     </plugin>
+<!--           </packagesToRegister> -->
+<!--           <uriHandler>org.eclipse.acceleo.maven.AcceleoURIHandler</uriHandler> -->
+<!--         </configuration> -->
+<!--      </plugin> -->
+ 
+ 
     </plugins>
     <pluginManagement>
       <plugins>
