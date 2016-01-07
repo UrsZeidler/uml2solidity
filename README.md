@@ -2,7 +2,7 @@
 
 A profile and a set code generators to create solidity contracts from an uml model usable with the Papyrus UML modeler for eclipse.
 
-a plugin for eclipse: updatesite
+a plugin for eclipse: http://urszeidler.github.io/uml2solidity/uml2solidity-updatesite/
 
 dependencies:
 
