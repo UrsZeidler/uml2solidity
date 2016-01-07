@@ -94,7 +94,8 @@ contract [aClass.name/][contractIs(aClass)/] {
 [for (prop : Property | aClass.allMappingProperties())]
 	[printPropertyMapping(prop)/]
 [/for]
-    // [protected (aClass.name+'.attributes')]
+
+			// [protected (aClass.name+'.attributes')]
 	// TODO implement
     // [/protected]
 
@@ -118,7 +119,7 @@ contract [aClass.name/][contractIs(aClass)/] {
 	[printGetterSetter(prop)/]
 [/for]
 
-    // [protected (aClass.name+'.operations')]
+    		// [protected (aClass.name+'.operations')]
 	// TODO implement
     // [/protected]
 
@@ -230,7 +231,7 @@ function [printFunctionDeclaration(aOperation)/]
 [printCommentDoc(aOperation.ownedComment)/]
 function [printFunctionDeclaration(aOperation)/] {
     [aOperation.printCode()/]
-        // [protected (aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name)]
+        	// [protected (aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name)]
 	// TODO implement
     // [/protected]
 }
@@ -259,7 +260,7 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [p
 [else]
 	[printDelegateCall(aProperty, aOperation)/]    
 [/if]
-    // [protected (aOperation.owner.oclAsType(NamedElement).name+'.delegate.function.'+aOperation.name)]
+    		// [protected (aOperation.owner.oclAsType(NamedElement).name+'.delegate.function.'+aOperation.name)]
 	// TODO implement
     // [/protected]
 }
