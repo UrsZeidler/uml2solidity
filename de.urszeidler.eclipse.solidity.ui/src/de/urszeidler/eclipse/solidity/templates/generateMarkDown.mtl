@@ -17,34 +17,33 @@
 
 [aModel.printDoc()/]
 [for (	aClass : Class | aModel.allContracts())]
+* [ '[' /][aClass.name/][ ']' /](#contract-[aClass.name.toLowerCase()/])
+[/for]
+[for (	aClass : Class | aModel.allContracts())]
+[printContract(aClass)/]
+[/for]
+
+[/file]
+[/template]
+
+[template public printContract (aClass : Class) ]
 
 ## contract: [aClass.name/]
 
+[if (not aClass.superClass->isEmpty())]inherites: [for (c : Class | aClass.superClass)separator (',')][c.name/][/for][/if]
 [aClass.printDoc()/]
-[if (not aClass.superClass->isEmpty())]
-inherites: [for (c : Class | aClass.superClass)separator (',')][c.name/][/for]
-[/if]
 [for (ne : NamedElement | aClass.ownedMember->filter(Enumeration))]
 
 ### [aClass.name/] enums: [ne.name/]
 
 [ne.printDoc()/]
 name|doc
+----|----|----
 [for (l : EnumerationLiteral | ne.oclAsType(Enumeration).ownedLiteral)]
 [l.name/]|[l.printDoc()/]
-[/for]
-[/for]
-[for (ne : NamedElement | aClass.allStructs())]
-
-### [aClass.name/] structs:  [ne.name/]
-
-[ne.printDoc()/]
-[printPropperties(ne.oclAsType(Class))/]
-[/for]
-
-
-[printPropperties(aClass)/]
-[printMapping(aClass)/]
+[/for][/for]
+[printStructs(aClass)/]
+[if (not aClass.allCProperties()->isEmpty())][printPropperties(aClass)/][/if][if (not aClass.allMappingProperties()->isEmpty())][printMapping(aClass)/][/if]-
 [for (op : Operation | aClass.allFunctions())]
 
 #### [aClass.name/].[op.name/] [op.visibility/]
@@ -59,24 +58,33 @@ name|type|direction|doc
 [/for]
 [/if]
 [/for]
-[/for]
+[/template]
 
-[/file]
+[template public printStructs(aClass : Class)?(not aClass.allStructs()->isEmpty())]
+
+### structs:
+[for (ne : NamedElement | aClass.allStructs())]
+
+[ne.name/]
+[ne.printDoc()/]
+[printPropperties(ne.oclAsType(Class))/]
+[/for]
 [/template]
 
 [template public printMapping (c : Class)?(not c.allMappingProperties()->isEmpty())]
-### [c.name/] mappings
+
+#### [c.name/] mappings
 
 name|type|mapsTo|visiblity|doc
 ----|----|----|----|----
 [for (p : Property | c.allMappingProperties())]
 [p.name/]|[p.type.name/]|[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/]|[p.visibility/]|[p.printDoc()/]
 [/for]
-
 [/template]
 
 [template public printPropperties (c : Class)?(not c.allCProperties()->isEmpty()) ]
-### [c.name/] properties
+
+#### [c.name/] properties
 
 name|type|visiblity|delegate|doc
 ----|----|----|----|----
@@ -87,7 +95,13 @@ name|type|visiblity|delegate|doc
 
 [template public printCommentDoc (comments : Set(Comment)) ? (not comments->isEmpty()) ]
 [for (c : Comment | comments)]
-[c._body/]
+[c._body.printLines()/]
+[/for]
+[/template]
+
+[template public printLines(aString : String)]
+[for (line : String | aString.tokenizeLine())]
+[line/]
 [/for]
 [/template]
 

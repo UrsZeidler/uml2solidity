@@ -147,7 +147,7 @@ function set[aProperty.name/] ([aProperty.externalType()/] a[aProperty.name/]) {
 [query public externalType(t : TypedElement) : String = if t.type.hasStereotype('Contract') then
 'address'
 else
-t.name
+t.type.name
 endif
  /]
 
@@ -231,7 +231,7 @@ function [printFunctionDeclaration(aOperation)/]
 [printCommentDoc(aOperation.ownedComment)/]
 function [printFunctionDeclaration(aOperation)/] {
     [aOperation.printCode()/]
-        	// [protected (aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name)]
+    // [protected (aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name)]
 	// TODO implement
     // [/protected]
 }
