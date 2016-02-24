@@ -20,7 +20,7 @@
 	"deploymentDir": "",
 	"deploymentTrHashes": "{}",
 	"files": [ '[' /]
-		{
+		[comment]{
 			"fileName": "[aModel.name/].sol",
 			"title": "[aModel.name/].sol"
 		},
@@ -31,7 +31,7 @@
 		{
 			"fileName": "[aModel.name/]Web3.js",
 			"title": "[aModel.name/]Web3.js"
-		}
+		}[/comment]
 	[ ']' /] ,
 	"lastPackageDate": "",
 	"packageBase64": "",
@@ -40,6 +40,7 @@
 	"registerContentHashTrHash": "",
 	"registerUrlBlockNumber": -1,
 	"registerUrlTrHash": "",
+	"startUrl": "/[aModel.name/].html",
 	"title": "[aModel.name/]",
 	"states": [ '[' /]
 		{

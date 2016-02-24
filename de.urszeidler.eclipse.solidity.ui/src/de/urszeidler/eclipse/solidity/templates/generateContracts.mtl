@@ -12,12 +12,29 @@
  */]
 [template public generateElement(aModel : Model)]
 [comment @main/]
+[iteratePackages(aModel)/]
+[/template]
+
+[**
+ * Iterates over the packages.
+*/]
+[template private iteratePackages(p : Package)]
+[for (p1 : Package | p.nestedPackage)]
+[generatePackage(p1)/]
+[iteratePackages(p1)/]
+[/for]
+[/template]
+
+[**
+ * Generates a packages as a file.
+ * @param aModel a package
+ */]
+[template public generatePackage(aModel : Package)?(isGeneratePackage(aModel))]
 [file (aModel.name+'.sol', false, 'UTF-8')]
 [printCommentDoc(aModel.ownedComment)/]
 [for (pi : PackageImport | aModel.packageImport->select(hasStereotype('Import')))]
 import "[pi.target.oclAsType(NamedElement).name/]";
 [/for]
-
 [printLibrary(aModel)/]
 [for (	i : Interface | aModel.allInterfaces())]
 [printContractInterface(i)/]
@@ -28,6 +45,9 @@ import "[pi.target.oclAsType(NamedElement).name/]";
 [/file]
 [/template]
 
+[**
+ * Prints a contact interface.
+*/]
 [template public printContractInterface (aInterface : Interface)?(not hasStereotype('StandardizedContractAPI')) ]
 [printCommentDoc(aInterface.ownedComment)/]
 contract [aInterface.name/][contractIs(aInterface)/] {
@@ -44,13 +64,16 @@ contract [aInterface.name/][contractIs(aInterface)/] {
 [/for]
 [for (op : Operation | aInterface.ownedOperation->select(hasStereotype('Function')))]
 	[printCommentDoc(op.ownedComment)/]
-	function [printFunctionDeclaration(op)/]
+	function [printFunctionDeclaration(op)/];
 [/for]
 }
 
 [/template]
 
-[template public printLibrary (aModel : Model)?(not aModel.allLibrarys()->isEmpty()) ]
+[**
+ * Prints a library.
+*/]
+[template public printLibrary (aModel : Package)?(not aModel.allLibrarys()->isEmpty()) ]
 [for (	aClass : Class | aModel.allLibrarys())]
 [printCommentDoc(aClass.ownedComment)/]
 library [aClass.name/] {
@@ -94,11 +117,9 @@ contract [aClass.name/][contractIs(aClass)/] {
 [for (prop : Property | aClass.allMappingProperties())]
 	[printPropertyMapping(prop)/]
 [/for]
-
-			// [protected (aClass.name+'.attributes')]
-	// TODO implement
-    // [/protected]
-
+	// [protected (aClass.name+'.attributes')]
+	//TODO: implement
+	// [/protected]
 [for (c : Constraint | Constraint.allInstances()->select(_context=aClass) )]
 	[c.printContraintDefinition(aClass)/]
 [/for]
@@ -118,11 +139,9 @@ contract [aClass.name/][contractIs(aClass)/] {
 [for (prop : Property | aClass.allGetterProperties())]
 	[printGetterSetter(prop)/]
 [/for]
-
-    		// [protected (aClass.name+'.operations')]
-	// TODO implement
-    // [/protected]
-
+	// [protected (aClass.name+'.operations')]
+	//TODO: implement
+	// [/protected]
 }
 
 [/template]
@@ -139,9 +158,7 @@ function get[aProperty.name/]() returns([aProperty.type.name/]) {
 function set[aProperty.name/] ([aProperty.externalType()/] a[aProperty.name/]) {
 	[aProperty.name/] = [if (hasStereotype(aProperty.type, 'Contract'))][aProperty.type.name/](a[aProperty.name/]);[else]a[aProperty.name/];[/if]
 }
- 
 [/if]
-
 [/template]
 
 [query public externalType(t : TypedElement) : String = if t.type.hasStereotype('Contract') then
@@ -163,6 +180,7 @@ enum [en.name/] { [for (l : EnumerationLiteral | en.ownedLiteral)separator (',')
 
 
 [template public printContraintDefinition (aConstraint : Constraint, aClass : Class) ? (aConstraint._context=aClass) ]
+
 modifier [aConstraint.name/]
 {
     [aConstraint.specification.oclAsType(LiteralString).value/]
@@ -182,7 +200,7 @@ event [aOperation.name/]([printParameters(aOperation)/]);
 function [aClass.name/]([printContructorArgs(aClass)/]){
     [aClass.getStereotypeValue('Contract', 'ConstructorCode')/]
     //[protected ('Constructor.'+aClass.name)]
-	// TODO implement
+	//TODO: implement
     //[/protected]
 }
 [/template]
@@ -219,23 +237,24 @@ mapping ([t.type.name/]=>[getStereotypeValue('Mapping', 'value').oclAsType(Named
 
 
 [template public printOperation (aOperation : Operation) ? (hasStereotype(aOperation, 'Function'))]
+
 [if (aOperation.isAbstract)]
 [printCommentDoc(aOperation.ownedComment)/]
-function [printFunctionDeclaration(aOperation)/]
+function [printFunctionDeclaration(aOperation)/];
 [else]
 [printFunctionImplementation(aOperation)/]
 [/if]
 [/template]
 
 [template public printFunctionImplementation(aOperation : Operation)]
+
 [printCommentDoc(aOperation.ownedComment)/]
 function [printFunctionDeclaration(aOperation)/] {
-    [aOperation.printCode()/]
-    // [protected (aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name)]
-	// TODO implement
-    // [/protected]
+[if(not aOperation.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]	[aOperation.printCode()/][/if]
+	//[protected(aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name)]
+	//TODO: implement
+	//[/protected]
 }
-	
 [/template]
 
 [template public printCode(op : Operation) ? (op.hasStereotype('Function') and not op.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]
@@ -248,8 +267,10 @@ function [printFunctionDeclaration(aOperation)/] {
 [printFunctionDeclarationA(aOperation)/][/template]
 
 [template public printDelegateOperations (aProperty : Property)]
-// delegate functions from [aProperty.name/]
+// delegate functions from [aProperty.name/] ([aProperty.type.name/])
 [for (aOperation : Operation | aProperty.type.oclAsType(Class).allFunctions()->select(visibility=VisibilityKind::public))]
+
+// delegate to [aOperation.name/]
 function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [printReturn(aOperation)/] {
 [if (hasReturnValue(aOperation))]
 [if (not aOperation.allReturnParameters()->any(name.oclIsUndefined()).oclIsUndefined())]
@@ -260,12 +281,8 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [p
 [else]
 	[printDelegateCall(aProperty, aOperation)/]    
 [/if]
-    		// [protected (aOperation.owner.oclAsType(NamedElement).name+'.delegate.function.'+aOperation.name)]
-	// TODO implement
-    // [/protected]
 }
 [/for]
-
 [/template]
 
 [template public printDelegateCall(aProperty : Property, aOperation : Operation)]

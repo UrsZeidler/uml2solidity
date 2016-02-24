@@ -17,20 +17,40 @@
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getStereotypeListValue(org.eclipse.uml2.uml.NamedElement, java.lang.String, java.lang.String)', Sequence{class, name,propertyname})
 /]
 
+[query public isGeneratePackage(pa : Package) : Boolean = not pa.allContracts()->isEmpty() 
+or not pa.allLibrarys()->isEmpty()
+or not pa.allInterfaces()->isEmpty() /]
 
-[query public allContracts(aModel : Model) : OrderedSet(Class) = aModel.allOwnedElements()
+
+
+[query public allContracts(aModel : Model) : OrderedSet(Class) = aModel.ownedElement
 	->selectByType(Class)
 	->select(hasStereotype('Contract')) 
 	->sortedBy( indexInContainer(oclAsType(Class)) ) /]
 
-[query public allInterfaces(aModel : Model) : OrderedSet(Interface) = aModel.allOwnedElements()
+[query public allContracts(aModel : Package) : OrderedSet(Class) = aModel.ownedElement
+	->selectByType(Class)
+	->select(hasStereotype('Contract')) 
+	->sortedBy( indexInContainer(oclAsType(Class)) ) /]
+
+[query public allInterfaces(aModel : Model) : OrderedSet(Interface) = aModel.ownedElement
 	->selectByType(Interface)
 	->sortedBy( indexInContainer(oclAsType(Interface)) ) /]
 
-[query public allLibrarys(aModel : Model) : OrderedSet(Class) = aModel.allOwnedElements()
+[query public allInterfaces(aModel : Package) : OrderedSet(Interface) = aModel.ownedElement
+	->selectByType(Interface)
+	->sortedBy( indexInContainer(oclAsType(Interface)) ) /]
+
+[query public allLibrarys(aModel : Model) : OrderedSet(Class) = aModel.ownedElement
 	->selectByType(Class)
 	->select(hasStereotype('Library')) 
 	->sortedBy( indexInContainer(oclAsType(Class)) ) /]
+
+[query public allLibrarys(aModel : Package) : OrderedSet(Class) = aModel.ownedElement
+	->selectByType(Class)
+	->select(hasStereotype('Library')) 
+	->sortedBy( indexInContainer(oclAsType(Class)) ) /]
+
 
 [query public allStructs(aClass : Class) : OrderedSet(Class) = aClass.ownedMember
 	->select(hasStereotype('Struct'))
