@@ -29,17 +29,17 @@
  * Generates a packages as a file.
  * @param aModel a package
  */]
-[template public generatePackage(aModel : Package)?(isGeneratePackage(aModel))]
-[file (aModel.name+'.sol', false, 'UTF-8')]
-[printCommentDoc(aModel.ownedComment)/]
-[for (pi : PackageImport | aModel.packageImport->select(hasStereotype('Import')))]
+[template public generatePackage(p : Package)?(isGeneratePackage(p))]
+[file (p.name+'.sol', false, 'UTF-8')]
+[printCommentDoc(p.ownedComment)/]
+[for (pi : PackageImport | p.packageImport->select(hasStereotype('Import')))]
 import "[pi.target.oclAsType(NamedElement).name/]";
 [/for]
-[printLibrary(aModel)/]
-[for (	i : Interface | aModel.allInterfaces())]
+[printLibrary(p)/]
+[for (	i : Interface | p.allInterfaces())]
 [printContractInterface(i)/]
 [/for]
-[for (	aClass : Class | aModel.allContracts())]
+[for (	aClass : Class | p.allContracts())]
 [printContract(aClass)/]
 [/for]
 [/file]
@@ -75,6 +75,7 @@ contract [aInterface.name/][contractIs(aInterface)/] {
 */]
 [template public printLibrary (aModel : Package)?(not aModel.allLibrarys()->isEmpty()) ]
 [for (	aClass : Class | aModel.allLibrarys())]
+
 [printCommentDoc(aClass.ownedComment)/]
 library [aClass.name/] {
 [for (op : Operation | aClass.allFunctions())]
@@ -82,7 +83,6 @@ library [aClass.name/] {
 [/for]
 }
 [/for]
-
 [/template]
 
 [**
@@ -326,12 +326,12 @@ op.getStereotypeListValue('Function','modifier')
 [template public printCommentDoc (comments : Set(Comment)) ? (not comments->isEmpty()) ]
 /*
 [for (c : Comment | comments)]
- * [c._body.printLines()/][/for]
+[c._body.printLines()/][/for]
 */[/template]
 
 [template public printLines(aString : String)]
 [for (line : String | aString.tokenizeLine())]
-[line/]
+* [line/]
 [/for]
 [/template]
 

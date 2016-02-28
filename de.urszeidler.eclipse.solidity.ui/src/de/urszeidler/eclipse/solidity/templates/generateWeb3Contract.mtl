@@ -3,11 +3,31 @@
 
 [import de::urszeidler::eclipse::solidity::util::um2service /]
 
+[**
+ * Generate for each package containing a compileable instrance the coresponding Web3 JS file.
+*/]
 [template public generateWeb3Contract(aModel : Model)]
 [comment @main/]
-[file (aModel.name+'Web3.js', false, 'UTF-8')]
+[iteratePackages(aModel)/]
+[/template]
 
-[for (	aClass : Class | aModel.allContracts())]
+[**
+ * Iterates over the packages.
+*/]
+[template private iteratePackages(p : Package)]
+[for (p1 : Package | p.nestedPackage)]
+[generatePackage(p1)/]
+[iteratePackages(p1)/]
+[/for]
+[/template]
+
+[**
+ * Generate the web3 for the given package.
+*/]
+[template public generatePackage (p : Package)?(isGeneratePackage(p)) ]
+[file (p.name+'Web3.js', false, 'UTF-8')]
+
+[for (	aClass : Class | p.allContracts())]
 var [aClass.name/]Contract = web3.eth.contract([ '[' /]
 [printMethodSignature(aClass)/] [if (not aClass.ownedOperation->select(hasStereotype('Event'))->isEmpty())],[/if]
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
@@ -17,10 +37,12 @@ var [aClass.name/]Contract = web3.eth.contract([ '[' /]
 
 [/for]
 
-
 [/file]
 [/template]
 
+[**
+ * Print the method signature as json.
+*/]
 [template public printMethodSignature (aClass : Class) ]
 [for (op : Operation | aClass.allFunctions())separator (',')]
   {
@@ -33,6 +55,9 @@ var [aClass.name/]Contract = web3.eth.contract([ '[' /]
 [/for]
 [/template]
 
+[**
+ * Print the event signature as json.
+*/]
 [template public printEventSignature (op : Operation) ]
   {
     "constant": true,

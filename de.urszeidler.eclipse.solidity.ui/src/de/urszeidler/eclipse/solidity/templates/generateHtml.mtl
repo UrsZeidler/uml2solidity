@@ -5,12 +5,30 @@
 
 [template public generateHtmlInterface(aModel : Model)]
 [comment @main/]
-[file (aModel.name+'.html', false, 'UTF-8')]
+[iteratePackages(aModel)/]
+[/template]
+
+
+[**
+ * Iterates over the packages.
+*/]
+[template private iteratePackages(p : Package)]
+[for (p1 : Package | p.nestedPackage)]
+[generatePackage(p1)/]
+[iteratePackages(p1)/]
+[/for]
+[/template]
+
+[**
+ * Generate a basic html example for the given package.
+*/]
+[template public generatePackage(p : Package)?(isGeneratePackage(p)) ]
+[file (p.name+'.html', false, 'UTF-8')]
 <!doctype>
 <html>
 <head>
 <script type='text/javascript'>
-[printJavaScript(aModel)/]
+[printJavaScript(p)/]
 </script>
 <style>
 .contract {
@@ -24,8 +42,8 @@
 </style>
 </head>
 <body bgcolor='#E6E6FA'>
-	<h1>Sample Interface for [aModel.name/]</h1>
-[printHtmlInterface(aModel)/]
+	<h1>Sample Interface for [p.name/]</h1>
+[printHtmlInterface(p)/]
 </body>
 </html>
 [/file]
@@ -56,8 +74,8 @@
  /]
 
 
-[template public printHtmlInterface (aModel : Model) ]
-[for (	aClass : Class | aModel.allContracts())]
+[template public printHtmlInterface (p : Package) ]
+[for (	aClass : Class | p.allContracts())]
 <div class="contract">
 [aClass.name/]:
   <div class="contract_attributes"> attributes:
@@ -93,8 +111,8 @@
 [template public functionName(op : Operation)]
 [op.owner.oclAsType(NamedElement).name/]_[op.name/][for (p : Parameter | op.allInParameters())]_[p.type.name/][/for][/template]
 
-[template public printJavaScript (aModel : Model) ]
-[for (	aClass : Class | aModel.allContracts())]
+[template public printJavaScript (p : Package) ]
+[for (	aClass : Class | p.allContracts())]
 // script for [aClass.name/]
 function [aClass.name/]_updateAttributes() {
 // update attributes
