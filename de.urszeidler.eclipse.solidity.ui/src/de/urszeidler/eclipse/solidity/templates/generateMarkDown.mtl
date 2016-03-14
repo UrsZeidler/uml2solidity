@@ -5,35 +5,61 @@
 [module generateMarkDown('http://www.eclipse.org/uml2/5.0.0/UML')]
 
 [import de::urszeidler::eclipse::solidity::util::um2service /]
-
+[import de::urszeidler::eclipse::solidity::templates::generateContracts /]
 [**
  * The documentation of the template generateMarkDown.
  * @param aModel
  */]
 [template public generateMarkDown(aModel : Model)]
 [comment @main/]
-[file (aModel.name+'.md', false, 'UTF-8')]
-# [aModel.name/]
+[iteratePackages(aModel)/]
+[/template]
 
-[aModel.printDoc()/]
-[for (	aClass : Class | aModel.allContracts())]
-* [ '[' /][aClass.name/][ ']' /](#contract-[aClass.name.toLowerCase()/])
+[template public generatePackage (p : Package) ]
+[file (p.name+'.md', false, 'UTF-8')]
+# [p.name/]
+
+[p.printDoc()/]
+[for (	aClass : Class | p.allContracts())]
+* [contractLink(aClass)/]
 [/for]
-[for (	aClass : Class | aModel.allContracts())]
+[for (	aClass : Class | p.allContracts())]
 [printContract(aClass)/]
 [/for]
 
 [/file]
 [/template]
 
+[template public contractLink(aClass : Class) ]
+[ '[' /][aClass.name/][ ']' /](#contract-[aClass.name.toLowerCase()/])[/template]
+
+[**
+ * Iterates over the packages.
+*/]
+[template private iteratePackages(p : Package)]
+[for (p1 : Package | p.nestedPackage)]
+[generatePackage(p1)/]
+[iteratePackages(p1)/]
+[/for]
+[/template]
+
+
 [template public printContract (aClass : Class) ]
 
 ## contract: [aClass.name/]
 
-[if (not aClass.superClass->isEmpty())]inherites: [for (c : Class | aClass.superClass)separator (',')][c.name/][/for][/if]
+    overview:
+[for (op : Operation | aClass.allAbstractFunctions())]
+	abstract function [printFunctionDeclaration(op)/]
+[/for]
+[for (op : Operation | aClass.allFunctions())]
+	function [printFunctionDeclaration(op)/]
+[/for]
+
+[if (not aClass.superClass->isEmpty())]inherites: [for (c : Class | aClass.superClass)separator (',')][contractLink(c)/][/for][/if]
+
 [aClass.printDoc()/]
 [for (ne : NamedElement | aClass.ownedMember->filter(Enumeration))]
-
 ### [aClass.name/] enums: [ne.name/]
 
 [ne.printDoc()/]
@@ -46,15 +72,14 @@ name|doc
 [if (not aClass.allCProperties()->isEmpty())][printPropperties(aClass)/][/if][if (not aClass.allMappingProperties()->isEmpty())][printMapping(aClass)/][/if]-
 [for (op : Operation | aClass.allFunctions())]
 
-#### [aClass.name/].[op.name/] [op.visibility/]
+#### [aClass.name/].[printFunctionDeclaration(op)/]
 
 [op.printDoc()/]
-
 [if (not op.ownedParameter->isEmpty())]
 name|type|direction|doc
 ----|----|----|----
 [for (p : Parameter | op.ownedParameter)]
-[p.name/]|[p.type.name/]|[p.direction/]|[p.printDoc()/]
+[p.name/]|[p.type.name/]|[p.direction/]|[p.printSingleLineDoc()/]
 [/for]
 [/if]
 [/for]
@@ -78,8 +103,7 @@ name|type|direction|doc
 name|type|mapsTo|visiblity|doc
 ----|----|----|----|----
 [for (p : Property | c.allMappingProperties())]
-[p.name/]|[p.type.name/]|[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/]|[p.visibility/]|[p.printDoc()/]
-[/for]
+[p.name/]|[p.type.name/]|[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/]|[p.visibility/]|[p.printSingleLineDoc()/][/for]
 [/template]
 
 [template public printPropperties (c : Class)?(not c.allCProperties()->isEmpty()) ]
@@ -89,7 +113,7 @@ name|type|mapsTo|visiblity|doc
 name|type|visiblity|delegate|doc
 ----|----|----|----|----
 [for (p : Property | c.allCProperties())]
-[p.name/]|[p.type.name/]|[p.visibility/]|[if (p.hasStereotype('Delegate'))]X[/if]|[p.printDoc()/]
+[p.name/]|[p.type.name/]|[p.visibility/]|[if (p.hasStereotype('Delegate'))]X[/if]|[p.printSingleLineDoc()/]
 [/for]
 [/template]
 
@@ -105,6 +129,8 @@ name|type|visiblity|delegate|doc
 [/for]
 [/template]
 
+[template public printSingleLineDoc (ne : NamedElement)?(not ne.ownedComment->isEmpty()) ]
+[for (c : Comment | ne.ownedComment)][c._body/][/for][/template]
 
 [template public printDoc (ne : NamedElement)  ? (not ne.ownedComment->isEmpty()) ]
 [printCommentDoc(ne.ownedComment)/]

@@ -258,7 +258,7 @@ function [printFunctionDeclaration(aOperation)/] {
 [/template]
 
 [template public printCode(op : Operation) ? (op.hasStereotype('Function') and not op.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]
-[op.getStereotypeValue('Function', 'functionCode').oclAsType(String).printLines()/][/template]
+[op.getStereotypeValue('Function', 'functionCode').oclAsType(String).printLines('')/][/template]
 
 [template public printFunctionDeclarationA(aOperation : Operation)]
 [aOperation.name/]([printParameters(aOperation,ParameterDirectionKind::_in)/]) [aOperation.visibility()/] [printModifier(aOperation)/] [printReturn(aOperation)/][/template]
@@ -326,12 +326,12 @@ op.getStereotypeListValue('Function','modifier')
 [template public printCommentDoc (comments : Set(Comment)) ? (not comments->isEmpty()) ]
 /*
 [for (c : Comment | comments)]
-[c._body.printLines()/][/for]
+[c._body.printLines('*')/][/for]
 */[/template]
 
-[template public printLines(aString : String)]
+[template public printLines(aString : String, prefix : String)]
 [for (line : String | aString.tokenizeLine())]
-* [line/]
+[prefix/] [line/]
 [/for]
 [/template]
 

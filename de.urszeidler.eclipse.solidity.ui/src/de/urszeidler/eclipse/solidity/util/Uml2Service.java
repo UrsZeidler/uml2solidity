@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Stereotype;
 
@@ -19,7 +20,13 @@ import org.eclipse.uml2.uml.Stereotype;
  */
 public class Uml2Service {
 	
-	public boolean hasStereotype(NamedElement clazz, String stereotypeName) {
+	/**
+	 * Returns true when the stereotype is applied to the {@link Element}.
+	 * @param clazz
+	 * @param stereotypeName
+	 * @return
+	 */
+	public boolean hasStereotype(Element clazz, String stereotypeName) {
 		List<Stereotype> stereotypes = clazz.getAppliedStereotypes();
 		for (Stereotype stereotype : stereotypes) {
 			if (stereotype.getName().equals(stereotypeName)) {
@@ -29,7 +36,13 @@ public class Uml2Service {
 		return false;
 	}
 	
-	public Stereotype getStereotype(NamedElement clazz, String stereotypeName) {
+	/**
+	 * Returns the stereotype.
+	 * @param clazz
+	 * @param stereotypeName
+	 * @return
+	 */
+	public Stereotype getStereotype(Element clazz, String stereotypeName) {
 		List<Stereotype> stereotypes = clazz.getAppliedStereotypes();
 		for (Stereotype stereotype : stereotypes) {
 			if (stereotype.getName().equals(stereotypeName)) {
@@ -39,7 +52,14 @@ public class Uml2Service {
 		return null;
 	}
 	
-	public Object getStereotypeValue(NamedElement clazz, String stereotypeName, String propertyName) {
+	/**
+	 * Return the value of the the stereotype property.
+	 * @param clazz
+	 * @param stereotypeName 
+	 * @param propertyName
+	 * @return
+	 */
+	public Object getStereotypeValue(Element clazz, String stereotypeName, String propertyName) {
 		Stereotype stereotype = getStereotype(clazz, stereotypeName);
 		if(stereotype!=null){
 			Object value =  clazz.getValue(stereotype, propertyName);
@@ -48,7 +68,15 @@ public class Uml2Service {
 		return null;
 	}
 	
-	public List<?> getStereotypeListValue(NamedElement clazz, String stereotypeName, String propertyName) {
+	/**
+	 * Returns the value cast as an List.
+	 * 
+	 * @param clazz
+	 * @param stereotypeName
+	 * @param propertyName
+	 * @return
+	 */
+	public List<?> getStereotypeListValue(Element clazz, String stereotypeName, String propertyName) {
 		Stereotype stereotype = getStereotype(clazz, stereotypeName);
 		if(stereotype!=null){
 			try {
@@ -58,13 +86,17 @@ public class Uml2Service {
 					return new_name;
 				}
 			} catch (IllegalArgumentException e) {
-				// TODO: handle exception
 			}
 			
 		}
 		return new ArrayList<Object>();
 	}
 	
+	/**
+	 * Get the index of the given {@link NamedElement} of its container.
+	 * @param clazz
+	 * @return
+	 */
 	public int getIndexInContainer(NamedElement clazz) {
 		EObject eContainer = clazz.eContainer();
 		EStructuralFeature eContainingFeature = clazz.eContainingFeature();
