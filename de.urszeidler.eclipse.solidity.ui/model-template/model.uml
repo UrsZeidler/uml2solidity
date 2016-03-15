@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_cHkEcOqEEeW-WZmxJuA3BA" name="model">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_U3qdUOqGEeW-WZmxJuA3BA">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/solidity_types.uml#_N0uwUKKsEeWvY9GWZZMftw"/>
+  </packageImport>
+  <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_cIUSYOqEEeW-WZmxJuA3BA">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_cIUSYuqEEeW-WZmxJuA3BA" source="PapyrusVersion">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cIUSY-qEEeW-WZmxJuA3BA" key="Version" value="0.0.20"/>
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cIUSZOqEEeW-WZmxJuA3BA" key="Comment" value=""/>
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cIUSZeqEEeW-WZmxJuA3BA" key="Copyright" value=""/>
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cIUSZuqEEeW-WZmxJuA3BA" key="Date" value="2015-12-31"/>
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cIUSZ-qEEeW-WZmxJuA3BA" key="Author" value=""/>
+    </eAnnotations>
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_cIUSYeqEEeW-WZmxJuA3BA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+      <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILE/solidity_profiles.uml#_mMyo0K-8EeWyf-Y9sdI4kw"/>
+    </eAnnotations>
+    <appliedProfile xmi:type="uml:Profile" href="pathmap://UML_PROFILE/solidity_profiles.uml#_uCE5EKHREeWjOZ0I8ilEXA"/>
+  </profileApplication>
+</uml:Model>

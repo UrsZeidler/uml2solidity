@@ -136,4 +136,15 @@
             provider="Urs Zeidler">
       </library>
    </extension>
+   <extension
+         point="org.eclipse.papyrus.uml.diagram.wizards.templates">
+      <template
+            di_file="model-template/model.di"
+            file="model-template/model.uml"
+            id="de.urszeidler.eclipse.solidity.ui.basic"
+            language="uml"
+            name="Basic Solidity model"
+            notation_file="model-template/model.notation">
+      </template>
+   </extension>
 </plugin>
