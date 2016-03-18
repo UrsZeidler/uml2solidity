@@ -345,16 +345,14 @@ op.getStereotypeListValue('Function','modifier')
 
 [query public visibility(v : Property) : String = if v.visibility = VisibilityKind::public then 'public'
 else if v.visibility = VisibilityKind::private then 'private'
-else if v.visibility = VisibilityKind::protected then 'protected'
-else '' 
-endif
-endif
-endif
+else if v.visibility = VisibilityKind::protected then 'internal'
+else if v.visibility = VisibilityKind::_package then 'external'
+else '' endif endif endif endif
  /]
 
 [query public visibility(v : Operation) : String = if v.visibility = VisibilityKind::public then 'public'
 else if v.visibility = VisibilityKind::private then 'private'
-else if v.visibility = VisibilityKind::protected then 'inheritable'
+else if v.visibility = VisibilityKind::protected then 'internal'
 else if v.visibility = VisibilityKind::_package then 'external'
 else '' 
 endif
