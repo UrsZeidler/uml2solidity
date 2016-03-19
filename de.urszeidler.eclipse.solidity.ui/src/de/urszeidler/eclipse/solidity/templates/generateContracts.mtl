@@ -33,7 +33,7 @@
 [file (p.name+'.sol', false, 'UTF-8')]
 [printCommentDoc(p.ownedComment)/]
 [for (pi : PackageImport | p.packageImport->select(hasStereotype('Import')))]
-import "[pi.target.oclAsType(NamedElement).name/]";
+import "[pi.target.oclAsType(Package).toImport()/]";
 [/for]
 [printLibrary(p)/]
 [for (	i : Interface | p.allInterfaces())]
@@ -342,6 +342,12 @@ op.getStereotypeListValue('Function','modifier')
 
 [template private printTypeM(t : MultiplicityElement) ? (t.oclIsKindOf(MultiplicityElement))]
 [if (t.getUpper()=-1)][ '[' /][ ']' /][elseif (t.getUpper()>1)][ '[' /][t.getUpper()/][ ']' /][/if][/template]
+
+
+[query public toImport(pi : Package) : String = pi.toImportPath()+ pi.name+'.sol' /]
+
+[query public toImportPath(pi : Package) : String = './' /]
+
 
 [query public visibility(v : Property) : String = if v.visibility = VisibilityKind::public then 'public'
 else if v.visibility = VisibilityKind::private then 'private'

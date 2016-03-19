@@ -2,20 +2,25 @@
 <feature
       id="de.urszeidler.eclipse.solidity.feature"
       label="Solidity modeling and generating Feature"
-      version="1.0.0.qualifier"
+      version="1.0.1.qualifier"
       provider-name="Urs Zeidler">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="https://github.com/UrsZeidler/uml2solidity">
+      A uml profile and a set of acceleo code generators to model smart contracts in uml and generate solidity code.
+see https://github.com/UrsZeidler/uml2solidity/wiki for more details.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      (c) Urs Zeidler 2016
    </copyright>
 
    <license url="http://www.example.com/license">
       [Enter License Description here.]
    </license>
+
+   <url>
+      <update label="solidity" url="http://urszeidler.github.io/uml2solidity/uml2solidity-updatesite/"/>
+   </url>
 
    <requires>
       <import plugin="org.eclipse.ui"/>
@@ -40,7 +45,7 @@
          id="de.urszeidler.eclipse.solidity.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.1.qualifier"
          unpack="false"/>
 
 </feature>
