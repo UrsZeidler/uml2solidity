@@ -11,12 +11,14 @@ refer to [install](https://github.com/UrsZeidler/uml2solidity/wiki#install) sect
 dependencies:
 
 * uml2 (5.0)
-* [papyrus (1.1.3)](Papyrus Mars release (1.1.3)) 
+* papyrus (1.1.x)
 * acceleo (3.5)
+
+There are all available in the default Mars updatesite.
 
 find out more in the docs
 
-* [wiki](https://github.com/UrsZeidler/uml2solidity/wiki)
+* [wiki home](https://github.com/UrsZeidler/uml2solidity/wiki)
  * [install](https://github.com/UrsZeidler/uml2solidity/wiki#install)
  * [usage](https://github.com/UrsZeidler/uml2solidity/wiki#usage)
  * [create a model](https://github.com/UrsZeidler/uml2solidity/wiki#create-a-model)
@@ -31,3 +33,4 @@ find out more in the docs
 * [preferences](https://github.com/UrsZeidler/uml2solidity/wiki/Preferences)
 
 
+you can `tip the coder` by sending some ether : 0x25b2ce55746f54d88e9fc4d2f0f85e879c30bb05
