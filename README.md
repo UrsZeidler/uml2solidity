@@ -14,5 +14,20 @@ dependencies:
 * [papyrus (1.1.3)](Papyrus Mars release (1.1.3)) 
 * acceleo (3.5)
 
-find out more in the [wiki](https://github.com/UrsZeidler/uml2solidity/wiki)
+find out more in the docs
+
+* [wiki](https://github.com/UrsZeidler/uml2solidity/wiki)
+ * [install](https://github.com/UrsZeidler/uml2solidity/wiki#install)
+ * [usage](https://github.com/UrsZeidler/uml2solidity/wiki#usage)
+ * [create a model](https://github.com/UrsZeidler/uml2solidity/wiki#create-a-model)
+ * [generate code](https://github.com/UrsZeidler/uml2solidity/wiki#generate-code)
+* [Solidity Code](https://github.com/UrsZeidler/uml2solidity/SolidityCode)
+ * [packages and solidity files](https://github.com/UrsZeidler/uml2solidity/SolidityCode#packages-and-solidity-files)
+ * [contract constructors](https://github.com/UrsZeidler/uml2solidity/SolidityCode#contract-constructors)
+ * [visibilities](https://github.com/UrsZeidler/uml2solidity/SolidityCode#visibilities)
+ * [protected user code](https://github.com/UrsZeidler/uml2solidity/SolidityCode#protected-user-code)
+ * [an example](https://github.com/UrsZeidler/uml2solidity/SolidityCode#an-example)
+* [profile definition](https://github.com/UrsZeidler/uml2solidity/Contracts)
+* [preferences](https://github.com/UrsZeidler/uml2solidity/Preferences)
+
 
