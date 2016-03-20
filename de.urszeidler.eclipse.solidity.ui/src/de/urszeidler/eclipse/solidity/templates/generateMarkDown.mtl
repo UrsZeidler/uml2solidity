@@ -15,7 +15,7 @@
 [iteratePackages(aModel)/]
 [/template]
 
-[template public generatePackage (p : Package) ]
+[template public generatePackage (p : Package)?(isGeneratePackage(p)) ]
 [file (p.name+'.md', false, 'UTF-8')]
 # [p.name/]
 

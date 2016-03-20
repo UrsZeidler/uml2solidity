@@ -129,10 +129,8 @@ public class GenerateAll {
 					targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateWeb3Contract.setGenerationID(generationID);
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
-			
-		}
-		
-		{
+		}		
+		if(store.getBoolean(PreferenceConstants.GENERATE_MARKDOWN)){
 			GenerateMarkDown generateWeb3Contract = new GenerateMarkDown(modelURI,
 					targetFolder.getLocation().toFile(), arguments);
 			monitor.worked(1);
@@ -142,7 +140,6 @@ public class GenerateAll {
 					targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateWeb3Contract.setGenerationID(generationID);
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
-
 		}
 	}
 
