@@ -1,6 +1,6 @@
 # uml2solidity
 
-A uml profile and a set of acceleo code generators to model smart contracts in uml and generate solidity code usable with the Papyrus UML modeler for eclipse.
+A uml profile and a set of acceleo code generators to model smart contracts in uml and generate solidity code. Usable with the Papyrus UML modeler for eclipse.
 
 a plugin for eclipse: 
 
