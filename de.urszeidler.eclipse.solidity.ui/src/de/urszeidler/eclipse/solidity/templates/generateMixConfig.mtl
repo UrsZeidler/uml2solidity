@@ -41,7 +41,7 @@
 	"registerContentHashTrHash": "",
 	"registerUrlBlockNumber": -1,
 	"registerUrlTrHash": "",
-	"startUrl": "/[aModel.nestedPackage->select(isGeneratePackage()).name/].html",
+	"startUrl": "/[aModel.nestedPackage->select(isGeneratePackage())->asSequence()->first().name/].html",
 	"title": "[aModel.name/]",
 	"states": [ '[' /]
 		{
