@@ -33,7 +33,7 @@
 [file (p.name+'.sol', false, 'UTF-8')]
 [printCommentDoc(p.ownedComment)/]
 [for (pi : PackageImport | p.packageImport->select(hasStereotype('Import')))]
-import "[pi.target.oclAsType(Package).toImport()/]";
+import [if (not pi.getStereotypeValue('Import', 'importFilter').oclIsUndefined())] [pi.getStereotypeValue('Import', 'importFilter')/] from [/if]"[pi.target.oclAsType(Package).toImport()/]";
 [/for]
 [printLibrary(p)/]
 [for (	i : Interface | p.allInterfaces())]
