@@ -2,6 +2,8 @@
 
 A uml profile and a set of acceleo code generators to model smart contracts in uml and generate solidity code. Usable with the Papyrus UML modeler for eclipse.
 
+<a href="http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=2784342" class="drag" title="Drag to your running Eclipse workspace to install Uml to Solidity"><img class="img-responsive" src="https://marketplace.eclipse.org/sites/all/themes/solstice/public/images/marketplace/btn-install.png" alt="Drag to your running Eclipse workspace to install Uml to Solidity" /></a>
+
 a plugin for eclipse: 
 
       http://urszeidler.github.io/uml2solidity/uml2solidity-updatesite/
