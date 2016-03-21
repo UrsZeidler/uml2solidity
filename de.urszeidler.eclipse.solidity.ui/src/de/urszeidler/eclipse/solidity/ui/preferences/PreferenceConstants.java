@@ -7,10 +7,11 @@ public class PreferenceConstants {
 
 
 	public static final String COMPILE_CONTRACTS = "COMPILE_CONTRACTS";
-	public static final String COMPILER_PROGRAMM = "COMPILE_CONTRACTS";
+	public static final String COMPILER_PROGRAMM = "COMPILER_PROGRAMM";
 
 
 	public static final String GENERATION_TARGET = "GENERATION_TARGET";
+	public static final String GENERATION_TARGET_DOC = "GENERATION_TARGET_DOC";
 
 	public static final String GENERATE_WEB3 = "GENERATE_WEB3";
 	public static final String GENERATE_HTML = "GENERATE_HTML";	

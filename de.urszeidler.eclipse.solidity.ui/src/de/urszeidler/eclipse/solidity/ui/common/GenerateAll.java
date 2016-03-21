@@ -129,10 +129,17 @@ public class GenerateAll {
 					targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateWeb3Contract.setGenerationID(generationID);
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
-		}		
+		}
+		
+		final String docTarget = store.getString(PreferenceConstants.GENERATION_TARGET_DOC);
+		IContainer target1 = targetFolder.getProject().getFolder(docTarget);
+		if (!target1.getLocation().toFile().exists()) {
+			target1.getLocation().toFile().mkdirs();
+		}
+		
 		if(store.getBoolean(PreferenceConstants.GENERATE_MARKDOWN)){
 			GenerateMarkDown generateWeb3Contract = new GenerateMarkDown(modelURI,
-					targetFolder.getLocation().toFile(), arguments);
+					target1.getLocation().toFile(), arguments);
 			monitor.worked(1);
 			generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
 					"de.urszeidler.eclipse.solidity.ui",

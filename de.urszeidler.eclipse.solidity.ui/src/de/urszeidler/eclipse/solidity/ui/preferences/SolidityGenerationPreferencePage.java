@@ -41,6 +41,8 @@ public class SolidityGenerationPreferencePage
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_HTML, "generate mix html", BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_MIX, "generate mix config", BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_WEB3, "generate web3 interface", BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		
+		addField(new StringFieldEditor(PreferenceConstants.GENERATION_TARGET_DOC, "generate doc to directory", -1, StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_MARKDOWN, "generate markdown report", BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 	}
 

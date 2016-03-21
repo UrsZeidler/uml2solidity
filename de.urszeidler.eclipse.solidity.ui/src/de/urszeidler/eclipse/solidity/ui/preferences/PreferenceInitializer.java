@@ -22,8 +22,9 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.GENERATE_WEB3, true);
 		store.setDefault(PreferenceConstants.GENERATE_MARKDOWN, true);
 		store.setDefault(PreferenceConstants.GENERATION_TARGET, "mix");
+		store.setDefault(PreferenceConstants.GENERATION_TARGET_DOC, "doc");
 		store.setDefault(PreferenceConstants.COMPILER_PROGRAMM, false);
-		store.setDefault(PreferenceConstants.COMPILER_PROGRAMM,
+		store.setDefault(PreferenceConstants.COMPILE_CONTRACTS,
 				"Default value");
 	}
 
