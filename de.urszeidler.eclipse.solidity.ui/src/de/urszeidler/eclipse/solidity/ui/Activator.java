@@ -10,6 +10,8 @@
  *******************************************************************************/
 package de.urszeidler.eclipse.solidity.ui;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -63,6 +65,26 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+
+	public static void logError(String message, Exception e) {
+		getDefault().getLog().log(createErrorStatus(message, e));
+	}
+
+	public static Status createErrorStatus(String message, Exception e) {
+		return new Status(IStatus.ERROR, PLUGIN_ID, message, e);
+	}
+
+	public static void logError(String message) {
+		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, message));
+	}
+
+	public static void logInfo(String message) {
+		getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, message));
+	}
+
+	public static void logWarning(String message) {
+		getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, message));
 	}
 
 }

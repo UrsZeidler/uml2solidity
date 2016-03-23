@@ -23,9 +23,25 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.GENERATE_MARKDOWN, true);
 		store.setDefault(PreferenceConstants.GENERATION_TARGET, "mix");
 		store.setDefault(PreferenceConstants.GENERATION_TARGET_DOC, "doc");
-		store.setDefault(PreferenceConstants.COMPILER_PROGRAMM, false);
-		store.setDefault(PreferenceConstants.COMPILE_CONTRACTS,
-				"Default value");
+		store.setDefault(PreferenceConstants.COMPILE_CONTRACTS, false);
+		store.setDefault(PreferenceConstants.COMPILER_PROGRAMM,
+				"/usr/bin/solc");
+		store.setDefault(PreferenceConstants.COMPILER_TARGET,
+				"bin");
+		store.setDefault(PreferenceConstants.COMPILER_BIN, true);
+		store.setDefault(PreferenceConstants.COMPILER_BIN_RUNTIME, false);
+		store.setDefault(PreferenceConstants.COMPILER_ABI, true);
+		store.setDefault(PreferenceConstants.COMPILER_INTERFACT, false);
+		store.setDefault(PreferenceConstants.COMPILER_ASM, false);
+		store.setDefault(PreferenceConstants.COMPILER_AST, false);
+		store.setDefault(PreferenceConstants.COMPILER_ASM_JSON, false);
+		store.setDefault(PreferenceConstants.COMPILER_AST_JSON, false);
+		store.setDefault(PreferenceConstants.COMPILER_USERDOC, false);
+		store.setDefault(PreferenceConstants.COMPILER_DEVDOC, false);
+		store.setDefault(PreferenceConstants.COMPILER_OPTIMIZE, false);
+		store.setDefault(PreferenceConstants.COMPILER_OPCODE, false);
+		store.setDefault(PreferenceConstants.COMPILER_FORMAL, false);
+		store.setDefault(PreferenceConstants.COMPILER_HASHES, false);
 	}
 
 }

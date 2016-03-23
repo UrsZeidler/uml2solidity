@@ -33,6 +33,7 @@ import de.urszeidler.eclipse.solidity.templates.GenerateMixConfig;
 import de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract;
 import de.urszeidler.eclipse.solidity.ui.Activator;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
+import de.urszeidler.eclipse.solidity.util.StartCompiler;
 
 /**
  * Main entry point of the 'Solidity' generation module.
@@ -97,8 +98,6 @@ public class GenerateAll {
 				modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 		gen0.setGenerationID(generationID);
 		gen0.doGenerate(BasicMonitor.toMonitor(monitor));
-		files = gen0.getFiles();
-
 		if (store.getBoolean(PreferenceConstants.GENERATE_HTML)) {
 			GenerateHtml generateHtml = new GenerateHtml(modelURI, targetFolder.getLocation().toFile(), arguments);
 			monitor.worked(1);
@@ -119,35 +118,43 @@ public class GenerateAll {
 			generateWeb3Contract.setGenerationID(generationID);
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
-		if(store.getBoolean(PreferenceConstants.GENERATE_MIX)){
+		if (store.getBoolean(PreferenceConstants.GENERATE_MIX)) {
 			GenerateMixConfig generateWeb3Contract = new GenerateMixConfig(modelURI,
 					targetFolder.getLocation().toFile(), arguments);
 			monitor.worked(1);
 			generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
-					"de.urszeidler.eclipse.solidity.ui",
-					"de.urszeidler.eclipse.solidity.templates.GenerateMixConfig", modelURI.toString(),
-					targetFolder.getFullPath().toString(), new ArrayList<String>());
+					"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateMixConfig",
+					modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateWeb3Contract.setGenerationID(generationID);
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
-		
+
 		final String docTarget = store.getString(PreferenceConstants.GENERATION_TARGET_DOC);
 		IContainer target1 = targetFolder.getProject().getFolder(docTarget);
 		if (!target1.getLocation().toFile().exists()) {
 			target1.getLocation().toFile().mkdirs();
 		}
-		
-		if(store.getBoolean(PreferenceConstants.GENERATE_MARKDOWN)){
-			GenerateMarkDown generateWeb3Contract = new GenerateMarkDown(modelURI,
-					target1.getLocation().toFile(), arguments);
+
+		if (store.getBoolean(PreferenceConstants.GENERATE_MARKDOWN)) {
+			GenerateMarkDown generateWeb3Contract = new GenerateMarkDown(modelURI, target1.getLocation().toFile(),
+					arguments);
 			monitor.worked(1);
 			generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
-					"de.urszeidler.eclipse.solidity.ui",
-					"de.urszeidler.eclipse.solidity.templates.GenerateMarkDown", modelURI.toString(),
-					targetFolder.getFullPath().toString(), new ArrayList<String>());
+					"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateMarkDown",
+					modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateWeb3Contract.setGenerationID(generationID);
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
+		if (store.getBoolean(PreferenceConstants.COMPILE_CONTRACTS)) {
+			files = gen0.getFiles();
+			String compile_folder = store.getString(PreferenceConstants.COMPILER_TARGET);
+			IContainer target = targetFolder.getProject().getFolder(compile_folder);
+			if (!target.getLocation().toFile().exists()) {
+				target.getLocation().toFile().mkdirs();
+			}
+			StartCompiler.startCompiler(target.getLocation().toFile(), files);
+		}
+
 	}
 
 	/**

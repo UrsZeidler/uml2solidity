@@ -61,6 +61,12 @@
             id="de.urszeidler.eclipse.solidity.ui.preferences.SolidityGenerationPreferencePage"
             name="Solidity generation Preferences">
       </page>
+      <page
+            category="de.urszeidler.eclipse.solidity.ui.preferences.SolidityGenerationPreferencePage"
+            class="de.urszeidler.eclipse.solidity.ui.preferences.SolcCompilerPreferencePage"
+            id="de.urszeidler.eclipse.solidity.ui.preferences.SolcCompilerPreferencePage"
+            name="Solc Compiler Preference Page">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
