@@ -58,12 +58,12 @@ contract [aInterface.name/][contractIs(aInterface)/] {
 [for (ne : NamedElement | aInterface.allStructs())]
     [printStruct(ne.oclAsType(Class))/]
 [/for]
-
 [for (op : Operation | aInterface.ownedOperation->select(hasStereotype('Event')))]
 	[printEventDefinition(op)/]
 [/for]
 [for (op : Operation | aInterface.ownedOperation->select(hasStereotype('Function')))]
-	[printCommentDoc(op.ownedComment)/]
+	
+	[printFunctionComments(op)/]
 	function [printFunctionDeclaration(op)/];
 [/for]
 }
@@ -146,7 +146,10 @@ contract [aClass.name/][contractIs(aClass)/] {
 
 [/template]
 
-[template public printGetterSetter (aProperty : Property) ]
+[**
+ * Prints the getter and setter for a property.
+*/]
+[template public printGetterSetter (aProperty : Property)?(aProperty.hasStereotype('GetterSetter')) ]
 [if (aProperty.getStereotypeValue('GetterSetter', 'getter').oclAsType(Boolean))]
 // get[aProperty.name/]
 function get[aProperty.name/]() returns([aProperty.type.name/]) {
@@ -208,6 +211,9 @@ function [aClass.name/]([printContructorArgs(aClass)/]){
 [template public printContructorArgs (aClass : Class) ? (not aClass.getStereotypeValue('Contract', 'ConstructorArgs').oclIsUndefined()) ]
 [aClass.getStereotypeValue('Contract', 'ConstructorArgs')/][/template]
 
+[**
+ * Prints a property, initalized when a default value is set.
+*/]
 [template public printProperty (p : Property)?(not hasStereotype(p, 'Mapping')) ]
 [if (p.defaultValue.oclIsUndefined())]
 [printPropertyDeclaration(p)/];[else]
@@ -230,25 +236,33 @@ function [aClass.name/]([printContructorArgs(aClass)/]){
 [v.value/]
 [/template]
 
-
+[**
+ * Prints a mapping property.
+*/]
 [template public printPropertyMapping (t : Property)?( hasStereotype(t, 'Mapping')) ]
 mapping ([t.type.name/]=>[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/])[t.visibility()/] [t.name/];
 [/template]
 
-
+[**
+ * Prints a concrete or abstract function.
+*/]
 [template public printOperation (aOperation : Operation) ? (hasStereotype(aOperation, 'Function'))]
-
 [if (aOperation.isAbstract)]
-[printCommentDoc(aOperation.ownedComment)/]
+
+[printFunctionComments(aOperation)/]
 function [printFunctionDeclaration(aOperation)/];
 [else]
 [printFunctionImplementation(aOperation)/]
 [/if]
 [/template]
 
+
+[**
+ * Print a complete function with doc.
+*/]
 [template public printFunctionImplementation(aOperation : Operation)]
 
-[printCommentDoc(aOperation.ownedComment)/]
+[printFunctionComments(aOperation)/]
 function [printFunctionDeclaration(aOperation)/] {
 [if(not aOperation.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]	[aOperation.printCode()/][/if]
 	//[protected(aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name)]
@@ -266,6 +280,9 @@ function [printFunctionDeclaration(aOperation)/] {
 [template public printFunctionDeclaration(aOperation : Operation) ? (hasStereotype(aOperation, 'Function')) ]
 [printFunctionDeclarationA(aOperation)/][/template]
 
+[**
+ * Print a delegation method and the code calling the delegated object.
+*/]
 [template public printDelegateOperations (aProperty : Property)]
 // delegate functions from [aProperty.name/] ([aProperty.type.name/])
 [for (aOperation : Operation | aProperty.type.oclAsType(Class).allFunctions()->select(visibility=VisibilityKind::public))]
@@ -276,7 +293,7 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [p
 [if (not aOperation.allReturnParameters()->any(name.oclIsUndefined()).oclIsUndefined())]
 	return [printDelegateCall(aProperty, aOperation)/]
 [else]
-	var ([for (p : Parameter | aOperation.allReturnParameters())separator (',')][p.name/][/for]) = [printDelegateCall(aProperty, aOperation)/]
+	([for (p : Parameter | aOperation.allReturnParameters())separator (',')][p.name/][/for]) = [printDelegateCall(aProperty, aOperation)/]
 [/if]
 [else]
 	[printDelegateCall(aProperty, aOperation)/]    
@@ -290,29 +307,14 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [p
 [/template]
 
 [template public printReturn (aOperation : Operation)?(aOperation.hasReturnValue())]
-[if(aOperation.getStereotypeValue('Function', 'returnType').oclAsType(NamedElement).name<>'default')] constant [/if] returns ([aOperation.printParameters(ParameterDirectionKind::return)/])
+[if(aOperation.isReturnConstant())] constant [/if]returns ([aOperation.printParameters(ParameterDirectionKind::return)/])
 [/template]
 
-[template public printModifier (aOperation : Operation) ]
+[template public printModifier (aOperation : Operation)?(hasModifier(aOperation)) ]
 [for (c : Constraint |  aOperation.allModifier())]
 [c.name/]
 [/for]
 [/template]
-
-[query public allModifier(op : Operation) : Set(Constraint) = if op.hasStereotype('Function')  then
- Constraint.allInstances()
-	->select(constrainedElement->includes(op))  
-	-> union( op.appliedModifier() )
-else
- Constraint.allInstances()
-	->select(constrainedElement->includes(op))  
-endif
- /]
-
-[query public appliedModifier(op : Operation) : Set(Constraint) =
-op.getStereotypeListValue('Function','modifier') 
-/]
-
 
 [template public printParameters (aOperation : Operation) ]
 [for (p : Parameter | aOperation.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )separator (',')]
@@ -329,10 +331,34 @@ op.getStereotypeListValue('Function','modifier')
 [c._body.printLines('*')/][/for]
 */[/template]
 
+
+[**
+ * Prints a complete comment with parameter doc.
+*/]
+[template public printFunctionComments(aOperation : Operation) ? (not aOperation.ownedComment->isEmpty())
+{comments : Set(Comment) = aOperation.ownedComment;} ]
+/*
+[for (c : Comment | comments)]
+[c._body.printLines('*')/][/for]
+[if (not aOperation.allInParameters()->isEmpty())]
+* 
+[for (p : Parameter | aOperation.allInParameters() )]
+* [p.name/] -[if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
+[/for][/if]
+*/[/template]
+
 [template public printLines(aString : String, prefix : String)]
 [for (line : String | aString.tokenizeLine())]
 [prefix/] [line/]
 [/for]
+[/template]
+
+[**
+ * Prints the string in one line seperated with ' '.
+*/]
+[template public printInLines(aString : String)]
+[for (line : String | aString.tokenizeLine())]
+ [line/][/for]
 [/template]
 
 
@@ -340,6 +366,9 @@ op.getStereotypeListValue('Function','modifier')
 [t.type.name/][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if] [t.name/]
 [/template]
 
+[**
+ * Print the multiplicity as array.
+*/]
 [template private printTypeM(t : MultiplicityElement) ? (t.oclIsKindOf(MultiplicityElement))]
 [if (t.getUpper()=-1)][ '[' /][ ']' /][elseif (t.getUpper()>1)][ '[' /][t.getUpper()/][ ']' /][/if][/template]
 
