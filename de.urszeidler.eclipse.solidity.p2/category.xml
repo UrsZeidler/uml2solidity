@@ -3,5 +3,10 @@
    <feature url="features/de.urszeidler.eclipse.solidity.feature_1.0.1.qualifier.jar" id="de.urszeidler.eclipse.solidity.feature" version="1.0.1.qualifier">
       <category name="solidity"/>
    </feature>
-   <category-def name="solidity" label="solidity"/>
+   <category-def name="solidity" label="solidity">
+      <description>
+         Some solidity ethereum supporting for eclipse.
+      </description>
+   </category-def>
+   <repository-reference location="http://download.eclipse.org/releases/mars/" enabled="true" />
 </site>
