@@ -192,7 +192,8 @@ modifier [aConstraint.name/]
 [/template]
 
 [template public printEventDefinition (aOperation : Operation)? (hasStereotype(aOperation, 'Event')) ]
-[printCommentDoc(aOperation.ownedComment)/]
+
+[printFunctionComments(aOperation)/]
 event [aOperation.name/]([printParameters(aOperation)/]);
 [/template]
 
@@ -204,6 +205,7 @@ function [aClass.name/]([printContructorArgs(aClass)/]){
     [aClass.getStereotypeValue('Contract', 'ConstructorCode')/]
     //[protected ('Constructor.'+aClass.name)]
 	//TODO: implement
+	// deprecated use a normal function to model the constructor
     //[/protected]
 }
 [/template]
@@ -343,6 +345,11 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [p
 [if (not aOperation.allInParameters()->isEmpty())]
 * 
 [for (p : Parameter | aOperation.allInParameters() )]
+* [p.name/] -[if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
+[/for][/if]
+[if (not aOperation.allReturnParameters()->isEmpty())]
+* returns
+[for (p : Parameter | aOperation.allReturnParameters() )]
 * [p.name/] -[if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
 [/for][/if]
 */[/template]
