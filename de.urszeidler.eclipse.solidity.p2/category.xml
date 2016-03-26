@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.urszeidler.eclipse.solidity.feature_1.0.1.qualifier.jar" id="de.urszeidler.eclipse.solidity.feature" version="1.0.1.qualifier">
+   <feature url="features/de.urszeidler.eclipse.solidity.feature_1.0.2.qualifier.jar" id="de.urszeidler.eclipse.solidity.feature" version="1.0.2.qualifier">
       <category name="solidity"/>
    </feature>
    <category-def name="solidity" label="solidity">
