@@ -114,16 +114,6 @@ public class AcceleoGenerateSolidityAction extends ActionDelegate implements IAc
 			IContainer target = model.getProject().getFolder(gtarget);
 			GenerateAll generator = new GenerateAll(modelURI, target, arguments);
 			generator.doGenerate(monitor);
-			// TODO : if we want to compile
-			// for (String iFile : generator.getFiles()) {
-			// File src = new File(iFile);
-			// if (src.getName().endsWith("sol")) {
-			// StartCompiler startCompiler = new StartCompiler();
-			// startCompiler.startCompiler(new
-			// File(target.getRawLocation().toOSString()), src);
-			// }
-			// }
-
 		} catch (IOException e) {
 			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
 			Activator.getDefault().getLog().log(status);
