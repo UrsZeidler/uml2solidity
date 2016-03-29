@@ -313,9 +313,7 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [p
 [/template]
 
 [template public printModifier (aOperation : Operation)?(hasModifier(aOperation)) ]
-[for (c : Constraint |  aOperation.allModifier())]
-[c.name/]
-[/for]
+ [for (c : Constraint |  aOperation.allModifier())separator (' ')][c.name/][/for]
 [/template]
 
 [template public printParameters (aOperation : Operation) ]
