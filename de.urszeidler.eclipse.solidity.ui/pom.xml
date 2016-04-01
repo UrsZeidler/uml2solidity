@@ -81,6 +81,11 @@
       <artifactId>slf4j-simple</artifactId>
       <version>1.6.4</version>
     </dependency>
+    <dependency>
+      <groupId>de.urszeidler.eclipse.solidity.compiler.support</groupId>
+      <artifactId>de.urszeidler.eclipse.solidity.compiler.support</artifactId>
+      <version>1.0.2</version>
+    </dependency>
   </dependencies>
   
  <build>
