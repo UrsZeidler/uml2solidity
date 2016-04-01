@@ -145,9 +145,12 @@ public class GenerateAll {
 			generateWeb3Contract.setGenerationID(generationID);
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
-		if (store.getBoolean(de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS)) {
+		if (de.urszeidler.eclipse.solidity.compiler.support.Activator.getDefault().getPreferenceStore().getBoolean(
+				de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS)) {
 			files = gen0.getFiles();
-			String compile_folder = store.getString(de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
+			String compile_folder = de.urszeidler.eclipse.solidity.compiler.support.Activator.getDefault()
+					.getPreferenceStore().getString(
+							de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
 			IContainer target = targetFolder.getProject().getFolder(compile_folder);
 			if (!target.getLocation().toFile().exists()) {
 				target.getLocation().toFile().mkdirs();
