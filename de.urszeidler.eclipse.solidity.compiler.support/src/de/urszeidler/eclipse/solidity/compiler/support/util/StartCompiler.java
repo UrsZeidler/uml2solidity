@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.urszeidler.eclipse.solidity.util;
+package de.urszeidler.eclipse.solidity.compiler.support.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,17 +9,40 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.urszeidler.eclipse.solidity.ui.Activator;
-import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
+import de.urszeidler.eclipse.solidity.compiler.support.Activator;
+import de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants;
 
 /**
  * @author urs
  *
  */
 public class StartCompiler {
+
+	private static final class CallableImplementation implements Callable<String> {
+		private final BufferedReader reader;
+
+		private CallableImplementation(BufferedReader errorReader) {
+			this.reader = errorReader;
+		}
+
+		//@Override
+		public String call() throws Exception {
+			StringBuffer buffer = new StringBuffer();
+			String s = reader.readLine();
+			while (s != null) {
+				buffer.append(s);
+				buffer.append("\n");
+				s = reader.readLine();
+			}
+			return buffer.toString();
+		}
+	}
 
 	public static void startCompiler(File outFile, List<String> src) {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
@@ -54,31 +77,35 @@ public class StartCompiler {
 			list.add("--formal");
 		if (store.getBoolean(PreferenceConstants.COMPILER_HASHES))
 			list.add("--hashes");
-		
+
 		list.add("-o");
 		list.add(outFile.getAbsolutePath());
 		list.addAll(src);
-		System.out.println(list);
 
 		ProcessBuilder processBuilder = new ProcessBuilder(list);
-
 		try {
 			Process start = processBuilder.start();
-//			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(start.getInputStream()));
-//			BufferedReader bufferedReader1 = new BufferedReader(new InputStreamReader(start.getErrorStream()));
-//			String readLine = bufferedReader.readLine();
-//			System.out.println(readLine);
-//			System.out.println(bufferedReader1.readLine());
-			// System.out.println(bufferedReader1.readLine());
-			// while (bufferedReader.)
-			// System.out.println(bufferedReader1.readLine());
+			final BufferedReader errorReader = new BufferedReader(new InputStreamReader(start.getErrorStream()));
+			final BufferedReader outReader = new BufferedReader(new InputStreamReader(start.getInputStream()));
+
+			FutureTask<String> futureTaskErrorReader = new FutureTask<String>(new CallableImplementation(errorReader));
+			futureTaskErrorReader.run();
+			FutureTask<String> futureTaskOutReader = new FutureTask<String>(new CallableImplementation(outReader));
+			futureTaskOutReader.run();
 
 			int exitValue = start.waitFor();
-			// int exitValue = start.exitValue();
-//			System.out.println("-->" + exitValue);
+			if (exitValue != 0) {
+				String errorMessage = futureTaskErrorReader.get();
+				Activator.logInfo(errorMessage);
+			}
+			String message = futureTaskOutReader.get();
+			if(!message.isEmpty())
+				Activator.logInfo(message);
 		} catch (IOException e) {
 			Activator.logError("Error ", e);
 		} catch (InterruptedException e) {
+			Activator.logError("Error ", e);
+		} catch (ExecutionException e) {
 			Activator.logError("Error ", e);
 		}
 

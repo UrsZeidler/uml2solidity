@@ -1,10 +1,10 @@
-package de.urszeidler.eclipse.solidity.ui.preferences;
+package de.urszeidler.eclipse.solidity.compiler.support.preferences;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import de.urszeidler.eclipse.solidity.ui.Activator;
+import de.urszeidler.eclipse.solidity.compiler.support.Activator;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;

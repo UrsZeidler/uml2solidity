@@ -22,7 +22,8 @@ Require-Bundle: org.eclipse.ui,
  com.google.guava;bundle-version="15.0.0",
  org.eclipse.papyrus.uml.extensionpoints;bundle-version="1.1.2",
  org.eclipse.papyrus.uml.tools.utils;bundle-version="1.1.2",
- org.eclipse.papyrus.uml.diagram.wizards
+ org.eclipse.papyrus.uml.diagram.wizards,
+ de.urszeidler.eclipse.solidity.compiler.support;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true

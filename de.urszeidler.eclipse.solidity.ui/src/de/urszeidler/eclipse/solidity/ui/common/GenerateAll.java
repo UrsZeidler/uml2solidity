@@ -26,6 +26,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
 
+import de.urszeidler.eclipse.solidity.compiler.support.util.StartCompiler;
 import de.urszeidler.eclipse.solidity.templates.GenerateContracts;
 import de.urszeidler.eclipse.solidity.templates.GenerateHtml;
 import de.urszeidler.eclipse.solidity.templates.GenerateMarkDown;
@@ -33,7 +34,6 @@ import de.urszeidler.eclipse.solidity.templates.GenerateMixConfig;
 import de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract;
 import de.urszeidler.eclipse.solidity.ui.Activator;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
-import de.urszeidler.eclipse.solidity.util.StartCompiler;
 
 /**
  * Main entry point of the 'Solidity' generation module.
@@ -145,9 +145,9 @@ public class GenerateAll {
 			generateWeb3Contract.setGenerationID(generationID);
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
-		if (store.getBoolean(PreferenceConstants.COMPILE_CONTRACTS)) {
+		if (store.getBoolean(de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS)) {
 			files = gen0.getFiles();
-			String compile_folder = store.getString(PreferenceConstants.COMPILER_TARGET);
+			String compile_folder = store.getString(de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
 			IContainer target = targetFolder.getProject().getFolder(compile_folder);
 			if (!target.getLocation().toFile().exists()) {
 				target.getLocation().toFile().mkdirs();
