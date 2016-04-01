@@ -250,4 +250,10 @@ any resulting litigation.
          version="1.0.2.qualifier"
          unpack="false"/>
 
+   <plugin
+         id="de.urszeidler.eclipse.solidity.compiler.support"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
 </feature>
