@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Produce and update an updatesite and a release of the zipped updatesite.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.28"/>
+    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@1.13.5">
+      <doNotScan>false</doNotScan>
+    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.18.1">
+      <projectUrl>https://github.com/UrsZeidler/uml2solidity/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.4">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <name>uml2solidity</name>
+        <url>git+ssh://git@github.com/UrsZeidler/uml2solidity.git</url>
+        <credentialsId>bdf3e382-23c6-44a4-a7e0-4d79df07c1e4</credentialsId>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/gh-pages</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions>
+      <hudson.plugins.git.extensions.impl.CleanBeforeCheckout/>
+      <hudson.plugins.git.extensions.impl.UserIdentity>
+        <name>UrsZeidler</name>
+        <email>github@urszeidler.de</email>
+      </hudson.plugins.git.extensions.impl.UserIdentity>
+    </extensions>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>ECLIPSE=/var/lib/jenkins//tools/hudson.plugins.buckminster.BuckminsterInstallation/bucky_4.2/buckminster
+SOURCE=http://valis:8080/view/shr/job/uml2solidity/ws/de.urszeidler.eclipse.solidity.p2/target/repository/
+
+##https://urszeidler.ci.cloudbees.com/job/shr5-maven/updatesite
+LOCAL_SITE=$WORKSPACE/uml2solidity-updatesite
+
+SITE_NAME=uml2solidity-updatesite
+## mirror maven build
+echo &quot; Mirroring metadata for $SOURCE &quot;
+java -jar $ECLIPSE/plugins/org.eclipse.equinox.launcher_*.jar \
+     -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication \
+     -source $SOURCE \
+     -destination $LOCAL_SITE \
+     -destinationName &quot;$SITE_NAME&quot; \
+     -verbose -ignoreErrors
+
+echo &quot; Mirroring artifacts for $SOURCE &quot;
+java -jar $ECLIPSE/plugins/org.eclipse.equinox.launcher_*.jar \
+     -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication \
+     -source $SOURCE \
+     -destination $LOCAL_SITE \
+     -destinationName &quot;$SITE_NAME&quot; \
+     -verbose -ignoreErrors
+
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <hudson.plugins.release.ReleaseWrapper plugin="release@2.5.4">
+      <releaseVersionTemplate></releaseVersionTemplate>
+      <doNotKeepLog>false</doNotKeepLog>
+      <overrideBuildParameters>false</overrideBuildParameters>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>version</name>
+          <description>the version</description>
+          <defaultValue>0.0.0</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>description</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.TextParameterDefinition>
+      </parameterDefinitions>
+      <preBuildSteps>
+        <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.30">
+          <configs>
+            <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+              <configs class="empty-list"/>
+              <projects>uml2solidity</projects>
+              <condition>ALWAYS</condition>
+              <triggerWithNoParameters>false</triggerWithNoParameters>
+              <block>
+                <buildStepFailureThreshold>
+                  <name>FAILURE</name>
+                  <ordinal>2</ordinal>
+                  <color>RED</color>
+                  <completeBuild>true</completeBuild>
+                </buildStepFailureThreshold>
+                <unstableThreshold>
+                  <name>UNSTABLE</name>
+                  <ordinal>1</ordinal>
+                  <color>YELLOW</color>
+                  <completeBuild>true</completeBuild>
+                </unstableThreshold>
+                <failureThreshold>
+                  <name>FAILURE</name>
+                  <ordinal>2</ordinal>
+                  <color>RED</color>
+                  <completeBuild>true</completeBuild>
+                </failureThreshold>
+              </block>
+              <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+            </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          </configs>
+        </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+      </preBuildSteps>
+      <postBuildSteps/>
+      <postSuccessfulBuildSteps>
+        <hudson.tasks.Shell>
+          <command>git add .
+git commit -m &quot;updatesite set to ${version}&quot;
+
+#git push</command>
+        </hudson.tasks.Shell>
+        <hudson.plugins.git.GitPublisher plugin="git@2.4.4">
+          <configVersion>2</configVersion>
+          <pushMerge>false</pushMerge>
+          <pushOnlyIfSuccess>true</pushOnlyIfSuccess>
+          <forcePush>false</forcePush>
+          <branchesToPush>
+            <hudson.plugins.git.GitPublisher_-BranchToPush>
+              <targetRepoName>uml2solidity</targetRepoName>
+              <branchName>gh-pages</branchName>
+            </hudson.plugins.git.GitPublisher_-BranchToPush>
+          </branchesToPush>
+        </hudson.plugins.git.GitPublisher>
+      </postSuccessfulBuildSteps>
+      <postFailedBuildSteps/>
+      <preMatrixBuildSteps/>
+      <postSuccessfulMatrixBuildSteps/>
+      <postFailedMatrixBuildSteps/>
+      <postMatrixBuildSteps/>
+    </hudson.plugins.release.ReleaseWrapper>
+  </buildWrappers>
+</project>
+    
