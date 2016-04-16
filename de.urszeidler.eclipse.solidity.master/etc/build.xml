@@ -7,7 +7,7 @@
                    
      urs                                                                
      ====================================================================== -->
-<project name="release ziped update site" basedir="../">
+<project name="release ziped update site" basedir=".">
 	<description>
 		Release ziped update site.
     </description>
@@ -27,6 +27,10 @@
 		<property name="strip-end">{?name}",</property>
 		<property name="strip-start">"upload_url": "</property>
 
+		
+		<fileset id="afileset" dir="." includes="*.zip"/>
+		<pathconvert property="result" refid="afileset" />
+		<echo>file to send : ${result}</echo>
 
 		<property name="data.to.post">
 		{  "tag_name": "${version-name}",  "target_commitish": "master",  "name": "${version-name}",  "body": "${version-description}",  "draft": true,  "prerelease": true}
@@ -49,9 +53,6 @@
 		</loadfile>
 		<delete file="${post-answer}" />
 
-		<fileset id="afileset" dir="." includes="de.urszeidler.eclipse.solidity.p2*.zip"/>
-		<pathconvert property="result" refid="afileset" />
-		<echo>file to send : ${result}</echo>
 		<antcall target="send.file">
 			<param name="file.to.send" value="${result}" />
 		</antcall>
