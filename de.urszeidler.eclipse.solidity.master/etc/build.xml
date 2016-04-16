@@ -49,7 +49,7 @@
 		</loadfile>
 		<delete file="${post-answer}" />
 
-		<fileset id="afileset" dir="." includes="*.zip"/>
+		<fileset id="afileset" dir="." includes="de.urszeidler.eclipse.solidity.p2*.zip"/>
 		<pathconvert property="result" refid="afileset" />
 		<echo>file to send : ${result}</echo>
 		<antcall target="send.file">
