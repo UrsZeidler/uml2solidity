@@ -24,7 +24,7 @@
 		<property name="url" value="https://api.github.com/repos/${git.repo.path}/releases" />
 		
 		<property name="post-answer" value="answer.out" />
-		<property name="strip-end">{?name}",</property>
+		<property name="strip-end">{?name,label}",</property>
 		<property name="strip-start">"upload_url": "</property>
 
 		
@@ -51,7 +51,7 @@
 				<striplinebreaks />
 			</filterchain>
 		</loadfile>
-		<delete file="${post-answer}" />
+<!--		<delete file="${post-answer}" /> -->
 
 		<antcall target="send.file">
 			<param name="file.to.send" value="${result}" />
