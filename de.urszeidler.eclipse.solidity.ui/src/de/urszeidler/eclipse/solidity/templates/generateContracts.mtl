@@ -184,7 +184,7 @@ enum [en.name/] { [for (l : EnumerationLiteral | en.ownedLiteral)separator (',')
 
 [template public printContraintDefinition (aConstraint : Constraint, aClass : Class) ? (aConstraint._context=aClass) ]
 
-modifier [aConstraint.name/]
+modifier [aConstraint.name/][if (hasStereotype(aConstraint, 'ParameterModifier'))]([aConstraint.getStereotypeValue('ParameterModifier', 'parameters')/])[/if]
 {
     [aConstraint.specification.oclAsType(LiteralString).value/]
     _
@@ -313,7 +313,7 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [p
 [/template]
 
 [template public printModifier (aOperation : Operation)?(hasModifier(aOperation)) ]
- [for (c : Constraint |  aOperation.allModifier())separator (' ')][c.name/][/for]
+[for (c : Constraint |  aOperation.allModifier())] [c.name/][/for][for (d : OclAny |  aOperation.allParameterModifier())] [d.eGet('modifier').eGet('name')/]([d.eGet('parameter')/])[/for]
 [/template]
 
 [template public printParameters (aOperation : Operation) ]
