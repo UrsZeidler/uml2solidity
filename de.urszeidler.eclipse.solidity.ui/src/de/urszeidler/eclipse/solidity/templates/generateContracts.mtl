@@ -152,13 +152,13 @@ contract [aClass.name/][contractIs(aClass)/] {
 [template public printGetterSetter (aProperty : Property)?(aProperty.hasStereotype('GetterSetter')) ]
 [if (aProperty.getStereotypeValue('GetterSetter', 'getter').oclAsType(Boolean))]
 // get[aProperty.name/]
-function get[aProperty.name/]() returns([aProperty.type.name/]) {
+function get[aProperty.name.toUpperFirst()/]() returns([aProperty.type.name/]) {
 	return [aProperty.name/];
 }
 [/if]
 [if (aProperty.getStereotypeValue('GetterSetter', 'setter').oclAsType(Boolean))]
 // set[aProperty.name/]
-function set[aProperty.name/] ([aProperty.externalType()/] a[aProperty.name/]) {
+function set[aProperty.name.toUpperFirst()/] ([aProperty.externalType()/] a[aProperty.name/]) {
 	[aProperty.name/] = [if (hasStereotype(aProperty.type, 'Contract'))][aProperty.type.name/](a[aProperty.name/]);[else]a[aProperty.name/];[/if]
 }
 [/if]
