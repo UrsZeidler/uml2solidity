@@ -97,7 +97,9 @@ public class GenerateAll {
 				"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateContracts",
 				modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 		gen0.setGenerationID(generationID);
+		monitor.subTask("generate solidity");
 		gen0.doGenerate(BasicMonitor.toMonitor(monitor));
+		if(monitor.isCanceled())return;
 		if (store.getBoolean(PreferenceConstants.GENERATE_HTML)) {
 			GenerateHtml generateHtml = new GenerateHtml(modelURI, targetFolder.getLocation().toFile(), arguments);
 			monitor.worked(1);
@@ -105,8 +107,10 @@ public class GenerateAll {
 					"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateHtml",
 					modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateHtml.setGenerationID(generationID);
+			monitor.subTask("generate html");
 			generateHtml.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
+		if(monitor.isCanceled())return;
 		if (store.getBoolean(PreferenceConstants.GENERATE_WEB3)) {
 			GenerateWeb3Contract generateWeb3Contract = new GenerateWeb3Contract(modelURI,
 					targetFolder.getLocation().toFile(), arguments);
@@ -116,8 +120,10 @@ public class GenerateAll {
 					"de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract", modelURI.toString(),
 					targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateWeb3Contract.setGenerationID(generationID);
+			monitor.subTask("generate web3");
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
+		if(monitor.isCanceled())return;
 		if (store.getBoolean(PreferenceConstants.GENERATE_MIX)) {
 			GenerateMixConfig generateWeb3Contract = new GenerateMixConfig(modelURI,
 					targetFolder.getLocation().toFile(), arguments);
@@ -126,6 +132,7 @@ public class GenerateAll {
 					"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateMixConfig",
 					modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateWeb3Contract.setGenerationID(generationID);
+			monitor.subTask("generate mix");
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
 
@@ -143,11 +150,13 @@ public class GenerateAll {
 					"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateMarkDown",
 					modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateWeb3Contract.setGenerationID(generationID);
+			monitor.subTask("generate markdown");
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
 		if (de.urszeidler.eclipse.solidity.compiler.support.Activator.getDefault().getPreferenceStore().getBoolean(
 				de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS)) {
 			files = gen0.getFiles();
+			if(files.isEmpty())return;
 			String compile_folder = de.urszeidler.eclipse.solidity.compiler.support.Activator.getDefault()
 					.getPreferenceStore().getString(
 							de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
