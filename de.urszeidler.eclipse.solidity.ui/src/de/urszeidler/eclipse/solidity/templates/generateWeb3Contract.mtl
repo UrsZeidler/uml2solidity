@@ -8,6 +8,7 @@
 */]
 [template public generateWeb3Contract(aModel : Model)]
 [comment @main/]
+[generatePackage(aModel)/]
 [iteratePackages(aModel)/]
 [/template]
 

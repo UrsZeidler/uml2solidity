@@ -12,6 +12,7 @@
  */]
 [template public generateMarkDown(aModel : Model)]
 [comment @main/]
+[generatePackage(aModel)/]
 [iteratePackages(aModel)/]
 [/template]
 

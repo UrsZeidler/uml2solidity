@@ -12,6 +12,7 @@
  */]
 [template public generateElement(aModel : Model)]
 [comment @main/]
+[generatePackage(aModel)/]
 [iteratePackages(aModel)/]
 [/template]
 
@@ -141,7 +142,7 @@ contract [aClass.name/][contractIs(aClass)/] {
 [/for]
 [if (aClass.getStereotypeValue('Contract', 'defaultFunction').oclIsKindOf(Boolean))]
 	function() {
-		// [protected (aClass.name+'default.function')]
+		// [protected (aClass.name+' default.function')]
 		//TODO: implement the default function
 		// [/protected]
 	}
@@ -320,7 +321,7 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [p
 [/template]
 
 [template public printModifier (aOperation : Operation)?(hasModifier(aOperation)) ]
-[for (c : Constraint |  aOperation.allModifier())] [c.name/][/for][for (d : OclAny |  aOperation.allParameterModifier())] [d.eGet('modifier').eGet('name')/]([d.eGet('parameter')/])[/for]
+[for (c : Constraint |  aOperation.allModifier())] [c.name/][/for][for (d : OclAny |  aOperation.allParameterModifier())] [d.eGet('modifier').eGet('name')/][if (not d.eGet('parameter').oclIsUndefined())]([d.eGet('parameter')/])[/if][/for]
 [/template]
 
 [template public printParameters (aOperation : Operation) ]
