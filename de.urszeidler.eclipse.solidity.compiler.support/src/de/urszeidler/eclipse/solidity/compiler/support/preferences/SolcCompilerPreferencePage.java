@@ -1,22 +1,30 @@
 package de.urszeidler.eclipse.solidity.compiler.support.preferences;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.IWorkbenchPropertyPage;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import de.urszeidler.eclipse.solidity.compiler.support.Activator;
 
-import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.StringFieldEditor;
+public class SolcCompilerPreferencePage extends FieldEditorPreferencePage
+		implements IWorkbenchPreferencePage, IWorkbenchPropertyPage {
 
-public class SolcCompilerPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+	private IProject project;
 
 	/**
 	 * Create the preference page.
 	 */
 	public SolcCompilerPreferencePage() {
 		super(GRID);
-		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		setDescription("The solidity compiler preferences.");
 	}
 
@@ -25,6 +33,22 @@ public class SolcCompilerPreferencePage extends FieldEditorPreferencePage implem
 	 */
 	@Override
 	protected void createFieldEditors() {
+
+		if (project == null) {
+			IPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator.PLUGIN_ID);
+			setPreferenceStore(Activator.getDefault().getPreferenceStore());
+			
+			
+		} else {
+			IPreferenceStore store = new ScopedPreferenceStore(new ProjectScope(project), Activator.PLUGIN_ID);
+			setPreferenceStore(store);
+			addField(new BooleanFieldEditor(PreferenceConstants.COMPILE_CONTRACTS_PROJECT_SETTINGS, "Project Settings",
+					BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+			// setPreferenceStore(node);
+		}
+
+		
+		
 		// Create the field editors
 		addField(new BooleanFieldEditor(PreferenceConstants.COMPILE_CONTRACTS, "Compile generated solidity code.",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
@@ -36,30 +60,30 @@ public class SolcCompilerPreferencePage extends FieldEditorPreferencePage implem
 				getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_BIN, "generate bin", BooleanFieldEditor.DEFAULT,
 				getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_BIN_RUNTIME, "generate bin runtime", BooleanFieldEditor.DEFAULT,
-				getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_BIN_RUNTIME, "generate bin runtime",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_ABI, "generate abi", BooleanFieldEditor.DEFAULT,
 				getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_INTERFACT, "generate interface", BooleanFieldEditor.DEFAULT,
-				getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_INTERFACT, "generate interface",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_ASM, "generate asm", BooleanFieldEditor.DEFAULT,
 				getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_ASM_JSON, "generate asm json", BooleanFieldEditor.DEFAULT,
-				getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_ASM_JSON, "generate asm json",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_AST, "generate ast", BooleanFieldEditor.DEFAULT,
 				getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_AST_JSON, "generate ast json", BooleanFieldEditor.DEFAULT,
-				getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_USERDOC, "generate user doc", BooleanFieldEditor.DEFAULT,
-				getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_DEVDOC, "generate dev doc", BooleanFieldEditor.DEFAULT,
-				getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_OPCODE, "generate optcode", BooleanFieldEditor.DEFAULT,
-				getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_FORMAL, "generate formal", BooleanFieldEditor.DEFAULT,
-				getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_HASHES, "generate hashes", BooleanFieldEditor.DEFAULT,
-				getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_AST_JSON, "generate ast json",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_USERDOC, "generate user doc",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_DEVDOC, "generate dev doc",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_OPCODE, "generate optcode",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_FORMAL, "generate formal",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_HASHES, "generate hashes",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 	}
 
 	/**
@@ -67,6 +91,19 @@ public class SolcCompilerPreferencePage extends FieldEditorPreferencePage implem
 	 */
 	public void init(IWorkbench workbench) {
 		// Initialize the preference page
+	}
+
+	@Override
+	public IAdaptable getElement() {
+		return project;
+	}
+
+	@Override
+	public void setElement(IAdaptable element) {
+		if (element instanceof IProject) {
+			project = (IProject) element;
+
+		}
 	}
 
 }

@@ -48,7 +48,10 @@ public class StartCompiler {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
 		String command = store.getString(PreferenceConstants.COMPILER_PROGRAMM);
+		startCompiler(outFile, src, store, command);
+	}
 
+	public static void startCompiler(File outFile, List<String> src, IPreferenceStore store, String command) {
 		ArrayList<String> list = new ArrayList<String>();
 		list.add(command);
 		if (store.getBoolean(PreferenceConstants.COMPILER_BIN))
@@ -78,6 +81,10 @@ public class StartCompiler {
 		if (store.getBoolean(PreferenceConstants.COMPILER_HASHES))
 			list.add("--hashes");
 
+		startCompiler(outFile, src, list);
+	}
+
+	public static void startCompiler(File outFile, List<String> src, List<String> list) {
 		list.add("-o");
 		list.add(outFile.getAbsolutePath());
 		list.addAll(src);
@@ -108,7 +115,6 @@ public class StartCompiler {
 		} catch (ExecutionException e) {
 			Activator.logError("Error ", e);
 		}
-
 	}
 
 }

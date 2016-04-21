@@ -6,9 +6,12 @@ Bundle-Version: 1.0.2.qualifier
 Bundle-Activator: de.urszeidler.eclipse.solidity.compiler.support.Activator
 Bundle-Vendor: Urs Zeidler
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: de.urszeidler.eclipse.solidity.compiler.support,
+ de.urszeidler.eclipse.solidity.compiler.support.builder,
+ de.urszeidler.eclipse.solidity.compiler.support.nature,
  de.urszeidler.eclipse.solidity.compiler.support.preferences,
  de.urszeidler.eclipse.solidity.compiler.support.util

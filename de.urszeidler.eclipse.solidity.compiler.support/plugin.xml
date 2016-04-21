@@ -15,6 +15,144 @@
       <initializer
             class="de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceInitializer">
       </initializer>
+      <scope
+            class="de.urszeidler.eclipse.solidity.compiler.support.preferences.ProjectPreferences"
+            name="de.urszeidler.eclipse.solidity.compiler.support.projectscope">
+      </scope>
+   </extension>
+   <extension
+         id="sampleNature"
+         name="Sample Project Nature"
+         point="org.eclipse.core.resources.natures">
+<!--
+      <runtime>
+         <run
+               class="de.urszeidler.eclipse.solidity.compiler.support.nature.SolidityProjectNature">
+         </run>
+      </runtime>
+      <builder
+            id="de.urszeidler.eclipse.solidity.compiler.support.SolidityBuilder">
+      </builder>
+    -->
+      <runtime>
+         <run
+               class="de.urszeidler.eclipse.solidity.compiler.support.builder.SampleNature">
+         </run>
+      </runtime>
+      <builder
+            id="de.urszeidler.eclipse.solidity.compiler.support.sampleBuilder">
+      </builder>
+   </extension>
+   <extension
+         id="sampleBuilder"
+         name="Sample Project Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            callOnEmptyDelta="false"
+            hasNature="false"
+            isConfigurable="true"
+            supportsConfigurations="true">
+         <run
+               class="de.urszeidler.eclipse.solidity.compiler.support.builder.IncrementalProjectBuilder">
+         </run>
+      </builder>
+      <builder
+            hasNature="true">
+         <run
+               class="de.urszeidler.eclipse.solidity.compiler.support.builder.SampleBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="de.urszeidler.eclipse.solidity.compiler.support.preferences.SolcCompilerPreferencePage"
+            id="de.urszeidler.eclipse.solidity.compiler.support.properties.samplePropertyPage"
+            name="Sol Compiler">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="de.urszeidler.eclipse.solidity.compiler.support.sampleNature.category"
+            name="Sample Project Nature commands">
+      </category>
+      <command
+            categoryId="de.urszeidler.eclipse.solidity.compiler.support.sampleNature.category"
+            defaultHandler="de.urszeidler.eclipse.solidity.compiler.support.builder.AddRemoveSampleNatureHandler"
+            id="de.urszeidler.eclipse.solidity.compiler.support.addRemoveSampleNature"
+            name="Add/RemoveSample Project Nature">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
+         <command
+               commandId="de.urszeidler.eclipse.solidity.compiler.support.addRemoveSampleNature"
+               label="Disable Sample builder"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <adapt
+                           type="org.eclipse.core.resources.IProject">
+                        <test
+                              property="org.eclipse.core.resources.projectNature"
+                              value="de.urszeidler.eclipse.solidity.compiler.support.sampleNature">
+                        </test>
+                     </adapt>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.urszeidler.eclipse.solidity.compiler.support.addRemoveSampleNature"
+               label="Enable Sample builder"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <adapt
+                           type="org.eclipse.core.resources.IProject">
+                        <not>
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="de.urszeidler.eclipse.solidity.compiler.support.sampleNature">
+                           </test>
+                        </not>
+                     </adapt>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         id="xmlProblem"
+         name="XML Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
    </extension>
 
 </plugin>
