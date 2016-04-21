@@ -139,6 +139,13 @@ contract [aClass.name/][contractIs(aClass)/] {
 [for (prop : Property | aClass.allGetterProperties())]
 	[printGetterSetter(prop)/]
 [/for]
+[if (aClass.getStereotypeValue('Contract', 'defaultFunction').oclIsKindOf(Boolean))]
+	function() {
+		// [protected (aClass.name+'default.function')]
+		//TODO: implement the default function
+		// [/protected]
+	}
+[/if]
 	// [protected (aClass.name+'.operations')]
 	//TODO: implement
 	// [/protected]
@@ -152,13 +159,13 @@ contract [aClass.name/][contractIs(aClass)/] {
 [template public printGetterSetter (aProperty : Property)?(aProperty.hasStereotype('GetterSetter')) ]
 [if (aProperty.getStereotypeValue('GetterSetter', 'getter').oclAsType(Boolean))]
 // get[aProperty.name/]
-function get[aProperty.name/]() returns([aProperty.type.name/]) {
+function get[aProperty.name.toUpperFirst()/]() returns([aProperty.type.name/]) {
 	return [aProperty.name/];
 }
 [/if]
 [if (aProperty.getStereotypeValue('GetterSetter', 'setter').oclAsType(Boolean))]
 // set[aProperty.name/]
-function set[aProperty.name/] ([aProperty.externalType()/] a[aProperty.name/]) {
+function set[aProperty.name.toUpperFirst()/] ([aProperty.externalType()/] a[aProperty.name/]) {
 	[aProperty.name/] = [if (hasStereotype(aProperty.type, 'Contract'))][aProperty.type.name/](a[aProperty.name/]);[else]a[aProperty.name/];[/if]
 }
 [/if]
@@ -184,7 +191,7 @@ enum [en.name/] { [for (l : EnumerationLiteral | en.ownedLiteral)separator (',')
 
 [template public printContraintDefinition (aConstraint : Constraint, aClass : Class) ? (aConstraint._context=aClass) ]
 
-modifier [aConstraint.name/]
+modifier [aConstraint.name/][if (hasStereotype(aConstraint, 'ParameterModifier'))]([aConstraint.getStereotypeValue('ParameterModifier', 'parameters')/])[/if]
 {
     [aConstraint.specification.oclAsType(LiteralString).value/]
     _
@@ -313,7 +320,7 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [p
 [/template]
 
 [template public printModifier (aOperation : Operation)?(hasModifier(aOperation)) ]
- [for (c : Constraint |  aOperation.allModifier())separator (' ')][c.name/][/for]
+[for (c : Constraint |  aOperation.allModifier())] [c.name/][/for][for (d : OclAny |  aOperation.allParameterModifier())] [d.eGet('modifier').eGet('name')/]([d.eGet('parameter')/])[/for]
 [/template]
 
 [template public printParameters (aOperation : Operation) ]

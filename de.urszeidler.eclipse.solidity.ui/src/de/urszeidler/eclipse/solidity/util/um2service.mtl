@@ -104,19 +104,15 @@ select(oclAsType(Parameter).direction=ParameterDirectionKind::return) /]
 [query public hasReturnValue(aOperation : Operation) : Boolean = aOperation.allReturnParameters()->size()>0 /]
 [query public inherites(aClass : Class,superE : Element) : Boolean = not aClass.allSuperTypes()->includes(superE) /]
 
-[query public hasModifier(aOperation : Operation) : Boolean = not aOperation.allModifier()->isEmpty() /]
+[query public hasModifier(aOperation : Operation) : Boolean = not aOperation.allModifier()->isEmpty() or not aOperation.allParameterModifier()->isEmpty() /]
 
 [query public isReturnConstant(aOperation : Operation) : Boolean = aOperation.hasReturnValue() 
 and aOperation.getStereotypeValue('Function', 'returnType').oclAsType(NamedElement).name<>'default' /]
 
-[query public allModifier(op : Operation) : Set(Constraint) = if op.hasStereotype('Function')  then
- Constraint.allInstances()
-	->select(constrainedElement->includes(op))  
-	-> union( op.appliedModifier()->asSet() )
-else
- Constraint.allInstances()
-	->select(constrainedElement->includes(op))  
-endif
+[query public allModifier(op : Operation) : Set(Constraint) = Constraint.allInstances()->select(constrainedElement->includes(op))  
+ /]
+
+[query public allParameterModifier(op : Operation) : Set(DataType) = op.getStereotypeListValue('Function','modifiers')->asSet() 
  /]
 
 [query public appliedModifier(op : Operation) : Sequence(Constraint) =
