@@ -102,16 +102,17 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 	@Override
 	protected void doFillIntoGrid(Composite parent, int numColumns) {
 
-		title = new Label(parent, SWT.UP);
-		title.setFont(parent.getFont());
-		this.compTitle = getLabelText();
-		title.setText(this.compTitle);
+		title = getLabelControl(parent);
+//		title = new Label(parent, SWT.UP);
+//		title.setFont(parent.getFont());
+//		this.compTitle = getLabelText();
+//		title.setText(this.compTitle);
 		title.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 
 		textField = getTextControl(parent);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.widthHint = 100;
-		gd.heightHint = 70;
+		gd.heightHint = 100;
 		textField.setLayoutData(gd);
 
 	}
@@ -160,6 +161,11 @@ public class MultiLineTextFieldEditor extends FieldEditor {
 		return textField;
 	}
 
+    public void setEnabled(boolean enabled, Composite parent) {
+    	super.setEnabled(enabled, parent);
+    	getTextControl(parent).setEnabled(enabled);
+    }
+	
 	public Text getTextControl(Composite parent) {
 		if (textField == null) {
 			textField = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER
