@@ -16,6 +16,9 @@
 [query public getStereotypeListValue(class : Element, name : String,propertyname : String) : Sequence(Constraint)
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getStereotypeListValue(org.eclipse.uml2.uml.Element, java.lang.String, java.lang.String)', Sequence{class, name,propertyname})
 /]
+[query public getSolidityFileHeader(class : Package) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getSolidityFileHeader(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
 
 [query public isGeneratePackage(pa : Package) : Boolean = not pa.allContracts()->isEmpty() 
 or not pa.allLibrarys()->isEmpty()
