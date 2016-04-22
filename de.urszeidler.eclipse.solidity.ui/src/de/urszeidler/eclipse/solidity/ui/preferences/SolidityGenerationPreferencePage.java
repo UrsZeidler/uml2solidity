@@ -50,8 +50,6 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 		
 		addField(new MultiLineTextFieldEditor(PreferenceConstants.CONTRACT_FILE_HEADER, "file header contracts", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
-	
-	
 	}
 
 	/*

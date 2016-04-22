@@ -165,7 +165,7 @@ public class GenerateAll {
 			if (!target.getLocation().toFile().exists()) {
 				target.getLocation().toFile().mkdirs();
 			}
-			monitor.subTask("generate markdown");
+			monitor.subTask("compile code");
 			StartCompiler.startCompiler(target.getLocation().toFile(), files,store1);
 		}
 	}

@@ -20,7 +20,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator.PLUGIN_ID);
 		
-//		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.GENERATE_HTML, true);
 		store.setDefault(PreferenceConstants.GENERATE_MIX, true);
 		store.setDefault(PreferenceConstants.GENERATE_WEB3, true);
@@ -28,6 +27,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.GENERATION_TARGET, "mix");
 		store.setDefault(PreferenceConstants.GENERATION_TARGET_DOC, "doc");
 
+		store.setDefault(PreferenceConstants.GENERATOR_PROJECT_SETTINGS, false);
 	}
 
 }
