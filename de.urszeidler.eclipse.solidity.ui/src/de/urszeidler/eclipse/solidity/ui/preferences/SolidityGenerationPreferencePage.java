@@ -3,9 +3,7 @@ package de.urszeidler.eclipse.solidity.ui.preferences;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.IWorkbenchPropertyPage;
@@ -52,6 +50,11 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_MARKDOWN, "generate markdown report",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		
+		addField(new MultiLineTextFieldEditor(PreferenceConstants.CONTRACT_FILE_HEADER, "file heder contracts", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+	
+	
 	}
 
 	/*

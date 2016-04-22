@@ -22,6 +22,7 @@ public class PreferenceConstants {
 	public static final String GENERATE_MARKDOWN = "GENERATE_MARKDOWN";
 	
 	public static final String GENERATOR_PROJECT_SETTINGS = "COMPILE_CONTRACTS_PROJECT_SETTINGS";
+	public static final String CONTRACT_FILE_HEADER = "CONTRACT_FILE_HEADER";
 
 	
 	public static IPreferenceStore getPreferenceStore(IProject project) {
