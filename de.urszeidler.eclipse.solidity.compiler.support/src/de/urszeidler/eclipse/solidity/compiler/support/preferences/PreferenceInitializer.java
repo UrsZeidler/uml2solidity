@@ -18,7 +18,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
 	 */
 	public void initializeDefaultPreferences() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = PreferenceConstants.getPreferenceStore(null);
 		store.setDefault(PreferenceConstants.COMPILE_CONTRACTS, false);
 		store.setDefault(PreferenceConstants.COMPILER_PROGRAMM,
 				"/usr/bin/solc");

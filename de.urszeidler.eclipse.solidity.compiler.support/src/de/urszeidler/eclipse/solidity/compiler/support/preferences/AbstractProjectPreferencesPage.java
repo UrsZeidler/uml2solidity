@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.FieldEditor;
@@ -22,12 +23,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferencePage {
+public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferencePage implements IWorkbenchPropertyPage{
 
-	protected IProject project;
+	private IProject project;
 	private Button useProjectSettingsButton;
 	private Link link;
 	private List<FieldEditor> editors = new ArrayList<FieldEditor>();
@@ -46,6 +48,17 @@ public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferen
 
 	public AbstractProjectPreferencesPage(String title, ImageDescriptor image, int style) {
 		super(title, image, style);
+	}
+
+	public IAdaptable getElement() {
+		return project;
+	}
+
+	public void setElement(IAdaptable element) {
+		if (element instanceof IProject) {
+			project = (IProject) element;
+
+		}
 	}
 
 	@Override

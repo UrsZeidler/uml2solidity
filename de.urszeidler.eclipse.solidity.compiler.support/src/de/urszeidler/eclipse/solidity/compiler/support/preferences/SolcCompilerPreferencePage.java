@@ -1,22 +1,19 @@
 package de.urszeidler.eclipse.solidity.compiler.support.preferences;
 
-import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.urszeidler.eclipse.solidity.compiler.support.Activator;
 
-import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.StringFieldEditor;
-
-public class SolcCompilerPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class SolcCompilerPreferencePage extends AbstractProjectPreferencesPage implements IWorkbenchPreferencePage {
 
 	/**
 	 * Create the preference page.
 	 */
 	public SolcCompilerPreferencePage() {
 		super(GRID);
-		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		setDescription("The solidity compiler preferences.");
 	}
 
@@ -67,6 +64,22 @@ public class SolcCompilerPreferencePage extends FieldEditorPreferencePage implem
 	 */
 	public void init(IWorkbench workbench) {
 		// Initialize the preference page
+	}
+
+
+	@Override
+	protected String preferencesId() {
+		return Activator.PLUGIN_ID;
+	}
+
+	@Override
+	protected String useProjectSettingsPreferenceName() {
+		return PreferenceConstants.COMPILER_PROJECT_SETTINGS;
+	}
+
+	@Override
+	protected String preferencesPageId() {
+		return "de.urszeidler.eclipse.solidity.ui.preferences.SolcCompilerPreferencePage";
 	}
 
 }

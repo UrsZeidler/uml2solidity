@@ -1,5 +1,13 @@
 package de.urszeidler.eclipse.solidity.compiler.support.preferences;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
+
+import de.urszeidler.eclipse.solidity.compiler.support.Activator;
+
 /**
  * Constant definitions for plug-in preferences
  */
@@ -24,5 +32,14 @@ public class PreferenceConstants {
 	public static final String COMPILER_HASHES = "COMPILER_HASHES";
 
 	public static final String COMPILER_PROJECT_SETTINGS = "COMPILE_CONTRACTS_PROJECT_SETTINGS";
+
+	public static IPreferenceStore getPreferenceStore(IProject project) {
+		if (project != null) {
+			IPreferenceStore store = new ScopedPreferenceStore(new ProjectScope(project), Activator.PLUGIN_ID);
+			if(store.getBoolean(PreferenceConstants.COMPILER_PROJECT_SETTINGS))
+			return store;
+		}
+		return new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator.PLUGIN_ID);//Activator.PLUGIN_ID);
+	}
 
 }

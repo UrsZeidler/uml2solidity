@@ -153,20 +153,21 @@ public class GenerateAll {
 			monitor.subTask("generate markdown");
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
-		if (de.urszeidler.eclipse.solidity.compiler.support.Activator.getDefault().getPreferenceStore().getBoolean(
+		IPreferenceStore store1 = de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.getPreferenceStore(targetFolder.getProject());
+		if (store1.getBoolean(
 				de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS)) {
+			
 			files = gen0.getFiles();
 			if(files.isEmpty())return;
-			String compile_folder = de.urszeidler.eclipse.solidity.compiler.support.Activator.getDefault()
-					.getPreferenceStore().getString(
+			String compile_folder = store1.getString(
 							de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
 			IContainer target = targetFolder.getProject().getFolder(compile_folder);
 			if (!target.getLocation().toFile().exists()) {
 				target.getLocation().toFile().mkdirs();
 			}
-			StartCompiler.startCompiler(target.getLocation().toFile(), files);
+			monitor.subTask("generate markdown");
+			StartCompiler.startCompiler(target.getLocation().toFile(), files,store1);
 		}
-
 	}
 
 

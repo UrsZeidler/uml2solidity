@@ -1,12 +1,9 @@
 package de.urszeidler.eclipse.solidity.ui.preferences;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.eclipse.ui.IWorkbenchPropertyPage;
 
 import de.urszeidler.eclipse.solidity.compiler.support.preferences.AbstractProjectPreferencesPage;
 import de.urszeidler.eclipse.solidity.ui.Activator;
@@ -23,7 +20,7 @@ import de.urszeidler.eclipse.solidity.ui.Activator;
  */
 
 public class SolidityGenerationPreferencePage extends AbstractProjectPreferencesPage
-		implements IWorkbenchPreferencePage, IWorkbenchPropertyPage {
+		implements IWorkbenchPreferencePage {
 
 	public SolidityGenerationPreferencePage() {
 		super(GRID);
@@ -64,17 +61,6 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 	 * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
 	public void init(IWorkbench workbench) {
-	}
-
-	public IAdaptable getElement() {
-		return project;
-	}
-
-	public void setElement(IAdaptable element) {
-		if (element instanceof IProject) {
-			project = (IProject) element;
-
-		}
 	}
 
 	@Override
