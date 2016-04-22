@@ -32,7 +32,6 @@ import de.urszeidler.eclipse.solidity.templates.GenerateHtml;
 import de.urszeidler.eclipse.solidity.templates.GenerateMarkDown;
 import de.urszeidler.eclipse.solidity.templates.GenerateMixConfig;
 import de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract;
-import de.urszeidler.eclipse.solidity.ui.Activator;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
 
 /**
@@ -89,7 +88,8 @@ public class GenerateAll {
 		if (!targetFolder.getLocation().toFile().exists()) {
 			targetFolder.getLocation().toFile().mkdirs();
 		}
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = PreferenceConstants.getPreferenceStore(targetFolder.getProject());		
+		
 		monitor.subTask("Loading...");
 		GenerateContracts gen0 = new GenerateContracts(modelURI, targetFolder.getLocation().toFile(), arguments);
 		monitor.worked(1);
@@ -169,6 +169,7 @@ public class GenerateAll {
 
 	}
 
+
 	/**
 	 * Finds the template in the plug-in. Returns the template plug-in URI.
 	 * 
@@ -180,7 +181,6 @@ public class GenerateAll {
 	 * @throws IOException
 	 * @generated
 	 */
-	@SuppressWarnings("unchecked")
 	private URI getTemplateURI(String bundleID, IPath relativePath) throws IOException {
 		Bundle bundle = Platform.getBundle(bundleID);
 		if (bundle == null) {

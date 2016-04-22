@@ -23,4 +23,6 @@ public class PreferenceConstants {
 	public static final String COMPILER_FORMAL = "COMPILER_FORMAL";
 	public static final String COMPILER_HASHES = "COMPILER_HASHES";
 
+	public static final String COMPILER_PROJECT_SETTINGS = "COMPILE_CONTRACTS_PROJECT_SETTINGS";
+
 }

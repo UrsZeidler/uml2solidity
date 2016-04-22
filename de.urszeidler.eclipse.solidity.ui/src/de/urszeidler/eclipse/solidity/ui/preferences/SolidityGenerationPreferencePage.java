@@ -1,8 +1,16 @@
 package de.urszeidler.eclipse.solidity.ui.preferences;
 
-import org.eclipse.jface.preference.*;
-import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.IWorkbenchPropertyPage;
+
+import de.urszeidler.eclipse.solidity.compiler.support.preferences.AbstractProjectPreferencesPage;
 import de.urszeidler.eclipse.solidity.ui.Activator;
 
 /**
@@ -16,11 +24,11 @@ import de.urszeidler.eclipse.solidity.ui.Activator;
  * preferences can be accessed directly via the preference store.
  */
 
-public class SolidityGenerationPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class SolidityGenerationPreferencePage extends AbstractProjectPreferencesPage
+		implements IWorkbenchPreferencePage, IWorkbenchPropertyPage {
 
 	public SolidityGenerationPreferencePage() {
 		super(GRID);
-		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		setDescription("The solidity generation preferences.");
 	}
 
@@ -53,6 +61,32 @@ public class SolidityGenerationPreferencePage extends FieldEditorPreferencePage 
 	 * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
 	public void init(IWorkbench workbench) {
+	}
+
+	public IAdaptable getElement() {
+		return project;
+	}
+
+	public void setElement(IAdaptable element) {
+		if (element instanceof IProject) {
+			project = (IProject) element;
+
+		}
+	}
+
+	@Override
+	protected String preferencesId() {
+		return Activator.PLUGIN_ID;
+	}
+
+	@Override
+	protected String useProjectSettingsPreferenceName() {
+		return PreferenceConstants.GENERATOR_PROJECT_SETTINGS;
+	}
+
+	@Override
+	protected String preferencesPageId() {
+		return "de.urszeidler.eclipse.solidity.ui.preferences.SolidityGenerationPreferencePage";
 	}
 
 }

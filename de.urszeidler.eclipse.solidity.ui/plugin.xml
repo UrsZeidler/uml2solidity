@@ -147,4 +147,18 @@
             notation_file="model-template/model.notation">
       </template>
    </extension>
+   
+      <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="de.urszeidler.eclipse.solidity.ui.preferences.SolidityGenerationPreferencePage"
+            id="de.urszeidler.eclipse.solidity.ui.preferences.SolidityGenerationPreferencePage"
+            name="Solidity generation Project Preferences">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
+   </extension>
 </plugin>

@@ -48,12 +48,11 @@ public class GenerateSolidityCommand extends AbstractHandler {
 					        
 					        Element resolveUMLElement = UMLUtil.resolveUMLElement(selectedElement);
 					        if(resolveUMLElement!=null){
-					    		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-					    		final String gtarget = store.getString(PreferenceConstants.GENERATION_TARGET);
 					        	Resource eResource = resolveUMLElement.eResource();
-					        	Path model = new Path(eResource.getURI().toPlatformString(true));
-								
+					        	Path model = new Path(eResource.getURI().toPlatformString(true));								
 					        	IFile iModelFile = ResourcesPlugin.getWorkspace().getRoot().getFile(model);
+					        	IPreferenceStore store =  PreferenceConstants.getPreferenceStore(iModelFile.getProject());	// Activator.getDefault().getPreferenceStore();
+					        	final String gtarget = store.getString(PreferenceConstants.GENERATION_TARGET);
 								AcceleoGenerateSolidityAction.modelTransform(gtarget, monitor, iModelFile , eResource.getURI(), new ArrayList<Object>());
 					        }
 

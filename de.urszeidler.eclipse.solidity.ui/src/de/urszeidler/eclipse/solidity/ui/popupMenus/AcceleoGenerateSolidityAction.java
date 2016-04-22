@@ -68,8 +68,6 @@ public class AcceleoGenerateSolidityAction extends ActionDelegate implements IAc
 	 * @generated
 	 */
 	public void run(IAction action) {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		final String gtarget = store.getString(PreferenceConstants.GENERATION_TARGET);
 		if (files != null) {
 			IRunnableWithProgress operation = new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) {
@@ -77,6 +75,8 @@ public class AcceleoGenerateSolidityAction extends ActionDelegate implements IAc
 						Iterator<IFile> filesIt = files.iterator();
 						while (filesIt.hasNext()) {
 							IFile model = (IFile) filesIt.next();
+							IPreferenceStore store =  PreferenceConstants.getPreferenceStore(model.getProject());	// Activator.getDefault().getPreferenceStore();
+							final String gtarget = store.getString(PreferenceConstants.GENERATION_TARGET);	
 							URI modelURI = URI.createPlatformResourceURI(model.getFullPath().toString(), true);
 							modelTransform(gtarget, monitor, model, modelURI,getArguments());
 						}
