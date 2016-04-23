@@ -17,4 +17,19 @@
       </initializer>
    </extension>
 
+      <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            category="de.urszeidler.eclipse.solidity.ui.preferences.SolidityGenerationPreferencePage"
+            class="de.urszeidler.eclipse.solidity.compiler.support.preferences.SolcCompilerPreferencePage"
+            id="de.urszeidler.eclipse.solidity.ui.preferences.SolcCompilerPreferencePage"
+            name="Solc Compiler Preference Page">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
+   </extension>
+
 </plugin>

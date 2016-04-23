@@ -32,7 +32,6 @@ import de.urszeidler.eclipse.solidity.templates.GenerateHtml;
 import de.urszeidler.eclipse.solidity.templates.GenerateMarkDown;
 import de.urszeidler.eclipse.solidity.templates.GenerateMixConfig;
 import de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract;
-import de.urszeidler.eclipse.solidity.ui.Activator;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
 
 /**
@@ -89,7 +88,8 @@ public class GenerateAll {
 		if (!targetFolder.getLocation().toFile().exists()) {
 			targetFolder.getLocation().toFile().mkdirs();
 		}
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = PreferenceConstants.getPreferenceStore(targetFolder.getProject());		
+		
 		monitor.subTask("Loading...");
 		GenerateContracts gen0 = new GenerateContracts(modelURI, targetFolder.getLocation().toFile(), arguments);
 		monitor.worked(1);
@@ -153,21 +153,23 @@ public class GenerateAll {
 			monitor.subTask("generate markdown");
 			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
-		if (de.urszeidler.eclipse.solidity.compiler.support.Activator.getDefault().getPreferenceStore().getBoolean(
+		IPreferenceStore store1 = de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.getPreferenceStore(targetFolder.getProject());
+		if (store1.getBoolean(
 				de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS)) {
+			
 			files = gen0.getFiles();
 			if(files.isEmpty())return;
-			String compile_folder = de.urszeidler.eclipse.solidity.compiler.support.Activator.getDefault()
-					.getPreferenceStore().getString(
+			String compile_folder = store1.getString(
 							de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
 			IContainer target = targetFolder.getProject().getFolder(compile_folder);
 			if (!target.getLocation().toFile().exists()) {
 				target.getLocation().toFile().mkdirs();
 			}
-			StartCompiler.startCompiler(target.getLocation().toFile(), files);
+			monitor.subTask("compile code");
+			StartCompiler.startCompiler(target.getLocation().toFile(), files,store1);
 		}
-
 	}
+
 
 	/**
 	 * Finds the template in the plug-in. Returns the template plug-in URI.
@@ -180,7 +182,6 @@ public class GenerateAll {
 	 * @throws IOException
 	 * @generated
 	 */
-	@SuppressWarnings("unchecked")
 	private URI getTemplateURI(String bundleID, IPath relativePath) throws IOException {
 		Bundle bundle = Platform.getBundle(bundleID);
 		if (bundle == null) {

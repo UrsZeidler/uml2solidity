@@ -46,7 +46,11 @@ public class StartCompiler {
 
 	public static void startCompiler(File outFile, List<String> src) {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-
+		startCompiler(outFile, src,store);
+	}
+	
+	public static void startCompiler(File outFile, List<String>  src,IPreferenceStore store) {
+		if(src==null || src.isEmpty()) return;
 		String command = store.getString(PreferenceConstants.COMPILER_PROGRAMM);
 
 		ArrayList<String> list = new ArrayList<String>();
