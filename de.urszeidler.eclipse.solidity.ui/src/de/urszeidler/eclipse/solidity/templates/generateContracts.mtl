@@ -141,7 +141,7 @@ contract [aClass.name/][contractIs(aClass)/] {
 [for (prop : Property | aClass.allGetterProperties())]
 	[printGetterSetter(prop)/]
 [/for]
-[if (aClass.getStereotypeValue('Contract', 'defaultFunction').oclIsKindOf(Boolean))]
+[if (aClass.getStereotypeValue('Contract', 'defaultFunction').oclAsType(Boolean))]
 	function() {
 		// [protected (aClass.name+' default.function')]
 		//TODO: implement the default function
