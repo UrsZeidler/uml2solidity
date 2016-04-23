@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="de.urszeidler.eclipse.solidity.feature"
-      label="Solidity modeling and generating Feature"
+      id="de.urszeidler.eclipse.solidity.compiler.support.feature"
+      label="Solidity compiler Feature"
       version="1.0.2.qualifier"
       provider-name="Urs Zeidler">
 
    <description url="https://github.com/UrsZeidler/uml2solidity">
-      A uml profile and a set of acceleo code generators to model smart contracts in uml and generate solidity code.
-see https://github.com/UrsZeidler/uml2solidity/wiki for more details.
+      Basic solidity compiler support.
    </description>
 
    <copyright>
@@ -224,31 +223,14 @@ any resulting litigation.
       <update label="solidity" url="http://urszeidler.github.io/uml2solidity/uml2solidity-updatesite/"/>
    </url>
 
-   <includes
-         id="de.urszeidler.eclipse.solidity.compiler.support.feature"
-         version="0.0.0"/>
-
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.emf.ecore"/>
-      <import plugin="org.eclipse.emf.ecore.xmi"/>
-      <import plugin="org.eclipse.ocl"/>
-      <import plugin="org.eclipse.ocl.ecore"/>
-      <import plugin="org.eclipse.acceleo.model"/>
-      <import plugin="org.eclipse.acceleo.engine"/>
-      <import plugin="org.eclipse.uml2" version="5.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.uml2.common" version="2.1.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.uml2.common.edit" version="2.1.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.uml2.uml" version="5.1.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.uml2.uml.edit" version="5.1.1" match="greaterOrEqual"/>
-      <import plugin="com.google.guava" version="15.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.papyrus.uml.extensionpoints" version="1.1.2" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="3.10.1" match="greaterOrEqual"/>
    </requires>
 
    <plugin
-         id="de.urszeidler.eclipse.solidity.ui"
+         id="de.urszeidler.eclipse.solidity.compiler.support"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -7,6 +7,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>../de.urszeidler.eclipse.solidity.compiler.support</module>
+		<module>../de.urszeidler.eclipse.solidity.compiler.support.feature</module>
 		<module>../de.urszeidler.eclipse.solidity.ui</module>
 		<module>../de.urszeidler.eclipse.solidity.feature</module>
 		<module>../de.urszeidler.eclipse.solidity.p2</module>
