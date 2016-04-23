@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.urszeidler.eclipse.solidity.master</groupId>
 	<artifactId>de.urszeidler.eclipse.solidity.master</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>../de.urszeidler.eclipse.solidity.compiler.support</module>
