@@ -48,7 +48,7 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_MARKDOWN, "generate markdown report",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		
-		addField(new MultiLineTextFieldEditor(PreferenceConstants.CONTRACT_FILE_HEADER, "file header contracts", -1,
+		addField(new MultiLineTextFieldEditor(PreferenceConstants.CONTRACT_FILE_HEADER, "solidity file header", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 	}
 
