@@ -5,12 +5,10 @@ package de.urszeidler.eclipse.solidity.compiler.support.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -31,7 +29,7 @@ public class StartCompiler {
 			this.reader = errorReader;
 		}
 
-		//@Override
+		// @Override
 		public String call() throws Exception {
 			StringBuffer buffer = new StringBuffer();
 			String s = reader.readLine();
@@ -44,15 +42,38 @@ public class StartCompiler {
 		}
 	}
 
+	/**
+	 * 
+	 *
+	 */
+	public interface CompilerCallback {
+		/**
+		 * Called after the compiler is called.
+		 * The input is null when an error occurs.
+		 * 
+		 * @param input the string of the input stream
+		 * @param error the string for the error stream
+		 * @param exception if an exception is raised
+		 */
+		void compiled(String input, String error, Exception exception);
+	}
+
 	public static void startCompiler(File outFile, List<String> src) {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		startCompiler(outFile, src,store);
+		startCompiler(outFile, src, store);
 	}
-	
-	public static void startCompiler(File outFile, List<String>  src,IPreferenceStore store) {
-		if(src==null || src.isEmpty()) return;
-		String command = store.getString(PreferenceConstants.COMPILER_PROGRAMM);
 
+	public static void startCompiler(File outFile, List<String> src, IPreferenceStore store) {
+		startCompiler(outFile, src, store, null);
+	}
+
+	public static void startCompiler(File outFile, List<String> src, IPreferenceStore store,
+			CompilerCallback callback) {
+		if (src == null || src.isEmpty())
+			return;
+		String command = store.getString(PreferenceConstants.COMPILER_PROGRAMM);
+		if (command == null || command.isEmpty())
+			return;
 		ArrayList<String> list = new ArrayList<String>();
 		list.add(command);
 		if (store.getBoolean(PreferenceConstants.COMPILER_BIN))
@@ -100,19 +121,24 @@ public class StartCompiler {
 			int exitValue = start.waitFor();
 			if (exitValue != 0) {
 				String errorMessage = futureTaskErrorReader.get();
-				Activator.logInfo(errorMessage);
+				if (callback != null)
+					callback.compiled(null, errorMessage, null);
+				else
+					Activator.logInfo(errorMessage);
 			}
 			String message = futureTaskOutReader.get();
-			if(!message.isEmpty())
-				Activator.logInfo(message);
-		} catch (IOException e) {
-			Activator.logError("Error ", e);
-		} catch (InterruptedException e) {
-			Activator.logError("Error ", e);
-		} catch (ExecutionException e) {
-			Activator.logError("Error ", e);
+			if (!message.isEmpty()) {
+				if (callback != null)
+					callback.compiled(message, null, null);
+				else
+					Activator.logInfo(message);
+			}
+		} catch (Exception e) {
+			if (callback != null)
+				callback.compiled(null, null, e);
+			else
+				Activator.logError("Error ", e);
 		}
-
 	}
 
 }
