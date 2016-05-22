@@ -83,7 +83,7 @@ or not pa.allInterfaces()->isEmpty() /]
 	->sortedBy(indexInContainer(oclAsType(Operation))) /]
 
 [query public allCProperties(c : Class) : OrderedSet(Property) = c.attribute 
-	-> select(not hasStereotype('Mapping')) /]
+	-> select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping')) /]
 
 [query public allMappingProperties(c : Class) : OrderedSet(Property) = c.attribute 
 	-> select(hasStereotype('Mapping')) /]
