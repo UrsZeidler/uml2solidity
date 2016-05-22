@@ -51,27 +51,16 @@
 [/template]
 
 
-[query public allSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
+[query private allSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
 	->select(not hasStereotype('Mapping'))
 	->select(visibility=VisibilityKind::public)
+	->sortedBy(indexInContainer(oclAsType(Property)))
  /]
 
-[query public allSubAttributes1(aClass : Class) : OrderedSet(Property) = aClass.generalization
-	->collect(general.attribute)
-	->flatten()
-	->select(visibility<>VisibilityKind::private)
-	->asOrderedSet() /]
-
-[query public allSubFunctions1(aClass : Class) : OrderedSet(Operation) = aClass.generalization
-	->collect(general.oclAsType(Class).ownedOperation)
-	->flatten()
-	->select(hasStereotype('Function'))
-	->asOrderedSet() /]
-
-[query public allSubFunctions(aClass : Class) : OrderedSet(Operation) = aClass.getAllOperations()
+[query private allSubFunctions(aClass : Class) : OrderedSet(Operation) = aClass.getAllOperations()
 ->select(hasStereotype('Function'))
 ->select(visibility<>VisibilityKind::private)
-->asOrderedSet()
+->sortedBy(indexInContainer(oclAsType(Operation)))
  /]
 
 
@@ -131,7 +120,7 @@ var [p.name/]_res = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract.[p.name/]
 [/for]
 [/template]
 
-[template printCallFunction(aClass : Class,aContractClass : Class, prefix:String)]
+[template private printCallFunction(aClass : Class,aContractClass : Class, prefix:String)]
 //call functions
 [for (op : Operation | aClass.allSubFunctions())]
 //function [prefix/][aClass.name/]_[op.name/]
