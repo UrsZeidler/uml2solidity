@@ -88,6 +88,9 @@ or not pa.allInterfaces()->isEmpty() /]
 [query public allMappingProperties(c : Class) : OrderedSet(Property) = c.attribute 
 	-> select(hasStereotype('Mapping')) /]
 
+[query public allKeyMappingProperties(c : Class) : OrderedSet(Property) = c.attribute 
+	-> select(hasStereotype('KeyMapping')) /]
+
 [query public allGetterProperties(c : Class) : OrderedSet(Property) = c.attribute 
 	-> select(hasStereotype('GetterSetter')) /]
 

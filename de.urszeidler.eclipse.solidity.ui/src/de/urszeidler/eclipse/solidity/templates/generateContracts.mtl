@@ -119,6 +119,9 @@ contract [aClass.name/][contractIs(aClass)/] {
 [for (prop : Property | aClass.allMappingProperties())]
 	[printPropertyMapping(prop)/]
 [/for]
+[for (prop : Property | aClass.allKeyMappingProperties())]
+	[printPropertyKeyMapping(prop)/]
+[/for]
 	// [protected (aClass.name+'.attributes')]
 	//TODO: implement
 	// [/protected]
@@ -160,15 +163,15 @@ contract [aClass.name/][contractIs(aClass)/] {
 */]
 [template public printGetterSetter (aProperty : Property)?(aProperty.hasStereotype('GetterSetter')) ]
 [if (aProperty.getStereotypeValue('GetterSetter', 'getter').oclAsType(Boolean))]
-// get[aProperty.name/]
-function get[aProperty.name.toUpperFirst()/]() returns([aProperty.type.name/]) {
+// get[aProperty.name.toUpperFirst()/]
+function get[aProperty.name.toUpperFirst()/]()[aProperty.printModifierGetterSetter()/] returns([aProperty.type.name/]) {
 	return [aProperty.name/];
 }
 [/if]
 [if (aProperty.getStereotypeValue('GetterSetter', 'setter').oclAsType(Boolean))]
-// set[aProperty.name/]
-function set[aProperty.name.toUpperFirst()/] ([aProperty.externalType()/] a[aProperty.name/]) {
-	[aProperty.name/] = [if (hasStereotype(aProperty.type, 'Contract'))][aProperty.type.name/](a[aProperty.name/]);[else]a[aProperty.name/];[/if]
+// set[aProperty.name.toUpperFirst()/]
+function set[aProperty.name.toUpperFirst()/] ([aProperty.externalType()/] a[aProperty.name.toUpperFirst()/])[aProperty.printModifierGetterSetter()/] {
+	[aProperty.name/] = [if (hasStereotype(aProperty.type, 'Contract'))][aProperty.type.name/](a[aProperty.name.toUpperFirst()/]);[else]a[aProperty.name.toUpperFirst()/];[/if]
 }
 [/if]
 [/template]
@@ -255,6 +258,15 @@ mapping ([t.type.name/]=>[getStereotypeValue('Mapping', 'value').oclAsType(Named
 [/template]
 
 [**
+ * Prints a key mapping property.
+*/]
+[template public printPropertyKeyMapping (t : Property)?( hasStereotype(t, 'KeyMapping')) ]
+mapping ([getStereotypeValue('KeyMapping', 'key').oclAsType(NamedElement).name/]=>[t.type.name/])[t.visibility()/] [t.name/];
+[/template]
+
+
+
+[**
  * Prints a concrete or abstract function.
 */]
 [template public printOperation (aOperation : Operation) ? (hasStereotype(aOperation, 'Function'))]
@@ -299,7 +311,7 @@ function [printFunctionDeclaration(aOperation)/] {
 [for (aOperation : Operation | aProperty.type.oclAsType(Class).allFunctions()->select(visibility=VisibilityKind::public))]
 
 // delegate to [aOperation.name/]
-function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [printReturn(aOperation)/] {
+function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/])[aProperty.printModifierDelegate()/] [printReturn(aOperation)/] {
 [if (hasReturnValue(aOperation))]
 [if (not aOperation.allReturnParameters()->any(name.oclIsUndefined()).oclIsUndefined())]
 	return [printDelegateCall(aProperty, aOperation)/]
@@ -322,7 +334,19 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/]) [p
 [/template]
 
 [template public printModifier (aOperation : Operation)?(hasModifier(aOperation)) ]
-[for (c : Constraint |  aOperation.allModifier())] [c.name/][/for][for (d : OclAny |  aOperation.allParameterModifier())] [d.eGet('modifier').eGet('name')/][if (not d.eGet('parameter').oclIsUndefined())]([d.eGet('parameter')/])[/if][/for]
+[for (c : Constraint |  aOperation.allModifier())] [c.name/][/for][printModifierList(aOperation.getStereotypeListValue('Function','modifiers'))/]
+[/template]
+
+[template public printModifierGetterSetter (aProperty : Property)?(aProperty.hasStereotype('GetterSetter')) ]
+[printModifierList(aProperty.getStereotypeListValue('GetterSetter','modifiers'))/]
+[/template]
+
+[template public printModifierDelegate (aProperty : Property)?(aProperty.hasStereotype('Delegate')) ]
+[printModifierList(aProperty.getStereotypeListValue('Delegate','modifiers'))/]
+[/template]
+
+[template public printModifierList (list : Sequence(OclAny))?(not list->isEmpty()) ]
+[for (d : OclAny |  list)] [d.eGet('modifier').eGet('name')/][if (not d.eGet('parameter').oclIsUndefined())]([d.eGet('parameter')/])[/if][/for]
 [/template]
 
 [template public printParameters (aOperation : Operation) ]
