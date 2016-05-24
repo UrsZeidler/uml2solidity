@@ -28,6 +28,8 @@
 <!doctype>
 <html>
 <head>
+<script type='text/javascript' src="[p.name/]Web3.js">
+</script>
 <script type='text/javascript'>
 [printJavaScript(p)/]
 </script>
@@ -45,9 +47,18 @@
 <body bgcolor='#E6E6FA'>
 	<h1>Sample Interface for [p.name/]</h1>
 [printHtmlInterface(p)/]
+[printAllContractAdresses(p)/]
 </body>
 </html>
 [/file]
+[/template]
+
+[template public printAllContractAdresses (p : Package) ]
+<script type='text/javascript'>
+[for (	aClass : Class | p.allContracts())]
+document.getElementById('[aClass.name/]_address').value = [aClass.name/]_instance.address; 
+[/for]
+</script>
 [/template]
 
 
@@ -68,6 +79,7 @@
 [for (	aClass : Class | p.allContracts())]
 <div class="contract">
 [aClass.name/]:
+  <input type='text' id='[aClass.name/]_address'> <button onclick='[aClass.name/]_setAddress()'>change [aClass.name/] Address</button>
   <div class="contract_attributes"> attributes:
 [for (p : Property | aClass.allSubAttributes())]
     <div class="contract_attribute"> [p.name/]:
@@ -104,10 +116,17 @@
 [template public printJavaScript (p : Package) ]
 [for (	aClass : Class | p.allContracts())]
 // script for [aClass.name/]
+var [aClass.name/]_instance = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract;
+// set address
+function [aClass.name/]_setAddress() {
+	var _address = document.getElementById('[aClass.name/]_address').value;
+	[aClass.name/]_instance = [aClass.name/]Contract.at(_address);
+}
+
 function [aClass.name/]_updateAttributes() {
 // update attributes
 [for (p : Property | aClass.allSubAttributes())]
-var [p.name/]_res = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract.[p.name/]();
+var [p.name/]_res = [aClass.name/]_instance.[p.name/]();
 	if([p.name/]_res!=null)
 		document.getElementById('[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
 [/for]
@@ -128,7 +147,7 @@ function [prefix/][op.functionName()/]() {
 [for (p : Parameter | op.allInParameters())]
 	var param_[p.name/] = document.getElementById('[prefix/][op.functionName()/]_[p.name/]').value;
 [/for]
-	var res = contracts[ '[' /]'[aContractClass.name/]'[ ']' /].contract.[op.name/]([for (p : Parameter | op.allInParameters())separator (', ')]param_[p.name/][/for]);
+	var res = [aClass.name/]_instance.[op.name/]([for (p : Parameter | op.allInParameters())separator (', ')]param_[p.name/][/for]);
 [if (op.hasReturnValue())]
 	if(res!=null)
 		document.getElementById('[prefix/][op.functionName()/]_res').innerText = res;

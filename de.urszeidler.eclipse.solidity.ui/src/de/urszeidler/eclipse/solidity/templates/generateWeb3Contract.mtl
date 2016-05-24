@@ -30,6 +30,15 @@
 
 [for (	aClass : Class | p.allContracts())]
 var [aClass.name/]Contract = web3.eth.contract([ '[' /]
+[for (p : Property | aClass.allAttributes()-> select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping')))]
+{"constant":true,"inputs":[ '[' /][ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"type":"function"},
+[/for]
+[for (p : Property | aClass.allAttributes()-> select(hasStereotype('Mapping')))]
+{"constant":true,"inputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/]"}[ ']' /],"type":"function"},
+[/for]
+[for (p : Property | aClass.allAttributes()-> select(hasStereotype('KeyMapping')))]
+{"constant":true,"inputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'key').oclAsType(NamedElement).name/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"type":"function"},
+[/for]
 [printMethodSignature(aClass)/] [if (not aClass.ownedOperation->select(hasStereotype('Event'))->isEmpty())],[/if]
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
 [printEventSignature(op)/]
