@@ -30,9 +30,8 @@
 <head>
 <script type='text/javascript' src="[p.name/]Web3.js">
 </script>
-<script type='text/javascript'>
 [printJavaScript(p)/]
-</script>
+<!-- start of style -->
 <style>
 .contract {
 	border-style: solid;
@@ -56,7 +55,7 @@
 [template public printAllContractAdresses (p : Package) ]
 <script type='text/javascript'>
 [for (	aClass : Class | p.allContracts())]
-if(![aClass.name/]_instance==undefined)
+if([aClass.name/]_instance!=undefined)
 	document.getElementById('[aClass.name/]_address').value = [aClass.name/]_instance.address; 
 [/for]
 </script>
