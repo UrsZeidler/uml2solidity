@@ -56,7 +56,8 @@
 [template public printAllContractAdresses (p : Package) ]
 <script type='text/javascript'>
 [for (	aClass : Class | p.allContracts())]
-document.getElementById('[aClass.name/]_address').value = [aClass.name/]_instance.address; 
+if(![aClass.name/]_instance==undefined)
+	document.getElementById('[aClass.name/]_address').value = [aClass.name/]_instance.address; 
 [/for]
 </script>
 [/template]
@@ -116,7 +117,10 @@ document.getElementById('[aClass.name/]_address').value = [aClass.name/]_instanc
 [template public printJavaScript (p : Package) ]
 [for (	aClass : Class | p.allContracts())]
 // script for [aClass.name/]
-var [aClass.name/]_instance = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract;
+var [aClass.name/]_instance = undefined;
+	
+if(!contracts[ '[' /]'[aClass.name/]'[ ']' /]==undefined)
+  Owned_instance = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract;
 // set address
 function [aClass.name/]_setAddress() {
 	var _address = document.getElementById('[aClass.name/]_address').value;
