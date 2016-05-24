@@ -116,6 +116,8 @@ if(![aClass.name/]_instance==undefined)
 
 [template public printJavaScript (p : Package) ]
 [for (	aClass : Class | p.allContracts())]
+<!-- javascript for [aClass.name/] -->
+<script type='text/javascript'>
 // script for [aClass.name/]
 var [aClass.name/]_instance = undefined;
 	
@@ -140,6 +142,7 @@ var [p.name/]_res = [aClass.name/]_instance.[p.name/]();
 [for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
 [printCallFunction(prop.type.oclAsType(Class),aClass,'delegate_')/]
 [/for]
+</script>
 [/for]
 [/template]
 
