@@ -37,7 +37,7 @@
 [if (aClass.owner=selfC.owner)]
 [ '[' /][aClass.name/][ ']' /](#contract-[aClass.name.toLowerCase()/])
 [else]
-[ '[' /][aClass.name/][ ']' /]([oclAsType(NamedElement).name/]#contract-[aClass.name.toLowerCase()/])
+[ '[' /][aClass.name/][ ']' /]([aClass.owner.oclAsType(NamedElement).name/]#contract-[aClass.name.toLowerCase()/])
 [/if]
 [/template]
 

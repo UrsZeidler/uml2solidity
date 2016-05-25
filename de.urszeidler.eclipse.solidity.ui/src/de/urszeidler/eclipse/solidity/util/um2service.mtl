@@ -90,7 +90,7 @@ or not pa.allInterfaces()->isEmpty() /]
 
 [query public isMapping(p : Property) : Boolean = p.hasStereotype('Mapping') /]
 [query public isKeyMapping(p : Property) : Boolean = p.hasStereotype('KeyMapping') /]
-[query public isAttribute(p : Property) : Boolean = not p.hasStereotype('KeyMapping') and not p.hasStereotype('KeyMapping') /]
+[query public isAttribute(p : Property) : Boolean = not p.hasStereotype('Mapping') and not p.hasStereotype('KeyMapping') /]
 
 
 [query public allCProperties(c : Class) : OrderedSet(Property) = c.attribute 
