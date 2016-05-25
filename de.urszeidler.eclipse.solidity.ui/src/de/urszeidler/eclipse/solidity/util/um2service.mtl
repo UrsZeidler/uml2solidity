@@ -1,8 +1,8 @@
 [comment encoding = UTF-8 /]
 [module um2service('http://www.eclipse.org/uml2/5.0.0/UML')/]
 
-[query public indexInContainer(class : NamedElement) : Integer
-	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getIndexInContainer(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+[query public indexInContainer(class : Element) : Integer
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getIndexInContainer(org.eclipse.uml2.uml.Element)', Sequence{class})
 /]
 [query public hasStereotype(class : Element, name : String) : Boolean
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'hasStereotype(org.eclipse.uml2.uml.Element, java.lang.String)', Sequence{class, name})
@@ -23,8 +23,6 @@
 [query public isGeneratePackage(pa : Package) : Boolean = not pa.allContracts()->isEmpty() 
 or not pa.allLibrarys()->isEmpty()
 or not pa.allInterfaces()->isEmpty() /]
-
-
 
 [query public allContracts(aModel : Model) : OrderedSet(Class) = aModel.ownedElement
 	->selectByType(Class)
@@ -82,6 +80,7 @@ or not pa.allInterfaces()->isEmpty() /]
 	->select( aClass.allSuperTypes()->includes(owner) )
 	->sortedBy(indexInContainer(oclAsType(Operation))) /]
 
+
 [query public allCProperties(c : Class) : OrderedSet(Property) = c.attribute 
 	-> select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping')) /]
 
@@ -124,5 +123,14 @@ and aOperation.getStereotypeValue('Function', 'returnType').oclAsType(NamedEleme
 [query public appliedModifier(op : Operation) : Sequence(Constraint) =
 op.getStereotypeListValue('Function','modifier') 
 /]
+
+
+
+[query public allImports(p : Package) : OrderedSet(PackageImport) = p.packageImport
+->select(hasStereotype('Import'))
+->sortedBy(indexInContainer(oclAsType(PackageImport))) 
+/]
+
+
 
 [comment][query public firstReturnParameter(aOperation : Operation) : Parameter = aOperation.ownedParameter->select(oclAsType(Parameter).direction=ParameterDirectionKind::return)->first() /][/comment]

@@ -107,7 +107,7 @@ public class Uml2Service {
 	 * @param clazz
 	 * @return
 	 */
-	public static int getIndexInContainer(NamedElement clazz) {
+	public static int getIndexInContainer(Element clazz) {
 		EObject eContainer = clazz.eContainer();
 		EStructuralFeature eContainingFeature = clazz.eContainingFeature();
 		List<?> eGet = (List<?>) eContainer.eGet(eContainingFeature);

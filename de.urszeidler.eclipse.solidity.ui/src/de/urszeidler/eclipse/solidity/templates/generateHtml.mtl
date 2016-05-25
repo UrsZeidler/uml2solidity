@@ -68,13 +68,13 @@ if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
 [query private allSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
 	->select(not hasStereotype('Mapping'))
 	->select(visibility=VisibilityKind::public)
-	->sortedBy(indexInContainer(oclAsType(Property)))
+	->sortedBy(indexInContainer(oclAsType(Property)) + name )
  /]
 
 [query private allSubFunctions(aClass : Class) : OrderedSet(Operation) = aClass.getAllOperations()
 ->select(hasStereotype('Function'))
 ->select(visibility<>VisibilityKind::private)
-->sortedBy(indexInContainer(oclAsType(Operation)))
+->sortedBy(indexInContainer(oclAsType(Operation)) + name )
  /]
 
 
