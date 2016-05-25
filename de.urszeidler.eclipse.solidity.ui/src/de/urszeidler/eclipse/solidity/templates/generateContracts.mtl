@@ -228,7 +228,7 @@ function [aClass.name/]([printContructorArgs(aClass)/]){
 [**
  * Prints a property, initalized when a default value is set.
 */]
-[template public printProperty (p : Property)?(not hasStereotype(p, 'Mapping')) ]
+[template public printProperty (p : Property)?(p.isMapping()) ]
 [if (p.defaultValue.oclIsUndefined())]
 [printPropertyDeclaration(p)/];[else]
 [printPropertyDeclaration(p)/] = [printDefaultValue(p.defaultValue)/];[/if]
@@ -253,14 +253,14 @@ function [aClass.name/]([printContructorArgs(aClass)/]){
 [**
  * Prints a mapping property.
 */]
-[template public printPropertyMapping (t : Property)?( hasStereotype(t, 'Mapping')) ]
+[template public printPropertyMapping (t : Property)?(isMapping(t)) ]
 mapping ([t.type.name/]=>[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/])[t.visibility()/] [t.name/];
 [/template]
 
 [**
  * Prints a key mapping property.
 */]
-[template public printPropertyKeyMapping (t : Property)?( hasStereotype(t, 'KeyMapping')) ]
+[template public printPropertyKeyMapping (t : Property)?(isKeyMapping(t)) ]
 mapping ([getStereotypeValue('KeyMapping', 'key').oclAsType(NamedElement).name/]=>[t.type.name/])[t.visibility()/] [t.name/];
 [/template]
 

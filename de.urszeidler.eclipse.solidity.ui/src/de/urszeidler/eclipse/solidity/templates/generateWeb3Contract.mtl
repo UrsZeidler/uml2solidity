@@ -30,13 +30,13 @@
 
 [for (	aClass : Class | p.allContracts())]
 var [aClass.name/]Contract = web3.eth.contract([ '[' /]
-[for (p : Property | aClass.allAttributes()-> select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping')))]
+[for (p : Property | aClass.allAttributes()-> select(isAttribute()))]
 {"constant":true,"inputs":[ '[' /][ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"type":"function"},
 [/for]
-[for (p : Property | aClass.allAttributes()-> select(hasStereotype('Mapping')))]
+[for (p : Property | aClass.allAttributes()-> select(isMapping()))]
 {"constant":true,"inputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/]"}[ ']' /],"type":"function"},
 [/for]
-[for (p : Property | aClass.allAttributes()-> select(hasStereotype('KeyMapping')))]
+[for (p : Property | aClass.allAttributes()-> select(isKeyMapping()))]
 {"constant":true,"inputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'key').oclAsType(NamedElement).name/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"type":"function"},
 [/for]
 [printMethodSignature(aClass)/] [if (not aClass.ownedOperation->select(hasStereotype('Event'))->isEmpty())],[/if]
@@ -54,7 +54,7 @@ var [aClass.name/]Contract = web3.eth.contract([ '[' /]
  * Print the method signature as json.
 */]
 [template public printMethodSignature (aClass : Class) ]
-[for (op : Operation | aClass.allFunctions())separator (',')]
+[for (op : Operation | aClass.allSubFunctions())separator (',')]
   {
     "constant": true,
     "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[p.type.name/]"}[/for][']'/],    

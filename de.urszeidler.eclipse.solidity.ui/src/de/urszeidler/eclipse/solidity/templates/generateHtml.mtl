@@ -71,13 +71,6 @@ if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
 	->sortedBy(indexInContainer(oclAsType(Property)) + name )
  /]
 
-[query private allSubFunctions(aClass : Class) : OrderedSet(Operation) = aClass.getAllOperations()
-->select(hasStereotype('Function'))
-->select(visibility<>VisibilityKind::private)
-->sortedBy(indexInContainer(oclAsType(Operation)) + name )
- /]
-
-
 [template public printHtmlInterface (p : Package) ]
 [for (	aClass : Class | p.allContracts())]
 <div class="contract">

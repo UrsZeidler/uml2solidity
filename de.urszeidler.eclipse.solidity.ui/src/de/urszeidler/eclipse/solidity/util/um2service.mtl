@@ -81,14 +81,26 @@ or not pa.allInterfaces()->isEmpty() /]
 	->sortedBy(indexInContainer(oclAsType(Operation))) /]
 
 
+[query public allSubFunctions(aClass : Class) : OrderedSet(Operation) = aClass.getAllOperations()
+->select(hasStereotype('Function'))
+->select(visibility<>VisibilityKind::private)
+->sortedBy(indexInContainer(oclAsType(Operation)) + name )
+ /]
+
+
+[query public isMapping(p : Property) : Boolean = p.hasStereotype('Mapping') /]
+[query public isKeyMapping(p : Property) : Boolean = p.hasStereotype('KeyMapping') /]
+[query public isAttribute(p : Property) : Boolean = not p.hasStereotype('KeyMapping') and not p.hasStereotype('KeyMapping') /]
+
+
 [query public allCProperties(c : Class) : OrderedSet(Property) = c.attribute 
-	-> select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping')) /]
+	-> select(isAttribute()) /]
 
 [query public allMappingProperties(c : Class) : OrderedSet(Property) = c.attribute 
-	-> select(hasStereotype('Mapping')) /]
+	-> select(isMapping()) /]
 
 [query public allKeyMappingProperties(c : Class) : OrderedSet(Property) = c.attribute 
-	-> select(hasStereotype('KeyMapping')) /]
+	-> select(isKeyMapping()) /]
 
 [query public allGetterProperties(c : Class) : OrderedSet(Property) = c.attribute 
 	-> select(hasStereotype('GetterSetter')) /]
