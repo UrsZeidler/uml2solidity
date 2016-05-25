@@ -33,6 +33,13 @@
 
 [template public contractLink(aClass : Class) ]
 [ '[' /][aClass.name/][ ']' /](#contract-[aClass.name.toLowerCase()/])[/template]
+[template public contractLink(aClass : Class, selfC : Class) ]
+[if (aClass.owner=selfC.owner)]
+[ '[' /][aClass.name/][ ']' /](#contract-[aClass.name.toLowerCase()/])
+[else]
+[ '[' /][aClass.name/][ ']' /]([oclAsType(NamedElement).name/]#contract-[aClass.name.toLowerCase()/])
+[/if]
+[/template]
 
 [**
  * Iterates over the packages.
@@ -57,7 +64,7 @@
 	function [printFunctionDeclaration(op)/]
 [/for]
 
-[if (not aClass.superClass->isEmpty())]inherites: [for (c : Class | aClass.superClass)separator (',')][contractLink(c)/][/for][/if]
+[if (not aClass.superClass->isEmpty())]inherites: [for (c : Class | aClass.superClass)separator (',')][contractLink(c,aClass)/][/for][/if]
 
 [aClass.printDoc()/]
 [for (ne : NamedElement | aClass.ownedMember->filter(Enumeration))]
