@@ -228,7 +228,7 @@ function [aClass.name/]([printContructorArgs(aClass)/]){
 [**
  * Prints a property, initalized when a default value is set.
 */]
-[template public printProperty (p : Property)?(p.isMapping()) ]
+[template public printProperty (p : Property)?(p.isAttribute()) ]
 [if (p.defaultValue.oclIsUndefined())]
 [printPropertyDeclaration(p)/];[else]
 [printPropertyDeclaration(p)/] = [printDefaultValue(p.defaultValue)/];[/if]

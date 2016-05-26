@@ -30,7 +30,7 @@
 
 [for (	aClass : Class | p.allContracts())]
 var [aClass.name/]Contract = web3.eth.contract([ '[' /]
-[for (p : Property | aClass.allAttributes()-> select(isAttribute()))]
+[for (p : Property | aClass.allCProperties())]
 {"constant":true,"inputs":[ '[' /][ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"type":"function"},
 [/for]
 [for (p : Property | aClass.allAttributes()-> select(isMapping()))]
