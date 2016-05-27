@@ -19,6 +19,12 @@
 [query public getSolidityFileHeader(class : Package) : String
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getSolidityFileHeader(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
 /]
+[query public getJsControllerDirectory(class : NamedElement) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getJsControllerDirectory(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public generateJsController(class : NamedElement) : Boolean
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateJsController(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
 
 [query public isGeneratePackage(pa : Package) : Boolean = not pa.allContracts()->isEmpty() 
 or not pa.allLibrarys()->isEmpty()
@@ -86,6 +92,10 @@ or not pa.allInterfaces()->isEmpty() /]
 ->select(visibility<>VisibilityKind::private)
 ->sortedBy(indexInContainer(oclAsType(Operation)) + name )
  /]
+
+
+[query public isPublic(p : Property) : Boolean = p.visibility.oclIsUndefined() or p.visibility=VisibilityKind::public /]
+[query public isPublic(f : Operation) : Boolean = f.visibility.oclIsUndefined() or f.visibility=VisibilityKind::public /]
 
 
 [query public isMapping(p : Property) : Boolean = p.hasStereotype('Mapping') /]

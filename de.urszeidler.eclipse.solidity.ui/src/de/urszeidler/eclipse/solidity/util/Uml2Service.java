@@ -120,7 +120,36 @@ public class Uml2Service {
 	 * @return
 	 */
 	public static String getSolidityFileHeader(NamedElement clazz) {
-		clazz.eResource().getURI().isPlatform();
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.CONTRACT_FILE_HEADER);
+	}
+
+	/**
+	 * Returns the header for a solidity file.
+	 * @param an element
+	 * @return
+	 */
+	public static String getJsControllerDirectory(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.GENERATE_JS_CONTROLLER_TRAGET);
+	}
+
+	/**
+	 * Should the js controller being generated.
+	 * @param an element
+	 * @return
+	 */
+	public static Boolean generateJsController(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(PreferenceConstants.GENERATE_JS_CONTROLLER);
+	}
+
+	/**
+	 * Get the preference store:
+	 * @param clazz
+	 * @return
+	 */
+	private static IPreferenceStore getStore(NamedElement clazz) {
 		IProject project = null;
 		URI eUri = clazz.eResource().getURI();
 		if (eUri.isPlatformResource()) {
@@ -128,7 +157,6 @@ public class Uml2Service {
 			project = ResourcesPlugin.getWorkspace().getRoot().findMember(platformString).getProject();
 		}
 		IPreferenceStore store = PreferenceConstants.getPreferenceStore(project);
-
-		return store.getString(PreferenceConstants.CONTRACT_FILE_HEADER);
+		return store;
 	}
 }
