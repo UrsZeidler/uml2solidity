@@ -26,6 +26,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.GENERATE_MARKDOWN, true);
 		store.setDefault(PreferenceConstants.GENERATION_TARGET, "mix");
 		store.setDefault(PreferenceConstants.GENERATION_TARGET_DOC, "doc");
+		store.setDefault(PreferenceConstants.GENERATE_JS_CONTROLLER, true);
+		store.setDefault(PreferenceConstants.GENERATE_JS_CONTROLLER_TRAGET, "js");
 
 		store.setDefault(PreferenceConstants.GENERATOR_PROJECT_SETTINGS, false);
 	}

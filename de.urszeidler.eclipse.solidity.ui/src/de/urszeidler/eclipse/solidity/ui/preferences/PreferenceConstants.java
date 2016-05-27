@@ -20,6 +20,8 @@ public class PreferenceConstants {
 	public static final String GENERATE_HTML = "GENERATE_HTML";	
 	public static final String GENERATE_MIX = "GENERATE_MIX";
 	public static final String GENERATE_MARKDOWN = "GENERATE_MARKDOWN";
+	public static final String GENERATE_JS_CONTROLLER = "GENERATE_JS_CONTROLLER";
+	public static final String GENERATE_JS_CONTROLLER_TRAGET = "GENERATE_JS_CONTROLLER_TRAGET";
 	
 	public static final String GENERATOR_PROJECT_SETTINGS = "COMPILE_CONTRACTS_PROJECT_SETTINGS";
 	public static final String CONTRACT_FILE_HEADER = "CONTRACT_FILE_HEADER";
