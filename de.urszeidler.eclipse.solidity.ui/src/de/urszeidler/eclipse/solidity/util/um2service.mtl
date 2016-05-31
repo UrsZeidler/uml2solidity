@@ -120,7 +120,8 @@ or not pa.allInterfaces()->isEmpty() /]
 	->sortedBy( indexInContainer(oclAsType(Classifier)) ) /]
 
 [query public allSuperTypesWithoutContractApi(aClass : Class) : Sequence(Classifier) = aClass.allSuperTypes()
-	->select(not hasStereotype('StandardizedContractAPI')) /]
+	->select(not hasStereotype('StandardizedContractAPI'))
+	->sortedBy( indexInContainer(oclAsType(Classifier))+name ) /]
 
 [query public allInParameters(aOp : Operation) : OrderedSet(Parameter) = aOp.ownedParameter->
 select(oclAsType(Parameter).direction=ParameterDirectionKind::_in) /]

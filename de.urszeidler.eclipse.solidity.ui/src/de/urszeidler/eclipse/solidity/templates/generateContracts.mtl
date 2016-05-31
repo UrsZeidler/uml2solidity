@@ -231,11 +231,21 @@ function [aClass.name/]([printContructorArgs(aClass)/]){
 [template public printProperty (p : Property)?(p.isAttribute()) ]
 [if (p.defaultValue.oclIsUndefined())]
 [printPropertyDeclaration(p)/];[else]
-[printPropertyDeclaration(p)/] = [printDefaultValue(p.defaultValue)/];[/if]
+[printPropertyDeclarationDefault(p)/] = [printDefaultValue(p.defaultValue)/];[/if]
 [/template]
 
 [template public printPropertyDeclaration(p : Property)]
 [p.type.name/][if (p.oclIsKindOf(MultiplicityElement))][printTypeM(p.oclAsType(MultiplicityElement)) /][/if] [p.visibility()/] [p.name/][/template]
+
+[template public printPropertyDeclarationDefault(p : Property)]
+[p.type.name/][if (p.oclIsKindOf(MultiplicityElement))][printTypeM(p.oclAsType(MultiplicityElement)) /][/if][p.const()/] [p.visibility()/] [p.name/][/template]
+
+[query public const(p : Property) : String = if p.hasStereotype('Const') then 
+' constant '
+else
+''
+endif
+ /]
 
 [template public printDefaultValue (v : ValueSpecification) ]
 [v.name/]
@@ -287,7 +297,9 @@ function [printFunctionDeclaration(aOperation)/];
 
 [printFunctionComments(aOperation)/]
 function [printFunctionDeclaration(aOperation)/] {
-[if(not aOperation.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]	[aOperation.printCode()/][/if]
+[if(not aOperation.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]
+	[aOperation.printCode()/]
+[/if]
 	//[protected(aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name)]
 	//TODO: implement
 	//[/protected]

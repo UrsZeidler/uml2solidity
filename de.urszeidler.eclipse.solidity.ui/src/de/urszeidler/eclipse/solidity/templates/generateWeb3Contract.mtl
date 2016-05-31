@@ -54,9 +54,9 @@ var [aClass.name/]Contract = web3.eth.contract([ '[' /]
  * Print the method signature as json.
 */]
 [template public printMethodSignature (aClass : Class) ]
-[for (op : Operation | aClass.allSubFunctions())separator (',')]
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))separator (',')]
   {
-    "constant": true,
+    "constant": [if(op.isReturnConstant())]true[else]false[/if],
     "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[p.type.name/]"}[/for][']'/],    
     "name": "[op.name/]",
     "outputs": ['['/][for (p : Parameter | op.allReturnParameters())separator (',')]{"name": "[p.name/]","type": "[p.type.name/]"}[/for][']'/],

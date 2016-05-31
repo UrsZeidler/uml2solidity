@@ -66,25 +66,78 @@ if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
 
 
 [query private allSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
-	->select(not hasStereotype('Mapping'))
-	->select(visibility=VisibilityKind::public)
+	->select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping'))
+	->select(isPublic())
 	->sortedBy(indexInContainer(oclAsType(Property)) + name )
  /]
 
-[template public printHtmlInterface (p : Package) ]
+[query private allMappingSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
+	->select(hasStereotype('Mapping'))
+	->select(isPublic())
+	->sortedBy(indexInContainer(oclAsType(Property)) + name )
+ /]
+
+[query private allKeyMappingSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
+	->select(hasStereotype('KeyMapping'))
+	->select(isPublic())
+	->sortedBy(indexInContainer(oclAsType(Property)) + name )
+ /]
+
+[template public printHtmlMappingInterface (c:Class , p : Property, k : Type,v : Type) ]
+<div class="Value_Mapping" id="[c.name/]_contract_attribute_[p.name/]">mapping  [p.name/]:
+		<input type='text' id='[c.name/]_contract_attribute_[p.name/]_input'>([k.name/])
+    	<div class="Mapping_value" id="[c.name/]_contract_attribute_[k.name/]"> [v.name/]:
+      		<div class="contract_attribute_value" id="[c.name/]_[p.name/]_value"> </div>
+    	</div>
+  </div>
+[/template]
+
+[template public printHtmlScructInterface (c:Class , p : Property, k : Type,v : Classifier) ]
+<!--struct -->
+<div class="Struct_Mapping" id="Struc_[c.name/]_contract_attribute_[p.name/]">struc mapping  [p.name/]:
+		<input type='text' id='[c.name/]_contract_attribute_[p.name/]_input'>([k.name/])
+[for (p1 : Property | v.attribute)]
+    	<div class="Struct_attribute" id="[c.name/]_contract_attribute_[p.name/]_[p1.name/]"> [p1.name/]:
+      		<div class="Struct_attribute_value" id="[c.name/]_[p.name/]_[p1.name/]_value"> </div>
+    	</div>
+[/for]
+  </div>
+[/template]
+
+[template public printHtmlInterface (p : Package)? (not p.oclIsUndefined())]
 [for (	aClass : Class | p.allContracts())]
-<div class="contract">
+<!-- gui for [aClass.name/]_contract -->
+<div class="contract" id="[aClass.name/]_contract">
 [aClass.name/]:
   <input type='text' id='[aClass.name/]_address'> <button onclick='[aClass.name/]_setAddress()'>change [aClass.name/] Address</button>
-  <div class="contract_attributes"> attributes:
+  <div class="contract_attributes" id="[aClass.name/]_contract_attributes"> attributes:
 [for (p : Property | aClass.allSubAttributes())]
-    <div class="contract_attribute"> [p.name/]:
+    <div class="contract_attribute" id="[aClass.name/]_contract_attribute_[p.name/]"> [p.name/]:
       <div class="contract_attribute_value" id="[aClass.name/]_[p.name/]_value"> </div>
     </div>
 [/for]
+
+[for (p : Property | aClass.allMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
+[if (value.oclIsTypeOf(Class))]
+[printHtmlScructInterface(aClass, p, p.type, value )/]
+[else]
+[printHtmlMappingInterface(aClass, p, p.type, value)/]
+[/if]
+[/let]
+[/for]
+[for (p : Property | aClass.allKeyMappingSubAttributes())]
+[let key : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
+[if (p.type.oclIsTypeOf(Class))]
+[printHtmlScructInterface(aClass,p, key, p.type.oclAsType(Class))/]
+[else]
+[printHtmlMappingInterface(aClass,p, key, p.type)/]
+[/if]
+[/let]
+[/for]
+
     <button onclick='[aClass.name/]_updateAttributes()'>update [aClass.name/] attributes</button>
   </div>
-
 [printOperationsUi(aClass,'')/]
 [for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
 [printOperationsUi(prop.type.oclAsType(Class),'delegate_')/]
@@ -93,9 +146,9 @@ if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
 [/for]
 [/template]
 
-[template public printOperationsUi (aClass : Class,prefix:String) ]
-[for (op : Operation | aClass.allSubFunctions())]
-  <div class="function_execution">
+[template public printOperationsUi (aClass : Class,prefix:String)? (not aClass.oclIsUndefined()) ]
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+  <div class="function_execution" id="[aClass.name/]_contract_function_[op.functionName()/]">
 [aClass.name/]_[op.name/]:
 [for (p : Parameter | op.allInParameters())]
 	<input type='[p.type.toHtmlType()/]' id='[prefix/][op.functionName()/]_[p.name/]'>
@@ -113,6 +166,18 @@ if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
 [for (	aClass : Class | p.allContracts())]
 <!-- javascript for [aClass.name/] -->
 <script type='text/javascript'>
+[printJavascriptForClass(aClass)/]
+</script>
+[if (aClass.generateJsController())]
+[file (aClass.getJsControllerDirectory()+ '/' + aClass.owner.oclAsType(NamedElement).name+'-'+aClass.name+'-controller.js', false, 'UTF-8')]
+[printJavascriptForClass(aClass)/]
+[/file]
+[/if]
+
+[/for]
+[/template]
+
+[template public printJavascriptForClass (aClass : Class) ]
 // script for [aClass.name/]
 var [aClass.name/]_instance = undefined;
 	
@@ -129,13 +194,50 @@ var [p.name/]_res = [aClass.name/]_instance.[p.name/]();
 	if([p.name/]_res!=null)
 		document.getElementById('[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
 [/for]
+[for (p : Property | aClass.allMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
+[if (value.oclIsTypeOf(Class))]
+var _key = document.getElementById('[aClass.name/]_contract_attribute_[p.name/]_input').value;
+var [p.name/]_res = [aClass.name/]_instance.[p.name/](_key);
+	if([p.name/]_res!=null){
+[for (p1 : Property | value.attribute)]
+		document.getElementById('[aClass.name/]_[p.name/]_[p1.name/]_value').innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
+[/for]
+	}
+[else]
+var _key = document.getElementById('[aClass.name/]_contract_attribute_[p.name/]_input').value;
+var [p.name/]_res = [aClass.name/]_instance.[p.name/](_key);
+	if([p.name/]_res!=null){
+		document.getElementById('[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
+	}
+[/if]
+[/let]
+[/for]
+[for (p : Property | aClass.allKeyMappingSubAttributes())]
+[let key : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
+[if (p.type.oclIsTypeOf(Class))]
+var _key = document.getElementById('[aClass.name/]_contract_attribute_[p.name/]_input').value;
+var [p.name/]_res = [aClass.name/]_instance.[p.name/](_key);
+	if([p.name/]_res!=null){
+[for (p1 : Property | p.type.oclAsType(Class).attribute)]
+		document.getElementById('[aClass.name/]_[p.name/]_[p1.name/]_value').innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
+[/for]
+	}
+[else]
+var _key = document.getElementById('[aClass.name/]_contract_attribute_[p.name/]_input').value;
+var [p.name/]_res = [aClass.name/]_instance.[p.name/](_key);
+	if([p.name/]_res!=null){
+		document.getElementById('[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
+	}
+[/if]
+[/let]
+[/for]
+
 }
 [printCallFunction(aClass,aClass,'')/]
 //delegated calls
 [for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
 [printCallFunction(prop.type.oclAsType(Class),aClass,'delegate_')/]
-[/for]
-</script>
 [/for]
 [/template]
 
