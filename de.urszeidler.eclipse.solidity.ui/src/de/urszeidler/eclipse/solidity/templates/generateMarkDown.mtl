@@ -91,6 +91,19 @@ name|type|direction|doc
 [/for]
 [/if]
 [/for]
+[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+
+#### event [op.name /]
+
+[op.printDoc()/]
+[if (not op.ownedParameter->isEmpty())]
+name|type|indexed|doc
+----|----|----|----
+[for (p : Parameter | op.ownedParameter)]
+[p.name/]|[p.type.name/]|[if (hasStereotype(p, 'Indexed')) ]X[else][/if]|[p.printSingleLineDoc()/]
+[/for]
+[/if]
+[/for]
 [/template]
 
 [template public printStructs(aClass : Class)?(not aClass.allStructs()->isEmpty())]
