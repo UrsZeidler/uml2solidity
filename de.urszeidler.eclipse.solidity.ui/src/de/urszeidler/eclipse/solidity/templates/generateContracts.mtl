@@ -363,8 +363,7 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/])[aP
 
 [template public printEventParameters (aOperation : Operation) ]
 [for (p : Parameter | aOperation.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )separator (',')]
-[p.type.name/][if (p.oclIsKindOf(MultiplicityElement))][printTypeM(p.oclAsType(MultiplicityElement))/][/if][if (hasStereotype(p, 'Indexed')) ] indexed[/if] [p.name/]
-[/for][/template]
+[p.type.name/][if (p.oclIsKindOf(MultiplicityElement))][printTypeM(p.oclAsType(MultiplicityElement))/][/if][if (hasStereotype(p, 'Indexed')) ] indexed[/if] [p.name/][/for][/template]
 
 [template public printParameters (aOperation : Operation) ]
 [for (p : Parameter | aOperation.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )separator (',')]
