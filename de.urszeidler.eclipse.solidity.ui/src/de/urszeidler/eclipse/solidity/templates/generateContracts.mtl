@@ -206,7 +206,7 @@ modifier [aConstraint.name/][if (hasStereotype(aConstraint, 'ParameterModifier')
 [template public printEventDefinition (aOperation : Operation)? (hasStereotype(aOperation, 'Event')) ]
 
 [printFunctionComments(aOperation)/]
-event [aOperation.name/]([printParameters(aOperation)/]);
+event [aOperation.name/]([printEventParameters(aOperation)/]);
 [/template]
 
 [template public printConstructor (aClass : Class) ? (not aClass.getStereotypeValue('Contract', 'ConstructorCode').oclIsUndefined()) ]
