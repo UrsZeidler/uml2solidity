@@ -26,18 +26,27 @@
  * Generate the web3 for the given package.
 */]
 [template public generatePackage (p : Package)?(isGeneratePackage(p)) ]
-[file (p.name+'Web3.js', false, 'UTF-8')]
+[file (p.getJsControllerDirectory()+ '/' + p.name+'Web3.js', false, 'UTF-8')]
+[printAllContracts(p)/]
+[/file]
+[/template]
+
+[template public printAllContracts (p : Package) ]
 
 [for (	aClass : Class | p.allContracts())]
 var [aClass.name/]Contract = web3.eth.contract([ '[' /]
 [for (p : Property | aClass.allCProperties())]
-{"constant":true,"inputs":[ '[' /][ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"type":"function"},
+{"constant":true,"inputs":[ '[' /][ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[toAbiType(p.type)/]"}[ ']' /],"type":"function"},
 [/for]
 [for (p : Property | aClass.allAttributes()-> select(isMapping()))]
-{"constant":true,"inputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/]"}[ ']' /],"type":"function"},
+[printMapping(p.type, getStereotypeValue('Mapping', 'value').oclAsType(Type), p)/],
+//
+
+[comment]{"constant":true,"inputs":[ '[' /]{"name":"","type":"[toAbiType(p.type)/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/]"}[ ']' /],"type":"function"},[/comment]
 [/for]
 [for (p : Property | aClass.allAttributes()-> select(isKeyMapping()))]
-{"constant":true,"inputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'key').oclAsType(NamedElement).name/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"type":"function"},
+[printMapping( getStereotypeValue('KeyMapping', 'key').oclAsType(Type),p.type, p)/],
+[comment]{"constant":true,"inputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'key').oclAsType(NamedElement).name/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"type":"function"},[/comment]
 [/for]
 [printMethodSignature(aClass)/] [if (not aClass.ownedOperation->select(hasStereotype('Event'))->isEmpty())],[/if]
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
@@ -47,7 +56,19 @@ var [aClass.name/]Contract = web3.eth.contract([ '[' /]
 
 [/for]
 
-[/file]
+[/template]
+
+[template public printMapping(key : Type,value:Type, p:Property)]
+{"constant": true,"inputs": [ '[' /]{"name": "","type": "[key.toAbiType()/]"}[ ']' /],"name": "[p.name/]","outputs": [ '[' /]
+[if (value.isContract())]
+{ "name": "", "type": "address"}
+[elseif (value.isStruct())]
+[for (p : Property | value.oclAsType(Class).attribute)separator (',')]
+{ "name": "[p.name/]", "type": "[p.type.toAbiType()/]"}
+[/for]	
+[else]
+{ "name": "", "type": "[value.toAbiType()/]"}
+[/if][ ']' /],"type": "function"	}
 [/template]
 
 [**
@@ -57,9 +78,9 @@ var [aClass.name/]Contract = web3.eth.contract([ '[' /]
 [for (op : Operation | aClass.allSubFunctions()->select(isPublic()))separator (',')]
   {
     "constant": [if(op.isReturnConstant())]true[else]false[/if],
-    "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[p.type.name/]"}[/for][']'/],    
+    "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[toAbiType(p.type)/]"}[/for][']'/],    
     "name": "[op.name/]",
-    "outputs": ['['/][for (p : Parameter | op.allReturnParameters())separator (',')]{"name": "[p.name/]","type": "[p.type.name/]"}[/for][']'/],
+    "outputs": ['['/][for (p : Parameter | op.allReturnParameters())separator (',')]{"name": "[p.name/]","type": "[toAbiType(p.type)/]"}[/for][']'/],
     "type": "function"
   }
 [/for]
@@ -71,9 +92,15 @@ var [aClass.name/]Contract = web3.eth.contract([ '[' /]
 [template public printEventSignature (op : Operation) ]
   {
     "constant": true,
-    "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[p.type.name/]"}[/for][']'/],    
+    "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[toAbiType(p.type)/]"}[/for][']'/],    
     "name": "[op.name/]",
     "type": "event"
   }
 
+[/template]
+
+[template public toAbiType(type : Type)]
+[if (type.hasStereotype('Contract'))]address 
+[else]
+[type.name/][/if]
 [/template]
