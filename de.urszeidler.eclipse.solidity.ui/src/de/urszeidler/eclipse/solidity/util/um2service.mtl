@@ -103,6 +103,10 @@ or not pa.allInterfaces()->isEmpty() /]
 [query public isAttribute(p : Property) : Boolean = not p.hasStereotype('Mapping') and not p.hasStereotype('KeyMapping')/]
 
 
+[query public isContract(c : Type) : Boolean = c.hasStereotype('Contract') /]
+[query public isStruct(s : Type) : Boolean = s.hasStereotype('Struct') /]
+
+
 [query public allCProperties(c : Class) : OrderedSet(Property) = c.attribute 
 	-> select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping')) /]
 
