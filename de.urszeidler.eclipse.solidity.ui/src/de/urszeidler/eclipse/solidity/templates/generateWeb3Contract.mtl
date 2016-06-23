@@ -49,7 +49,7 @@ var [aClass.name/]Contract = web3.eth.contract([ '[' /]
 [comment]{"constant":true,"inputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'key').oclAsType(NamedElement).name/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"type":"function"},[/comment]
 [/for]
 [printMethodSignature(aClass)/] [if (not aClass.ownedOperation->select(hasStereotype('Event'))->isEmpty())],[/if]
-[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))separator (',')]
 [printEventSignature(op)/]
 [/for]
 [ ']' /] );   
@@ -90,17 +90,13 @@ var [aClass.name/]Contract = web3.eth.contract([ '[' /]
  * Print the event signature as json.
 */]
 [template public printEventSignature (op : Operation) ]
-  {
-    "constant": true,
+  { "constant": true,
     "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[toAbiType(p.type)/]"}[/for][']'/],    
     "name": "[op.name/]",
-    "type": "event"
-  }
-
+    "type": "event"  }
 [/template]
 
 [template public toAbiType(type : Type)]
-[if (type.hasStereotype('Contract'))]address 
-[else]
+[if (type.hasStereotype('Contract'))]address[else]
 [type.name/][/if]
 [/template]
