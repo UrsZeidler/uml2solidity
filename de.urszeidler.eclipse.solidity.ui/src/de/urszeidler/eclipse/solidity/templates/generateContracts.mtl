@@ -300,10 +300,14 @@ function [printFunctionDeclaration(aOperation)/] {
 [if(not aOperation.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]
 	[aOperation.printCode()/]
 [/if]
-	//[protected(aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name)]
+	//[protected(aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name+operationParameters(aOperation))]
 	//TODO: implement
 	//[/protected]
 }
+[/template]
+
+[template private operationParameters(op : Operation)]
+[for (p : Parameter | op.allInParameters())]_[p.type.name/][/for]
 [/template]
 
 [template public printCode(op : Operation) ? (op.hasStereotype('Function') and not op.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]
