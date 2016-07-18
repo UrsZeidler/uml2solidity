@@ -125,13 +125,13 @@ public class Uml2Service {
 	}
 
 	/**
-	 * Returns the header for a solidity file.
+	 * Returns the directory for the js file.
 	 * @param an element
 	 * @return
 	 */
 	public static String getJsControllerDirectory(NamedElement clazz) {
 		IPreferenceStore store = getStore(clazz);
-		return store.getString(PreferenceConstants.GENERATE_JS_CONTROLLER_TRAGET);
+		return store.getString(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET);
 	}
 
 	/**
@@ -143,6 +143,27 @@ public class Uml2Service {
 		IPreferenceStore store = getStore(clazz);
 		return store.getBoolean(PreferenceConstants.GENERATE_JS_CONTROLLER);
 	}
+
+	/**
+	 * Should the js tests being generated.
+	 * @param an element
+	 * @return
+	 */
+	public static Boolean generateJsTests(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(PreferenceConstants.GENERATE_JS_TEST);
+	}
+
+	/**
+	 * Returns the directory for the tests generation.
+	 * @param an element
+	 * @return
+	 */
+	public static String getJsTestsDirectory(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.GENERATE_JS_TEST_TARGET);
+	}
+
 
 	/**
 	 * Get the preference store:

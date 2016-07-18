@@ -25,6 +25,12 @@
 [query public generateJsController(class : NamedElement) : Boolean
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateJsController(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
 /]
+[query public getJsTestsDirectory(class : NamedElement) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getJsTestsDirectory(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public generateJsTests(class : NamedElement) : Boolean
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateJsTests(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
 
 [query public isGeneratePackage(pa : Package) : Boolean = not pa.allContracts()->isEmpty() 
 or not pa.allLibrarys()->isEmpty()

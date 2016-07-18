@@ -44,7 +44,11 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_JS_CONTROLLER, "generate js controller",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceConstants.GENERATE_JS_CONTROLLER_TRAGET, "directory for js controller", -1,
+		addField(new StringFieldEditor(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET, "directory for js controller", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_JS_TEST, "generate js test code",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.GENERATE_JS_TEST_TARGET, "directory for js test code", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 
 		addField(new StringFieldEditor(PreferenceConstants.GENERATION_TARGET_DOC, "generate doc to directory", -1,
