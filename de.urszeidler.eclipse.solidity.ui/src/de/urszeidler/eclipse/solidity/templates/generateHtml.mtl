@@ -2,11 +2,93 @@
 [module generateHtml('http://www.eclipse.org/uml2/5.0.0/UML')]
 
 [import de::urszeidler::eclipse::solidity::util::um2service /]
+[import de::urszeidler::eclipse::solidity::templates::generateWeb3Contract /]
+
+
 
 [template public generateHtmlInterface(aModel : Model)]
 [comment @main/]
 [generatePackage(aModel)/]
 [iteratePackages(aModel)/]
+[if (aModel.generateJsTests())]
+[/if]
+[/template]
+
+[template public printTestHtml (p : Package) ]
+<!doctype>
+<html>
+<head>
+<script type='text/javascript' src="[p.name/]-test.js">
+</script>
+<style>
+.contract {
+	border-style: solid;
+	border-width: 1px;
+	} 
+.contract_attributes{
+	border-style: solid;
+	border-width: 1px;
+	} 
+.Struct_Mapping{}
+.Value_Mapping{}
+.contract_attribute{}
+.contract_attribute_value{}
+.function_execution{}
+.function_parameter{}
+.function_result{}
+.failed_state{
+	border-style: solid;
+	border-width: 1px;
+}
+
+</style>
+</head>
+<body bgcolor='#E6E6FA'>
+	<h1>Tests for [p.name/]</h1>
+
+
+<div id="all-testResult" ></div>
+<h1>Events</h1>
+<div id="eventLog" ></div>
+<script type='text/javascript'>
+web3.eth.defaultAccount = web3.eth.accounts[ '[' /]0[ ']' /];
+[for (	aClass : Class | p.allContracts())]
+// execute all [aClass.name/] tests if set 
+if(contracts[ '[' /]'[aClass.name/]'[ ']' /] !=undefined){
+	var contract = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract;
+	var instance = new Test[aClass.name/](contract);
+	instance.prefix = 'all';
+
+[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+var event_[op.name/] = contract.[op.name/]({},{fromBlock: 0});
+event_[op.name/].watch(function(error,result){
+	if(!error){
+		var e = document.getElementById('eventLog');
+		var elemDiv = document.createElement('div');
+		elemDiv.id= result.blockNumber +'event';
+		e.appendChild(elemDiv);
+		//console.log(result.address+ 'eventLog'+result.blockHash+' '+result.blockNumber+' '+result.args.name+' '+result.args.succesful+' ');
+		elemDiv.innerHTML = '<div>'
+[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
+        +'<span>'+result.args.[p.name/]+'</span>'
+[/for]
++ '</div>';
+		}else
+		console.log(error);
+	});
+[/for]
+
+
+//console.log(instance+'-->');
+	instance.allTests();
+}[/for]
+	//[protected('moreCustomTests_'+p.name)]
+	//TODO: implement
+	//[/protected]
+
+</script>
+</body>
+</html>
 [/template]
 
 
@@ -24,13 +106,40 @@
  * Generate a basic html example for the given package.
 */]
 [template public generatePackage(p : Package)?(isGeneratePackage(p)) ]
+[comment the controller js /]
+[if (p.generateJsController())]
+[file (p.getJsControllerDirectory()+ '/' +p.name+'-main.js', false, 'UTF-8')]
+[printAllContracts(p)/]
+[for (	aClass : Class | p.allContracts())]
+[printJavascriptForClass(aClass)/]
+[/for]
+[/file]
+[/if]
+[comment the tests /]
+[if (p.generateJsTests())]
+[file (p.getJsTestsDirectory()+ '/' +p.name+'-test.js', false, 'UTF-8')]
+[for (	aClass : Class | p.allContracts())]
+[printTestJavascriptForClass(aClass)/]
+[/for]
+[/file]
+[/if]
+[file (p.getJsTestsDirectory()+ '/'+p.name +'-tests.html', false, 'UTF-8')]
+[printTestHtml(p)/]
+[/file]
 [file (p.name+'.html', false, 'UTF-8')]
 <!doctype>
 <html>
 <head>
+<!--
 <script type='text/javascript' src="[p.name/]Web3.js">
 </script>
-[printJavaScript(p)/]
+[comment][printJavaScript(p)/][/comment]
+-->
+
+
+<script type='text/javascript' src="[p.getJsControllerDirectory()+ '/' +p.name+ '-main.js'/]">
+</script>
+
 <!-- start of style -->
 <style>
 .contract {
@@ -41,12 +150,21 @@
 	border-style: solid;
 	border-width: 1px;
 	} 
+.Struct_Mapping{}
+.Value_Mapping{}
+.contract_attribute{}
+.contract_attribute_value{}
+.function_execution{}
+.function_parameter{}
+.function_result{}
+
 </style>
 </head>
 <body bgcolor='#E6E6FA'>
 	<h1>Sample Interface for [p.name/]</h1>
 [printHtmlInterface(p)/]
 [printAllContractAdresses(p)/]
+
 </body>
 </html>
 [/file]
@@ -55,11 +173,27 @@
 [template public printAllContractAdresses (p : Package) ]
 <script type='text/javascript'>
 [for (	aClass : Class | p.allContracts())]
+var  default[aClass.name/]Controller  = new [aClass.name/]Controller();
+default[aClass.name/]Controller.bindGui();
+
+[aClass.name/]Gui  = new [aClass.name/]GuiFactory();
 if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
-  [aClass.name/]_instance = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract;
-  document.getElementById('[aClass.name/]_address').value = [aClass.name/]_instance.address; 
-  [aClass.name/]_updateAttributes();
+  	default[aClass.name/]Controller.[aClass.name/]_instance = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract;
+  	document.getElementById('[aClass.name/]_address').value = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract.address; 
+  
+	default[aClass.name/]Controller.bindGui();
+	default[aClass.name/]Controller._updateAttributes();
+  
 }
+//[aClass.name/]Gui.placeDefaultGui();
+//var  default[aClass.name/]Model  = new [aClass.name/]Model('Test');
+//default[aClass.name/]Model.create();
+[aClass.name/]Gui.prefix='Test';
+[aClass.name/]Gui.placeDefaultGui();
+test[aClass.name/]Controller  = new [aClass.name/]Controller();
+test[aClass.name/]Controller.prefix='Test';
+test[aClass.name/]Controller.bindGui();
+
 [/for]
 </script>
 [/template]
@@ -85,7 +219,7 @@ if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
 
 [template public printHtmlMappingInterface (c:Class , p : Property, k : Type,v : Type) ]
 <div class="Value_Mapping" id="[c.name/]_contract_attribute_[p.name/]">mapping  [p.name/]:
-		<input type='text' id='[c.name/]_contract_attribute_[p.name/]_input'>([k.name/])
+		<input type="[k.toHtmlType()/]" id="[c.name/]_contract_attribute_[p.name/]_input">([k.name/])
     	<div class="Mapping_value" id="[c.name/]_contract_attribute_[k.name/]"> [v.name/]:
       		<div class="contract_attribute_value" id="[c.name/]_[p.name/]_value"> </div>
     	</div>
@@ -95,7 +229,7 @@ if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
 [template public printHtmlScructInterface (c:Class , p : Property, k : Type,v : Classifier) ]
 <!--struct -->
 <div class="Struct_Mapping" id="Struc_[c.name/]_contract_attribute_[p.name/]">struc mapping  [p.name/]:
-		<input type='text' id='[c.name/]_contract_attribute_[p.name/]_input'>([k.name/])
+		<input type="[k.toHtmlType()/]" id="[c.name/]_contract_attribute_[p.name/]_input">([k.name/])
 [for (p1 : Property | v.attribute)]
     	<div class="Struct_attribute" id="[c.name/]_contract_attribute_[p.name/]_[p1.name/]"> [p1.name/]:
       		<div class="Struct_attribute_value" id="[c.name/]_[p.name/]_[p1.name/]_value"> </div>
@@ -106,20 +240,30 @@ if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
 
 [template public printHtmlInterface (p : Package)? (not p.oclIsUndefined())]
 [for (	aClass : Class | p.allContracts())]
+[printHtmlInterface(aClass)/]
+[/for]
+[for (	aClass : Class | p.allContracts())]
+<div class="contract">[aClass.name/]
+<div id="[aClass.name/]_gui" ></div>
+</div>
+[/for]
+[for (	aClass : Class | p.allContracts())]
+<div class="contract">test : [aClass.name/]
+<div id="Test[aClass.name/]_gui" ></div>
+</div>
+[/for]
+[/template]
+
+[template public printHtmlInterface (aClass : Class) ]
 <!-- gui for [aClass.name/]_contract -->
 <div class="contract" id="[aClass.name/]_contract">
 [aClass.name/]:
-  <input type='text' id='[aClass.name/]_address'> <button onclick='[aClass.name/]_setAddress()'>change [aClass.name/] Address</button>
+  <input type="text" id="[aClass.name/]_address"> <button id="[aClass.name/]Controller.setAddress" onclick="[aClass.name/]Controller.setAddress()">change [aClass.name/] Address</button>
   <div class="contract_attributes" id="[aClass.name/]_contract_attributes"> attributes:
-[for (p : Property | aClass.allSubAttributes())]
-    <div class="contract_attribute" id="[aClass.name/]_contract_attribute_[p.name/]"> [p.name/]:
-      <div class="contract_attribute_value" id="[aClass.name/]_[p.name/]_value"> </div>
-    </div>
-[/for]
-
+[printContractAttributes(aClass)/]
 [for (p : Property | aClass.allMappingSubAttributes())]
 [let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
-[if (value.oclIsTypeOf(Class))]
+[if (value.oclIsTypeOf(Class) and value.hasStereotype('Struct'))]
 [printHtmlScructInterface(aClass, p, p.type, value )/]
 [else]
 [printHtmlMappingInterface(aClass, p, p.type, value)/]
@@ -128,35 +272,45 @@ if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
 [/for]
 [for (p : Property | aClass.allKeyMappingSubAttributes())]
 [let key : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
-[if (p.type.oclIsTypeOf(Class))]
+[if (p.type.oclIsTypeOf(Class)and p.type.hasStereotype('Struct'))]
 [printHtmlScructInterface(aClass,p, key, p.type.oclAsType(Class))/]
 [else]
 [printHtmlMappingInterface(aClass,p, key, p.type)/]
 [/if]
 [/let]
 [/for]
-
-    <button onclick='[aClass.name/]_updateAttributes()'>update [aClass.name/] attributes</button>
+    <button id="[aClass.name/]_updateAttributes" onclick="[aClass.name/]Controller._updateAttributes()">update [aClass.name/] attributes</button>
   </div>
 [printOperationsUi(aClass,'')/]
 [for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
 [printOperationsUi(prop.type.oclAsType(Class),'delegate_')/]
 [/for]
 </div>
+[/template]
+
+[template public printContractAttributes (aClass : Class) ]
+[for (p : Property | aClass.allSubAttributes())]
+    <div class="contract_attribute" id="[aClass.name/]_contract_attribute_[p.name/]"> [p.name/]:
+      <div class="contract_attribute_value" id="[aClass.name/]_[p.name/]_value"> </div>
+    </div>
 [/for]
 [/template]
 
 [template public printOperationsUi (aClass : Class,prefix:String)? (not aClass.oclIsUndefined()) ]
 [for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+[printOperationUi(aClass,prefix,op)/]
+[/for]
+[/template]
+
+[template public printOperationUi (aClass : Class,prefix:String,op : Operation) ]
   <div class="function_execution" id="[aClass.name/]_contract_function_[op.functionName()/]">
 [aClass.name/]_[op.name/]:
 [for (p : Parameter | op.allInParameters())]
-	<input type='[p.type.toHtmlType()/]' id='[prefix/][op.functionName()/]_[p.name/]'>
+	  <div class="function_parameter">[p.name/]<input type="[p.type.toHtmlType()/]" id="[prefix/][op.functionName()/]_[p.name/]"></div>
 [/for]
-	<button onclick='[prefix/][op.functionName()/]()'>execute [aClass.name/]_[op.name/]</button>
+	<button id="[aClass.name/]Controller.[prefix/][op.functionName()/]" onclick="[aClass.name/]Controller.[prefix/][op.functionName()/]()">execute [aClass.name/]_[op.name/]</button>
 	<div class="function_result" id="[prefix/][op.functionName()/]_res"></div>
   </div>
-[/for]
 [/template]
 
 [template public functionName(op : Operation)]
@@ -165,98 +319,403 @@ if(contracts[ '[' /]'[aClass.name/]'[ ']' /]!=undefined){
 [template public printJavaScript (p : Package) ]
 [for (	aClass : Class | p.allContracts())]
 <!-- javascript for [aClass.name/] -->
-<script type='text/javascript'>
-[printJavascriptForClass(aClass)/]
+<script type='text/javascript'  src="[aClass.getJsControllerDirectory()+ '/' + aClass.owner.oclAsType(NamedElement).name+'-'+aClass.name+'-controller.js'/]">
+[comment][printJavascriptForClass(aClass)/][/comment]
 </script>
 [if (aClass.generateJsController())]
 [file (aClass.getJsControllerDirectory()+ '/' + aClass.owner.oclAsType(NamedElement).name+'-'+aClass.name+'-controller.js', false, 'UTF-8')]
 [printJavascriptForClass(aClass)/]
 [/file]
 [/if]
-
 [/for]
 [/template]
 
-[template public printJavascriptForClass (aClass : Class) ]
-// script for [aClass.name/]
-var [aClass.name/]_instance = undefined;
+
+[template public printTestJavascriptForClass (aClass : Class) ? (aClass.isContract() ) ]
+//test class for [aClass.name/]
+function Test[aClass.name/](contract) {
 	
-// set address
-function [aClass.name/]_setAddress() {
-	var _address = document.getElementById('[aClass.name/]_address').value;
-	[aClass.name/]_instance = [aClass.name/]Contract.at(_address);
+	this.test_instance = contract;
+	this.prefix='';
+	this.messageBlockId = "testResult";
+	var self = this;
+
+	this.testSetup=function(){
+		//[protected('testSetup_'+aClass.name)]
+		//TODO: implement
+		//[/protected]
+	}
+
+	this.allTests=function(){
+		this.testSetup();
+		this.testAttributes();
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+		this.test[op.functionName()/]();
+[/for]	
+		this.customTests();
+	
+		//[protected('allTests_'+aClass.name)]
+		//TODO: implement
+		//[/protected]
+
+	}
+	
+	//print the test result
+	this.printTest=function(testName,testMessage,state){
+		var e = document.getElementById(this.prefix+'-'+this.messageBlockId);
+		var elemDiv = document.createElement('div');
+		elemDiv.id= this.prefix+'-'+testName;
+		elemDiv.innerText = testMessage;
+		if(!state)
+			elemDiv.className = 'failed_state'
+		e.appendChild(elemDiv);
+	}
+	
+	this.testAttributes=function() {
+	//[protected('attributeTests_'+aClass.name)]
+	//TODO: implement
+	//[/protected]
+	}
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+
+	//Test for [op.functionName()/]
+	this.test[op.functionName()/]=function() {
+		//[protected('test_'+op.functionName())]
+		//TODO: implement
+//console.log('test[op.functionName()/]');
+[for (p : Parameter | op.allInParameters())]
+//	var p_[p.name/] = '';
+[/for]
+//	var res = this.test_instance.[op.name/]([for (p : Parameter | op.allInParameters())separator (',')] p_[p.name/][/for]);
+//	var state = res==="";		
+		this.printTest("test[op.name/]", "executed: test[op.functionName()/]", false);		
+		//[/protected]
+	}
+[/for]
+	this.customTests=function() {
+		//[protected('test_'+aClass.name+'_custom tests')]
+		//
+		//[/protected]
+	}
+}
+[/template]
+
+[template public printJavascriptForClass (aClass : Class) ]
+[printJsGuiFactory(aClass)/]
+[printJsGuiController(aClass)/]
+[comment]// set address
+[aClass.name/]Controller.prototype.setAddress=function() {
+	var _address = document.getElementById(this.prefix+'[aClass.name/]_address');
+	console.log('setAddress:' + this.prefix+' '+_address);
+	this.[aClass.name/]_instance = [aClass.name/]Contract.at(_address.value);
+	this.contractAddress = _address;
+	this._updateAttributes();
+}[/comment]
+
+
+// script for [aClass.name/]
+function [aClass.name/]Model(prefix) {
+	this.prefix = prefix;
+	this.guiFactory = new [aClass.name/]GuiFactory();
+	this.controller = new [aClass.name/]Controller();
+	this.guiFactory.prefix = prefix;
+	this.controller.prefix = prefix;
+}
+[aClass.name/]Model.prototype.create=function () {
+	this.guiFactory.placeDefaultGui();
+	this.controller._updateAttributes();
 }
 
-function [aClass.name/]_updateAttributes() {
-// update attributes
-[for (p : Property | aClass.allSubAttributes())]
-var [p.name/]_res = [aClass.name/]_instance.[p.name/]();
-	if([p.name/]_res!=null)
-		document.getElementById('[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
+
+//class as GlueCode
+//uses prefix + 'GuiContainer'
+function [aClass.name/]Manager(prefix,contract) {
+	this.prefix = prefix;
+	var self = this;
+	this.c = new [aClass.name/]Controller();
+	this.c.prefix=prefix;
+	this.c.[aClass.name/]_instance=contract;
+	this.c.contractAddress = contract.address;
+	this.g = new [aClass.name/]GuiFactory();
+	this.g.prefix = prefix;
+
+	this.addGui = function() {
+		var e = document.getElementById(this.prefix + 'GuiContainer');
+//console.log('addGui:' + this.prefix+ 'GuiContainer'+e);
+		var elemDiv = document.createElement('div');
+		elemDiv.id= this.prefix +'[aClass.name/]_gui';
+		e.appendChild(elemDiv);
+		this.g.placeDefaultGui();
+		document.getElementById(this.prefix+'[aClass.name/]_address').value = this.c.contractAddress;
+		this.c.bindGui();
+	}	
+	this.clearGui = function(){
+		var e = document.getElementById(this.prefix + 'GuiContainer');
+		e.innerHTML ='';
+	}
+	this.updateGui = function(){
+		this.c._updateAttributes();
+	}
+	this.getContract = function(){
+		return this.c.[aClass.name/]_instance;
+	}
+
+}// end of manager
+
+function [aClass.name/]GuiMananger(guiId){
+	this.prefix = guiId;
+	this.managers=new Array();	//[ '[' /][ ']' /];		
+	
+	this.addManager = function(contract) {
+//console.log('addManager:'+contract);
+		var m = new [aClass.name/]Manager(contract.address,contract);
+		this.managers.push(m);
+		//manager.addGui();
+	}
+			
+	this.clearGui = function(){
+		var e = document.getElementById(this.prefix);
+//console.log('clear gui:'+this.prefix+e);
+		if(e!==undefined)
+			e.innerHTML ='';
+	}
+			
+	this.displayGui = function(){
+		var e = document.getElementById(this.prefix);
+//console.log('displayGui:'+this.prefix +e);
+		if(e==undefined) return;
+		for (i in this.managers) {
+			var elemDiv = document.createElement('div');
+			elemDiv.id= this.managers[ '[' /]i[ ']' /].prefix + 'GuiContainer';//'[aClass.name/]_gui';
+			e.appendChild(elemDiv);
+//console.log('add:'+elemDiv.id);
+			this.managers[ '[' /]i[ ']' /].addGui();
+		}
+	}
+
+	this.updateGui = function(){
+		for (i in this.managers) {
+			this.managers[ '[' /]i[ ']' /].updateGui();
+		}
+//		console.log('update');
+	}
+}// end of gui mananger
+
+[/template]
+
+
+[**
+ * Print the controller js
+*/]
+[template public printJsGuiController (aClass : Class) ]
+// script for [aClass.name/] gui controller
+function [aClass.name/]Controller() {
+
+	this.[aClass.name/]_instance = undefined;
+	this.prefix='';
+	this.contractAddress = undefined; 
+	var self = this;
+
+// bind buttons
+	this.bindGui=function() {
+		var btn = document.getElementById(self.prefix+'[aClass.name/]Controller.setAddress');
+//	console.log('bind:' + self.prefix+' '+btn);
+		if(btn!=undefined)		
+			btn.onclick = this.setAddress;
+
+		var btn = document.getElementById(self.prefix+'[aClass.name/]_updateAttributes');
+//		console.log('bind update:' + self.prefix+' '+btn);
+		if(btn!=undefined)
+			btn.onclick = this._updateAttributes;
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+		var btn = document.getElementById(self.prefix+'[aClass.name/]Controller.[op.functionName()/]');
+//		console.log('bind:[aClass.name/]_[op.name/] ' + self.prefix+' '+btn+'  '+self.[op.functionName()/]);//[aClass.name/]_[op.name/]);
+		if(btn!=undefined)
+			btn.onclick = this.[op.functionName()/];
 [/for]
+	}
+	// set function
+	this.setAddress=function() {
+	var _address = document.getElementById(self.prefix+'[aClass.name/]_address');
+//	console.log('setAddress:' + self.prefix+' '+_address);
+	self.[aClass.name/]_instance = [aClass.name/]Contract.at(_address.value);
+	self.contractAddress = _address.value;
+	self._updateAttributes();
+}
+[printUpdateAttributeFunction(aClass)/]
+
+[printCallFunction(aClass,aClass,'')/]
+//delegated calls
+[for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
+[printCallFunction(prop.type.oclAsType(Class),aClass,'delegate_')/]
+[/for]
+
+}// end controller	
+[/template]
+
+[**
+ * Print the gui factory
+*/]
+[template public printJsGuiFactory (aClass : Class) ]
+//gui factory [aClass.name/]
+function [aClass.name/]GuiFactory() {
+	this.prefix='';
+	
+// default Gui
+this.placeDefaultGui=function() {
+//	console.log(this.prefix+' place gui');
+	document.getElementById(this.prefix+'[aClass.name/]_gui').innerHTML = this.createDefaultGui();
+}
+// default Gui
+this.createDefaultGui=function() {
+	return [for (it : String | printHtmlInterface(aClass).toString().tokenizeLine())separator ('+')]
+	'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+[/for];
+}
+
+//default attributes
+this.createAttributesGui=function() {
+	return [for (it : String | printContractAttributes(aClass).toString().tokenizeLine())separator ('+')]
+	'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+[/for];
+}
+
+
+
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+this.create[op.functionName()/]Gui=function() {
+return [for (it : String | printOperationUi(aClass,'',op).toString().tokenizeLine())separator ('+')]
+	'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+[/for];
+}
+[/for]
+
 [for (p : Property | aClass.allMappingSubAttributes())]
 [let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
-[if (value.oclIsTypeOf(Class))]
-var _key = document.getElementById('[aClass.name/]_contract_attribute_[p.name/]_input').value;
-var [p.name/]_res = [aClass.name/]_instance.[p.name/](_key);
+[if (value.oclIsTypeOf(Class) and value.hasStereotype('Struct'))]
+this.create[p.name/]StructGui=function() {
+return [for (it : String | printHtmlScructInterface(aClass, p, p.type, value ).toString().tokenizeLine())separator ('+')]
+	'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+[/for];
+}
+
+[/if][/let][/for]
+[for (p : Property | aClass.allKeyMappingSubAttributes())]
+[let key : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
+[if (p.type.oclIsTypeOf(Class)and p.type.hasStereotype('Struct'))]
+this.create[p.name/]StructGui=function() {
+return [for (it : String | printHtmlScructInterface(aClass,p, key, p.type.oclAsType(Class)).toString().tokenizeLine())separator ('+')]
+	'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+[/for];
+}
+[/if][/let][/for]
+
+//print the contract div around
+this.create[aClass.name/]SeletonGui=function(inner) {
+	return 	'<!-- gui for [aClass.name/]_contract -->'
++	'	<div class="contract" id="'+this.prefix+'[aClass.name/]_contract">'
++ inner
++'</div>';
+}
+
+
+//eventguis
+[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+this.create[op.name/]LogDataGui = function(prefix, blockHash, blockNumber,
+[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )separator (',')]
+[p.name/][/for]
+) {
+		return '<ul class="dapp-account-list"><li > '
+        +'<a class="dapp-identicon dapp-small" style="background-image: url(identiconimage.png)"></a>'
+		+'<span>'+prefix+' ('+blockNumber+')</span>'
+[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
+        +'<span>'+[p.name/]+'</span>'
+[/for]
+        +' </li>'
+        ;
+}
+[/for]
+
+}//end guifactory
+[/template]
+
+[template public printUpdateAttributeFunction (aClass : Class) ]
+//update attributes
+this._updateAttributes=function () {
+if(this.[aClass.name/]_instance===null) return;
+//console.log('updateAttributes:' + self.prefix);
+// update attributes
+[for (p : Property | aClass.allSubAttributes())]
+	var [p.name/]_res = self.[aClass.name/]_instance.[p.name/]();
+//	console.log('get:[p.name/]' + self.prefix);
+
+	if([p.name/]_res!=null)
+		document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
+[/for]
+[for (p : Property | aClass.allMappingSubAttributes())]
+//console.log('getStruct:[p.name/]' + self.prefix);
+[let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
+[if (value.oclIsTypeOf(Class) and value.hasStereotype('Struct'))]
+	var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
+	var [p.name/]_res = self.[aClass.name/]_instance.[p.name/](_key);
+//console.log('result:[p.name/]' + [p.name/]_res+' key: '+_key);
 	if([p.name/]_res!=null){
 [for (p1 : Property | value.attribute)]
-		document.getElementById('[aClass.name/]_[p.name/]_[p1.name/]_value').innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
+		document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_[p1.name/]_value').innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
 [/for]
 	}
 [else]
-var _key = document.getElementById('[aClass.name/]_contract_attribute_[p.name/]_input').value;
-var [p.name/]_res = [aClass.name/]_instance.[p.name/](_key);
+	var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
+	var [p.name/]_res = self.[aClass.name/]_instance.[p.name/](_key);
+//console.log('result:[p.name/]' + [p.name/]_res+' key: '+_key);
 	if([p.name/]_res!=null){
-		document.getElementById('[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
+		document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
 	}
 [/if]
 [/let]
 [/for]
 [for (p : Property | aClass.allKeyMappingSubAttributes())]
 [let key : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
-[if (p.type.oclIsTypeOf(Class))]
-var _key = document.getElementById('[aClass.name/]_contract_attribute_[p.name/]_input').value;
-var [p.name/]_res = [aClass.name/]_instance.[p.name/](_key);
+[if (p.type.oclIsTypeOf(Class) and p.type.hasStereotype('Struct'))]
+	var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
+	var [p.name/]_res = self.[aClass.name/]_instance.[p.name/](_key);
 	if([p.name/]_res!=null){
 [for (p1 : Property | p.type.oclAsType(Class).attribute)]
-		document.getElementById('[aClass.name/]_[p.name/]_[p1.name/]_value').innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
+		document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_[p1.name/]_value').innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
 [/for]
 	}
 [else]
-var _key = document.getElementById('[aClass.name/]_contract_attribute_[p.name/]_input').value;
-var [p.name/]_res = [aClass.name/]_instance.[p.name/](_key);
+	var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
+	var [p.name/]_res = self.[aClass.name/]_instance.[p.name/](_key);
 	if([p.name/]_res!=null){
-		document.getElementById('[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
+		document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
 	}
 [/if]
 [/let]
 [/for]
-
 }
-[printCallFunction(aClass,aClass,'')/]
-//delegated calls
-[for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
-[printCallFunction(prop.type.oclAsType(Class),aClass,'delegate_')/]
-[/for]
 [/template]
 
 [template private printCallFunction(aClass : Class,aContractClass : Class, prefix:String)]
 //call functions
 [for (op : Operation | aClass.allSubFunctions())]
 //function [prefix/][aClass.name/]_[op.name/]
-function [prefix/][op.functionName()/]() {
+this.[prefix/][op.functionName()/]=function() {
+//console.log('function:[op.name/]' + self.prefix);
 [for (p : Parameter | op.allInParameters())]
-	var param_[p.name/] = document.getElementById('[prefix/][op.functionName()/]_[p.name/]').value;
+	var e = document.getElementById(self.prefix+'[prefix/][op.functionName()/]_[p.name/]');
+//	console.log(':' + self.prefix+'[prefix/][op.functionName()/]_[p.name/]'+": "+e);
+	var param_[p.name/] = e.value;
 [/for]
-	var res = [aClass.name/]_instance.[op.name/]([for (p : Parameter | op.allInParameters())separator (', ')]param_[p.name/][/for]);
+//	console.log(':' +self.[aClass.name/]_instance+':');
+	var res = self.[aClass.name/]_instance.[op.name/]([for (p : Parameter | op.allInParameters())separator (', ')]param_[p.name/][/for]);
 [if (op.hasReturnValue())]
 	if(res!=null)
-		document.getElementById('[prefix/][op.functionName()/]_res').innerText = res;
+		document.getElementById(self.prefix+'[prefix/][op.functionName()/]_res').innerText = res;
 [/if]
 }
 [/for]
 [/template]
 
-[query public toHtmlType (t : Type) : String = 'text' /]
+[query public toHtmlType (t : Type) : String = if t.name.startsWith('uint') then 'number' else 'text' endif /]
 
