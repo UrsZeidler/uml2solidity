@@ -70,6 +70,7 @@
    </extension>
    <extension
          point="org.eclipse.ui.menus">
+         <!-- this is the legacy toolbar for papyrus 1.x -->
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.eclipse.papyrus.uml.diagram.ui.toolbar">
          <toolbar
@@ -108,17 +109,47 @@
             </and>
             </visibleWhen>
          </toolbar>
-         <!--
+      </menuContribution>
+     <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.eclipse.papyrus.ui.toolbar">
          <toolbar
-               id="de.urszeidler.eclipse.solidity.ui.toolbar1">
+               id="de.urszeidler.eclipse.solidity.ui.toolbar2">
             <command
                   commandId="de.urszeidler.eclipse.solidity.ui.command1"
                   icon="icons/solidity16.png"
+                  label="Generate Solidity"
                   style="push">
+               <visibleWhen>
+            <with
+                  variable="activeEditorId">
+               <equals
+                     value="org.eclipse.papyrus.infra.core.papyrusEditor">
+               </equals>
+            </with>
+               </visibleWhen>
             </command>
+            <visibleWhen>
+            <and>
+              <with
+                  variable="activeEditorId">
+               <equals
+                     value="org.eclipse.papyrus.infra.core.papyrusEditor">
+               </equals>
+            </with>
+               <with
+                     variable="selection">
+                      <iterate>
+                        <instanceof
+                              value="org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart">
+                        </instanceof>
+                     </iterate>
+               </with>
+            
+            </and>
+            </visibleWhen>
          </toolbar>
-         -->
       </menuContribution>
+
    </extension>
    <extension
          point="org.eclipse.ui.commands">
