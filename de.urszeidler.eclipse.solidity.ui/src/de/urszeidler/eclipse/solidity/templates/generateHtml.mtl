@@ -50,7 +50,14 @@
 <div id="all-testResult" ></div>
 <h1>Events</h1>
 <div id="eventLog" ></div>
+
+<!--[protected('Custom_html_'+p.name+ ' -->')]
+	//TODO: implement
+<!--[/protected]-->
+
+
 <script type='text/javascript'>
+
 web3.eth.defaultAccount = web3.eth.accounts[ '[' /]0[ ']' /];
 [for (	aClass : Class | p.allContracts())]
 // execute all [aClass.name/] tests if set 
@@ -113,6 +120,7 @@ event_[op.name/].watch(function(error,result){
 [for (	aClass : Class | p.allContracts())]
 [printJavascriptForClass(aClass)/]
 [/for]
+[printSimplePageObject(p)/]
 [/file]
 [/if]
 [comment the tests /]
@@ -140,6 +148,10 @@ event_[op.name/].watch(function(error,result){
 <script type='text/javascript' src="[p.getJsControllerDirectory()+ '/' +p.name+ '-main.js'/]">
 </script>
 
+<!-- [protected('custom_'+p.name+'_scripts -->')] 
+
+<!-- [/protected] -->
+
 <!-- start of style -->
 <style>
 .contract {
@@ -163,6 +175,7 @@ event_[op.name/].watch(function(error,result){
 <body bgcolor='#E6E6FA'>
 	<h1>Sample Interface for [p.name/]</h1>
 [printHtmlInterface(p)/]
+
 [printAllContractAdresses(p)/]
 
 </body>
@@ -170,9 +183,41 @@ event_[op.name/].watch(function(error,result){
 [/file]
 [/template]
 
+[template public printSimplePageObject (aPackage : Package) ]
+//the page Object for the [aPackage.name.toUpperFirst()/]Page.
+function [aPackage.name.toUpperFirst()/]Page(prefix) {
+	this.prefix=prefix;
+	//[protected('page_'+aPackage.name+'_attributes')]
+		//TODO: implement
+	//[/protected]
+
+	
+// default Gui
+this.placeDefaultGui=function() {
+this.createDefaultGui();
+
+	[comment]var e = document.getElementById(this.prefix);
+	if(e!=null)
+		e.innerHTML = this.createDefaultGui();
+	else
+		console.log(this.prefix+' [aPackage.name/]_gui not found');[/comment]
+}
+// default Gui
+this.createDefaultGui=function() {
+	//[protected('page_'+aPackage.name.toUpperFirst()+'_create_default_gui_functions')]
+		//TODO: implement
+	//[/protected]
+}
+	//[protected('page_'+aPackage.name.toUpperFirst()+'_functions')]
+		//TODO: implement
+	//[/protected]
+
+}// end of [aPackage.name.toUpperFirst()/]Page
+[/template]
+
 [template public printAllContractAdresses (p : Package) ]
 <script type='text/javascript'>
-[for (	aClass : Class | p.allContracts())]
+[comment][for (	aClass : Class | p.allContracts())]
 var  default[aClass.name/]Controller  = new [aClass.name/]Controller();
 default[aClass.name/]Controller.bindGui();
 
@@ -194,28 +239,16 @@ test[aClass.name/]Controller  = new [aClass.name/]Controller();
 test[aClass.name/]Controller.prefix='Test';
 test[aClass.name/]Controller.bindGui();
 
-[/for]
+[/for][/comment]
+
+var c = new [p.name.toUpperFirst()/]Page('[p.name.toUpperFirst()/]-Gui');
+//[protected('page_'+p.name.toUpperFirst()+'_js_functions')]
+		//TODO: implement
+//[/protected]
+c.createDefaultGui();
+
 </script>
 [/template]
-
-
-[query private allSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
-	->select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping'))
-	->select(isPublic())
-	->sortedBy(indexInContainer(oclAsType(Property)) + name )
- /]
-
-[query private allMappingSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
-	->select(hasStereotype('Mapping'))
-	->select(isPublic())
-	->sortedBy(indexInContainer(oclAsType(Property)) + name )
- /]
-
-[query private allKeyMappingSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
-	->select(hasStereotype('KeyMapping'))
-	->select(isPublic())
-	->sortedBy(indexInContainer(oclAsType(Property)) + name )
- /]
 
 [template public printHtmlMappingInterface (c:Class , p : Property, k : Type,v : Type) ]
 <div class="Value_Mapping" id="[c.name/]_contract_attribute_[p.name/]">mapping  [p.name/]:
@@ -239,9 +272,9 @@ test[aClass.name/]Controller.bindGui();
 [/template]
 
 [template public printHtmlInterface (p : Package)? (not p.oclIsUndefined())]
-[for (	aClass : Class | p.allContracts())]
+[comment][for (	aClass : Class | p.allContracts())]
 [printHtmlInterface(aClass)/]
-[/for]
+[/for][/comment]
 [for (	aClass : Class | p.allContracts())]
 <div class="contract">[aClass.name/]
 <div id="[aClass.name/]_gui" ></div>
@@ -252,6 +285,9 @@ test[aClass.name/]Controller.bindGui();
 <div id="Test[aClass.name/]_gui" ></div>
 </div>
 [/for]
+<div class="contract">test : [p.name/]
+<div id="[p.name.toUpperFirst()/]-Gui" ></div>
+</div>
 [/template]
 
 [template public printHtmlInterface (aClass : Class) ]
@@ -332,10 +368,13 @@ test[aClass.name/]Controller.bindGui();
 
 
 [template public printTestJavascriptForClass (aClass : Class) ? (aClass.isContract() ) ]
+[printJsModelWrapper(aClass)/]
+
 //test class for [aClass.name/]
 function Test[aClass.name/](contract) {
 	
 	this.test_instance = contract;
+	this.model = new [aClass.name/]Model(contract);
 	this.prefix='';
 	this.messageBlockId = "testResult";
 	var self = this;
@@ -401,63 +440,89 @@ function Test[aClass.name/](contract) {
 [/template]
 
 [template public printJavascriptForClass (aClass : Class) ]
+[printJsModelWrapper(aClass)/]
 [printJsGuiFactory(aClass)/]
 [printJsGuiController(aClass)/]
-[comment]// set address
-[aClass.name/]Controller.prototype.setAddress=function() {
-	var _address = document.getElementById(this.prefix+'[aClass.name/]_address');
-	console.log('setAddress:' + this.prefix+' '+_address);
-	this.[aClass.name/]_instance = [aClass.name/]Contract.at(_address.value);
-	this.contractAddress = _address;
-	this._updateAttributes();
-}[/comment]
 
-
-// script for [aClass.name/]
-function [aClass.name/]Model(prefix) {
-	this.prefix = prefix;
-	this.guiFactory = new [aClass.name/]GuiFactory();
-	this.controller = new [aClass.name/]Controller();
-	this.guiFactory.prefix = prefix;
-	this.controller.prefix = prefix;
-}
-[aClass.name/]Model.prototype.create=function () {
-	this.guiFactory.placeDefaultGui();
-	this.controller._updateAttributes();
-}
-
-
-//class as GlueCode
+//class as GlueCode [aClass.name/]Manager
 //uses prefix + 'GuiContainer'
-function [aClass.name/]Manager(prefix,contract) {
+function [aClass.name/]Manager(prefix,contract,containerId) {
 	this.prefix = prefix;
 	var self = this;
 	this.c = new [aClass.name/]Controller();
 	this.c.prefix=prefix;
-	this.c.[aClass.name/]_instance=contract;
+	this.c.instance=contract;
 	this.c.contractAddress = contract.address;
 	this.g = new [aClass.name/]GuiFactory();
 	this.g.prefix = prefix;
+	this.containerId = containerId;
 
-	this.addGui = function() {
-		var e = document.getElementById(this.prefix + 'GuiContainer');
-//console.log('addGui:' + this.prefix+ 'GuiContainer'+e);
+	this.addGui = function(e) {
+		if(e==null)
+			e = document.getElementById(this.containerId);
+		if(e==null){
+		console.log(this.containerId+' not found or :'+e);
+		return;
+		}
 		var elemDiv = document.createElement('div');
 		elemDiv.id= this.prefix +'[aClass.name/]_gui';
 		e.appendChild(elemDiv);
-		this.g.placeDefaultGui();
-		document.getElementById(this.prefix+'[aClass.name/]_address').value = this.c.contractAddress;
+		elemDiv.innerHTML = this.createGui(this.g);
+		var e = document.getElementById(this.prefix+'[aClass.name/]_address');
+		if(e!=null)
+			e.value = this.c.contractAddress;
 		this.c.bindGui();
 	}	
-	this.clearGui = function(){
-		var e = document.getElementById(this.prefix + 'GuiContainer');
+	this.clearGui = function(e){
+		if(e==null)
+			e = document.getElementById(this.containerId);
 		e.innerHTML ='';
+	}
+	this.createGui = function(guifactory){
+		var txt ='';
+//[protected(aClass.name+'_create_gui_js')]
+		txt = txt + guifactory.createDefaultGui();
+//[/protected]
+		return guifactory.createSeletonGui(txt);
+
+	}
+	this.createSmallGui = function(guifactory){
+		var txt ='';
+		txt = txt + guifactory.createAttributesGui();
+		return guifactory.createSeletonGui(txt);
+
 	}
 	this.updateGui = function(){
 		this.c._updateAttributes();
 	}
 	this.getContract = function(){
-		return this.c.[aClass.name/]_instance;
+		return this.c.instance;
+	}
+
+//watch events
+	this.watchEvents=function(){
+	[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+	var event_[op.name/] = contract.[op.name/]({},{fromBlock: 0});
+	event_[op.name/].watch(function(error,result){
+	if(!error){
+		var e = document.getElementById(self.eventlogPrefix+'eventLog');
+		if(e==null){
+			console.log(self.eventlogPrefix+'eventLog');
+			return;
+		}
+		var elemDiv = document.createElement('div');
+		elemDiv.id= result.blockNumber +'event';
+		e.appendChild(elemDiv);
+		//console.log(result.address+ 'eventLog'+result.blockHash+' '+result.blockNumber+' '+result.args.name+' '+result.args.succesful+' ');
+		elemDiv.innerHTML = '<div>'
+[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
+        +'<span>'+result.args.[p.name/]+'</span>'
+[/for]
+		+ '</div>';
+		}else
+			console.log(error);	
+	});
+[/for]
 	}
 
 }// end of manager
@@ -467,29 +532,35 @@ function [aClass.name/]GuiMananger(guiId){
 	this.managers=new Array();	//[ '[' /][ ']' /];		
 	
 	this.addManager = function(contract) {
-//console.log('addManager:'+contract);
-		var m = new [aClass.name/]Manager(contract.address,contract);
+		var m = new [aClass.name/]Manager(contract.address,contract,this.prefix);
+		m.watchEvents();
 		this.managers.push(m);
 		//manager.addGui();
 	}
 			
-	this.clearGui = function(){
-		var e = document.getElementById(this.prefix);
-//console.log('clear gui:'+this.prefix+e);
+	this.clearGui = function(e){
+		if(e==null)
+			e = document.getElementById(this.prefix);
 		if(e!==undefined)
 			e.innerHTML ='';
 	}
 			
-	this.displayGui = function(){
-		var e = document.getElementById(this.prefix);
-//console.log('displayGui:'+this.prefix +e);
+	this.displayGui = function(e){
+		if(e==null)
+			e = document.getElementById(this.prefix);
 		if(e==undefined) return;
 		for (i in this.managers) {
+			var manager = this.managers[ '[' /]i[ ']' /] ;
 			var elemDiv = document.createElement('div');
-			elemDiv.id= this.managers[ '[' /]i[ ']' /].prefix + 'GuiContainer';//'[aClass.name/]_gui';
+			elemDiv.id= manager.prefix + 'GuiContainer';//'[aClass.name/]_gui';
 			e.appendChild(elemDiv);
-//console.log('add:'+elemDiv.id);
-			this.managers[ '[' /]i[ ']' /].addGui();
+			elemDiv.innerHTML = manager.createGui(manager.g);
+		}
+	}
+	this.displaySimpleGui = function(){
+		for (i in this.managers) {
+			var manager = this.managers[ '[' /]i[ ']' /] ;
+			manager.addGui(null);
 		}
 	}
 
@@ -501,6 +572,36 @@ function [aClass.name/]GuiMananger(guiId){
 	}
 }// end of gui mananger
 
+function [aClass.name/]Deployment(guiId){
+//[protected(aClass.name+'_deployment_js')]
+//TODO: implement
+//[/protected]
+
+}
+//[protected('custom_'+aClass.name+'_js')]
+//TODO: implement
+//[/protected]
+[/template]
+
+[**
+ * Print a simple js model wrapper
+*/]
+[template public printJsModelWrapper (aClass : Class) ]
+//a simple bean class arount the contract
+// the [aClass.name/]Model
+function [aClass.name/]Model(contract) {
+this.contract = contract;
+[for (p : Property | aClass.allSubAttributes())]
+this.get[p.name.toUpperFirst()/] = function(){
+return contract.[p.name/](); 
+}
+[/for]
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+this.[op.name/] = function([for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]){
+return contract.[op.name/]([for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]); 
+}
+[/for]
+}// end of function [aClass.name/]Model
 [/template]
 
 
@@ -511,33 +612,35 @@ function [aClass.name/]GuiMananger(guiId){
 // script for [aClass.name/] gui controller
 function [aClass.name/]Controller() {
 
-	this.[aClass.name/]_instance = undefined;
+	this.instance = undefined;
 	this.prefix='';
 	this.contractAddress = undefined; 
+	this.eventlogPrefix = '';
 	var self = this;
 
 // bind buttons
 	this.bindGui=function() {
 		var btn = document.getElementById(self.prefix+'[aClass.name/]Controller.setAddress');
-//	console.log('bind:' + self.prefix+' '+btn);
 		if(btn!=undefined)		
 			btn.onclick = this.setAddress;
+		else colsole.log('addres widget not bound');
 
 		var btn = document.getElementById(self.prefix+'[aClass.name/]_updateAttributes');
-//		console.log('bind update:' + self.prefix+' '+btn);
 		if(btn!=undefined)
 			btn.onclick = this._updateAttributes;
+		else colsole.log('_updateAttributes widget not bound');
 [for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
 		var btn = document.getElementById(self.prefix+'[aClass.name/]Controller.[op.functionName()/]');
-//		console.log('bind:[aClass.name/]_[op.name/] ' + self.prefix+' '+btn+'  '+self.[op.functionName()/]);//[aClass.name/]_[op.name/]);
 		if(btn!=undefined)
 			btn.onclick = this.[op.functionName()/];
+		else colsole.log('[op.functionName()/] widget not bound');
 [/for]
 	}
 	// set function
 	this.setAddress=function() {
 	var _address = document.getElementById(self.prefix+'[aClass.name/]_address');
-//	console.log('setAddress:' + self.prefix+' '+_address);
+	if(_address==null)return;
+
 	self.[aClass.name/]_instance = [aClass.name/]Contract.at(_address.value);
 	self.contractAddress = _address.value;
 	self._updateAttributes();
@@ -562,9 +665,13 @@ function [aClass.name/]GuiFactory() {
 	this.prefix='';
 	
 // default Gui
-this.placeDefaultGui=function() {
-//	console.log(this.prefix+' place gui');
-	document.getElementById(this.prefix+'[aClass.name/]_gui').innerHTML = this.createDefaultGui();
+this.placeDefaultGui=function(e) {
+	if(e==null)
+		e = document.getElementById(this.prefix+'[aClass.name/]_gui');
+	if(e!=null)
+		e.innerHTML = this.createDefaultGui();
+	else
+		console.log(this.prefix+'[aClass.name/]_gui not found');
 }
 // default Gui
 this.createDefaultGui=function() {
@@ -611,7 +718,7 @@ return [for (it : String | printHtmlScructInterface(aClass,p, key, p.type.oclAsT
 [/if][/let][/for]
 
 //print the contract div around
-this.create[aClass.name/]SeletonGui=function(inner) {
+this.createSeletonGui=function(inner) {
 	return 	'<!-- gui for [aClass.name/]_contract -->'
 +	'	<div class="contract" id="'+this.prefix+'[aClass.name/]_contract">'
 + inner
@@ -621,9 +728,9 @@ this.create[aClass.name/]SeletonGui=function(inner) {
 
 //eventguis
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
-this.create[op.name/]LogDataGui = function(prefix, blockHash, blockNumber,
-[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )separator (',')]
-[p.name/][/for]
+this.create[op.name/]LogDataGui = function(prefix, blockHash, blockNumber
+[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
+,[p.name/][/for]
 ) {
 		return '<ul class="dapp-account-list"><li > '
         +'<a class="dapp-identicon dapp-small" style="background-image: url(identiconimage.png)"></a>'
@@ -642,54 +749,70 @@ this.create[op.name/]LogDataGui = function(prefix, blockHash, blockNumber,
 [template public printUpdateAttributeFunction (aClass : Class) ]
 //update attributes
 this._updateAttributes=function () {
-if(this.[aClass.name/]_instance===null) return;
-//console.log('updateAttributes:' + self.prefix);
+if(this.instance===null) return;
 // update attributes
 [for (p : Property | aClass.allSubAttributes())]
-	var [p.name/]_res = self.[aClass.name/]_instance.[p.name/]();
-//	console.log('get:[p.name/]' + self.prefix);
-
-	if([p.name/]_res!=null)
-		document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
+	var [p.name/]_res = self.instance.[p.name/]();
+	var e = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value');
+	if([p.name/]_res!=null && e!=null)
+		e.innerText = [p.name/]_res;
+	else console.log(self.prefix+'[aClass.name/]_[p.name/]_value not found');
 [/for]
 [for (p : Property | aClass.allMappingSubAttributes())]
-//console.log('getStruct:[p.name/]' + self.prefix);
 [let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
 [if (value.oclIsTypeOf(Class) and value.hasStereotype('Struct'))]
-	var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
-	var [p.name/]_res = self.[aClass.name/]_instance.[p.name/](_key);
-//console.log('result:[p.name/]' + [p.name/]_res+' key: '+_key);
+	var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
+if(e!=null){
+	var _key = e.value;
+	if(_key=='') return;
+	var [p.name/]_res = self.instance.[p.name/](_key);
 	if([p.name/]_res!=null){
 [for (p1 : Property | value.attribute)]
-		document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_[p1.name/]_value').innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
+	var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_[p1.name/]_value');
+	if(e1!=null)	
+		e1.innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
 [/for]
-	}
+	}}
 [else]
-	var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
-	var [p.name/]_res = self.[aClass.name/]_instance.[p.name/](_key);
-//console.log('result:[p.name/]' + [p.name/]_res+' key: '+_key);
+var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
+if(e!=null){
+	var _key = e.value;
+	if(_key=='') return;
+	var [p.name/]_res = self.instance.[p.name/](_key);
 	if([p.name/]_res!=null){
-		document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
-	}
+		var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value');
+		if(e1!=null)	
+			e1.innerText = [p.name/]_res;
+	}}
 [/if]
 [/let]
 [/for]
 [for (p : Property | aClass.allKeyMappingSubAttributes())]
 [let key : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
 [if (p.type.oclIsTypeOf(Class) and p.type.hasStereotype('Struct'))]
-	var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
-	var [p.name/]_res = self.[aClass.name/]_instance.[p.name/](_key);
+var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
+if(e!=null){
+	var _key = e.value;
+	if(_key=='') return;
+	var [p.name/]_res = self.instance.[p.name/](_key);
 	if([p.name/]_res!=null){
 [for (p1 : Property | p.type.oclAsType(Class).attribute)]
-		document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_[p1.name/]_value').innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
+	var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_[p1.name/]_value');
+	if(e1!=null)	
+		e1.innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
 [/for]
-	}
+	}}
 [else]
+var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
+if(e!=null){
 	var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
-	var [p.name/]_res = self.[aClass.name/]_instance.[p.name/](_key);
+	if(_key=='') return;
+	var [p.name/]_res = self.instance.[p.name/](_key);
 	if([p.name/]_res!=null){
-		document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value').innerText = [p.name/]_res;
-	}
+		var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value');
+		if(e1!=null)	
+			e1.innerText = [p.name/]_res;
+	}}
 [/if]
 [/let]
 [/for]
@@ -701,17 +824,17 @@ if(this.[aClass.name/]_instance===null) return;
 [for (op : Operation | aClass.allSubFunctions())]
 //function [prefix/][aClass.name/]_[op.name/]
 this.[prefix/][op.functionName()/]=function() {
-//console.log('function:[op.name/]' + self.prefix);
 [for (p : Parameter | op.allInParameters())]
 	var e = document.getElementById(self.prefix+'[prefix/][op.functionName()/]_[p.name/]');
-//	console.log(':' + self.prefix+'[prefix/][op.functionName()/]_[p.name/]'+": "+e);
-	var param_[p.name/] = e.value;
+	if(e!=null)
+		var param_[p.name/] = e.value;
+	else console.log(self.prefix+'[prefix/][op.functionName()/]_[p.name/] not found')
 [/for]
-//	console.log(':' +self.[aClass.name/]_instance+':');
-	var res = self.[aClass.name/]_instance.[op.name/]([for (p : Parameter | op.allInParameters())separator (', ')]param_[p.name/][/for]);
+	var res = self.instance.[op.name/]([for (p : Parameter | op.allInParameters())separator (', ')]param_[p.name/][/for]);
 [if (op.hasReturnValue())]
-	if(res!=null)
-		document.getElementById(self.prefix+'[prefix/][op.functionName()/]_res').innerText = res;
+	var e = document.getElementById(self.prefix+'[prefix/][op.functionName()/]_res');
+	if(res!=null && e!=null)
+		e.innerText = res;
 [/if]
 }
 [/for]

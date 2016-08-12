@@ -100,6 +100,26 @@ or not pa.allInterfaces()->isEmpty() /]
  /]
 
 
+[query public allSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
+	->select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping'))
+	->select(isPublic())
+	->sortedBy(indexInContainer(oclAsType(Property)) + name )
+ /]
+
+[query public allMappingSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
+	->select(hasStereotype('Mapping'))
+	->select(isPublic())
+	->sortedBy(indexInContainer(oclAsType(Property)) + name )
+ /]
+
+[query public allKeyMappingSubAttributes(aClass : Class) : OrderedSet(Property) = aClass.allAttributes()
+	->select(hasStereotype('KeyMapping'))
+	->select(isPublic())
+	->sortedBy(indexInContainer(oclAsType(Property)) + name )
+ /]
+
+
+
 [query public isPublic(p : Property) : Boolean = p.visibility.oclIsUndefined() or p.visibility=VisibilityKind::public /]
 [query public isPublic(f : Operation) : Boolean = f.visibility.oclIsUndefined() or f.visibility=VisibilityKind::public /]
 

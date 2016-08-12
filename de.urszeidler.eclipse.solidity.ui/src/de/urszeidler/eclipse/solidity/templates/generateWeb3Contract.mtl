@@ -35,7 +35,7 @@
 
 [for (	aClass : Class | p.allContracts())]
 var [aClass.name/]Contract = web3.eth.contract([ '[' /]
-[for (p : Property | aClass.allCProperties())]
+[for (p : Property | aClass.allSubAttributes())]
 {"constant":true,"inputs":[ '[' /][ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[toAbiType(p.type)/]"}[ ']' /],"type":"function"},
 [/for]
 [for (p : Property | aClass.allAttributes()-> select(isMapping()))]
