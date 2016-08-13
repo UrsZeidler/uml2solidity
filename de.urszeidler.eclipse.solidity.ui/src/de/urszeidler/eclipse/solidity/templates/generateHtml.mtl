@@ -175,8 +175,16 @@ event_[op.name/].watch(function(error,result){
 <body bgcolor='#E6E6FA'>
 	<h1>Sample Interface for [p.name/]</h1>
 [printHtmlInterface(p)/]
+<div id="eventLog" ></div>
+
+<!-- [protected('custom_'+p.name+'html -->')] 
+
+<!-- [/protected] -->
+
 
 [printAllContractAdresses(p)/]
+
+
 
 </body>
 </html>
@@ -456,6 +464,8 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 	this.g = new [aClass.name/]GuiFactory();
 	this.g.prefix = prefix;
 	this.containerId = containerId;
+	this.eventlogPrefix = '';
+	this.guiFunction = null;
 
 	this.addGui = function(e) {
 		if(e==null)
@@ -467,10 +477,15 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 		var elemDiv = document.createElement('div');
 		elemDiv.id= this.prefix +'[aClass.name/]_gui';
 		e.appendChild(elemDiv);
-		elemDiv.innerHTML = this.createGui(this.g);
+		if(this.guiFunction==null)
+			elemDiv.innerHTML = this.createGui(this.g);
+		else elemDiv.innerHTML = this.guiFunction(this.g);
+		
 		var e = document.getElementById(this.prefix+'[aClass.name/]_address');
 		if(e!=null)
 			e.value = this.c.contractAddress;
+		else 
+			console.log(this.prefix+'[aClass.name/]_address not found');
 		this.c.bindGui();
 	}	
 	this.clearGui = function(e){
@@ -503,11 +518,12 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 	this.watchEvents=function(){
 	[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
 	var event_[op.name/] = contract.[op.name/]({},{fromBlock: 0});
+	var elp = this.eventlogPrefix;
 	event_[op.name/].watch(function(error,result){
 	if(!error){
-		var e = document.getElementById(self.eventlogPrefix+'eventLog');
+		var e = document.getElementById(elp+'eventLog');
 		if(e==null){
-			console.log(self.eventlogPrefix+'eventLog');
+			console.log(elp+'eventLog');
 			return;
 		}
 		var elemDiv = document.createElement('div');
@@ -530,10 +546,13 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 function [aClass.name/]GuiMananger(guiId){
 	this.prefix = guiId;
 	this.managers=new Array();	//[ '[' /][ ']' /];		
+	this.guiFunction = null;
 	
 	this.addManager = function(contract) {
 		var m = new [aClass.name/]Manager(contract.address,contract,this.prefix);
 		m.watchEvents();
+		if(this.guiFunction!=null)
+			m.guiFunction = this.guiFunction;
 		this.managers.push(m);
 		//manager.addGui();
 	}
@@ -554,7 +573,9 @@ function [aClass.name/]GuiMananger(guiId){
 			var elemDiv = document.createElement('div');
 			elemDiv.id= manager.prefix + 'GuiContainer';//'[aClass.name/]_gui';
 			e.appendChild(elemDiv);
-			elemDiv.innerHTML = manager.createGui(manager.g);
+			if(this.guiFunction==null)
+				elemDiv.innerHTML = manager.createGui(manager.g);
+			else elemDiv.innerHTML = this.guiFunction(manager.g);
 		}
 	}
 	this.displaySimpleGui = function(){
@@ -620,20 +641,21 @@ function [aClass.name/]Controller() {
 
 // bind buttons
 	this.bindGui=function() {
+		console.log('bind gui for:'+self.prefix);
 		var btn = document.getElementById(self.prefix+'[aClass.name/]Controller.setAddress');
 		if(btn!=undefined)		
 			btn.onclick = this.setAddress;
-		else colsole.log('addres widget not bound');
+		else console.log('addres widget not bound');
 
 		var btn = document.getElementById(self.prefix+'[aClass.name/]_updateAttributes');
 		if(btn!=undefined)
 			btn.onclick = this._updateAttributes;
-		else colsole.log('_updateAttributes widget not bound');
+		else console.log('_updateAttributes widget not bound');
 [for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
 		var btn = document.getElementById(self.prefix+'[aClass.name/]Controller.[op.functionName()/]');
 		if(btn!=undefined)
 			btn.onclick = this.[op.functionName()/];
-		else colsole.log('[op.functionName()/] widget not bound');
+		else console.log('[op.functionName()/] widget not bound');
 [/for]
 	}
 	// set function
