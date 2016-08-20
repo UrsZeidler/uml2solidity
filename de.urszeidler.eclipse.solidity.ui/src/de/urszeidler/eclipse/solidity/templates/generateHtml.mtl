@@ -543,6 +543,7 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 
 }// end of manager
 
+//Manages a list of [aClass.name/]Manager uses the guid id to place the gui which is also the eventlogPrefix
 function [aClass.name/]GuiMananger(guiId){
 	this.prefix = guiId;
 	this.managers=new Array();	//[ '[' /][ ']' /];		
@@ -550,6 +551,7 @@ function [aClass.name/]GuiMananger(guiId){
 	
 	this.addManager = function(contract) {
 		var m = new [aClass.name/]Manager(contract.address,contract,this.prefix);
+		m.eventlogPrefix = this.prefix;
 		m.watchEvents();
 		if(this.guiFunction!=null)
 			m.guiFunction = this.guiFunction;
@@ -576,6 +578,7 @@ function [aClass.name/]GuiMananger(guiId){
 			if(this.guiFunction==null)
 				elemDiv.innerHTML = manager.createGui(manager.g);
 			else elemDiv.innerHTML = this.guiFunction(manager.g);
+			manager.c.bindGui();
 		}
 	}
 	this.displaySimpleGui = function(){
@@ -850,7 +853,7 @@ this.[prefix/][op.functionName()/]=function() {
 	var e = document.getElementById(self.prefix+'[prefix/][op.functionName()/]_[p.name/]');
 	if(e!=null)
 		var param_[p.name/] = e.value;
-	else console.log(self.prefix+'[prefix/][op.functionName()/]_[p.name/] not found')
+	else console.log(self.prefix+'[prefix/][op.functionName()/]_[p.name/] not found');
 [/for]
 	var res = self.instance.[op.name/]([for (p : Parameter | op.allInParameters())separator (', ')]param_[p.name/][/for]);
 [if (op.hasReturnValue())]
