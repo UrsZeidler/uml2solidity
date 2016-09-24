@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Contracts="http:///schemas/Contracts/_mMyBwK-8EeWyf-Y9sdI4kw/19" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/Contracts/_mMyBwK-8EeWyf-Y9sdI4kw/19 pathmap://UML_PROFILE/solidity_profiles.uml#_mMyo0K-8EeWyf-Y9sdI4kw">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Contracts="http:///schemas/Contracts/_HcCYMDMgEeaX2cAdiOKUjg/33" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/Contracts/_HcCYMDMgEeaX2cAdiOKUjg/33 pathmap://UML_PROFILE/solidity_profiles.uml#_HcC_QDMgEeaX2cAdiOKUjg">
   <uml:Model xmi:id="_DT8wAKyuEeWQpqJCIBcpzQ" name="Standardized_Contract_API">
     <packagedElement xmi:type="uml:Interface" xmi:id="_rPn-4KyuEeWQpqJCIBcpzQ" name="TransferableFungible">
       <ownedComment xmi:type="uml:Comment" xmi:id="_dsrFUKywEeWQpqJCIBcpzQ">
@@ -174,15 +174,15 @@
       </ownedOperation>
     </packagedElement>
     <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_DlrZMKyuEeWQpqJCIBcpzQ">
-      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_4IYOwO1AEeWH7fXac3MBEw" source="PapyrusVersion">
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_4IYOwe1AEeWH7fXac3MBEw" key="Version" value="0.0.20"/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_4IYOwu1AEeWH7fXac3MBEw" key="Comment" value=""/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_4IYOw-1AEeWH7fXac3MBEw" key="Copyright" value=""/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_4IYOxO1AEeWH7fXac3MBEw" key="Date" value="2015-12-31"/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_4IYOxe1AEeWH7fXac3MBEw" key="Author" value=""/>
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_0EeFsIIzEeafK64Rq2tVkA" source="PapyrusVersion">
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_0EeFsYIzEeafK64Rq2tVkA" key="Version" value="0.0.34"/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_0EeFsoIzEeafK64Rq2tVkA" key="Comment" value=""/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_0EeFs4IzEeafK64Rq2tVkA" key="Copyright" value=""/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_0EeFtIIzEeafK64Rq2tVkA" key="Date" value="2016-06-15"/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_0EeFtYIzEeafK64Rq2tVkA" key="Author" value="Urs Zeidler"/>
       </eAnnotations>
       <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_DlucgKyuEeWQpqJCIBcpzQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILE/solidity_profiles.uml#_mMyo0K-8EeWyf-Y9sdI4kw"/>
+        <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILE/solidity_profiles.uml#_HcC_QDMgEeaX2cAdiOKUjg"/>
       </eAnnotations>
       <appliedProfile xmi:type="uml:Profile" href="pathmap://UML_PROFILE/solidity_profiles.uml#_uCE5EKHREeWjOZ0I8ilEXA"/>
     </profileApplication>

@@ -4,15 +4,15 @@
     <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/solidity_types.uml#_N0uwUKKsEeWvY9GWZZMftw"/>
   </packageImport>
   <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_cIUSYOqEEeW-WZmxJuA3BA">
-    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_cIUSYuqEEeW-WZmxJuA3BA" source="PapyrusVersion">
-      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cIUSY-qEEeW-WZmxJuA3BA" key="Version" value="0.0.20"/>
-      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cIUSZOqEEeW-WZmxJuA3BA" key="Comment" value=""/>
-      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cIUSZeqEEeW-WZmxJuA3BA" key="Copyright" value=""/>
-      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cIUSZuqEEeW-WZmxJuA3BA" key="Date" value="2015-12-31"/>
-      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cIUSZ-qEEeW-WZmxJuA3BA" key="Author" value=""/>
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_xWxJUIIzEeafK64Rq2tVkA" source="PapyrusVersion">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_xWxJUYIzEeafK64Rq2tVkA" key="Version" value="0.0.34"/>
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_xWxJUoIzEeafK64Rq2tVkA" key="Comment" value=""/>
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_xWxJU4IzEeafK64Rq2tVkA" key="Copyright" value=""/>
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_xWxJVIIzEeafK64Rq2tVkA" key="Date" value="2016-06-15"/>
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_xWxJVYIzEeafK64Rq2tVkA" key="Author" value="Urs Zeidler"/>
     </eAnnotations>
     <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_cIUSYeqEEeW-WZmxJuA3BA" source="http://www.eclipse.org/uml2/2.0.0/UML">
-      <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILE/solidity_profiles.uml#_mMyo0K-8EeWyf-Y9sdI4kw"/>
+      <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILE/solidity_profiles.uml#_HcC_QDMgEeaX2cAdiOKUjg"/>
     </eAnnotations>
     <appliedProfile xmi:type="uml:Profile" href="pathmap://UML_PROFILE/solidity_profiles.uml#_uCE5EKHREeWjOZ0I8ilEXA"/>
   </profileApplication>
