@@ -80,6 +80,19 @@ name|doc
 [/for][/for]
 [printStructs(aClass)/]
 [if (not aClass.allCProperties()->isEmpty())][printPropperties(aClass)/][/if][if (not aClass.allMappingProperties()->isEmpty())][printMapping(aClass)/][/if]-
+[for (op : Operation | aClass.allConstructors())]
+
+#### [aClass.name/].[printFunctionDeclarationA(op)/]
+
+[op.printDoc()/]
+[if (not op.ownedParameter->isEmpty())]
+name|type|doc
+----|----|----
+[for (p : Parameter | op.ownedParameter)]
+[p.name/]|[p.type.name/]|[p.printSingleLineDoc()/]
+[/for]
+[/if]
+[/for]
 [for (op : Operation | aClass.allFunctions())]
 
 #### [aClass.name/].[printFunctionDeclaration(op)/]
