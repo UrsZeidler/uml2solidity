@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Solidity Compiler Support
 Bundle-SymbolicName: de.urszeidler.eclipse.solidity.compiler.support;singleton:=true
-Bundle-Version: 1.0.3.qualifier
+Bundle-Version: 1.0.5.qualifier
 Bundle-Activator: de.urszeidler.eclipse.solidity.compiler.support.Activator
 Bundle-Vendor: Urs Zeidler
 Require-Bundle: org.eclipse.ui,
