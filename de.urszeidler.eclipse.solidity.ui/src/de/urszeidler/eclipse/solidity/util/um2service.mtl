@@ -32,9 +32,11 @@
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateJsTests(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
 /]
 
-[query public isGeneratePackage(pa : Package) : Boolean = not pa.allContracts()->isEmpty() 
+[query public isGeneratePackage(pa : Package) : Boolean = 
+not pa.allContracts()->isEmpty() 
 or not pa.allLibrarys()->isEmpty()
-or not pa.allInterfaces()->isEmpty() /]
+or not pa.allInterfaces()->isEmpty()
+ /]
 
 [query public allContracts(aModel : Model) : OrderedSet(Class) = aModel.ownedElement
 	->selectByType(Class)

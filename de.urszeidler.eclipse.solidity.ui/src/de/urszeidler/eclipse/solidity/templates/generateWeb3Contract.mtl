@@ -17,8 +17,10 @@
 */]
 [template private iteratePackages(p : Package)]
 [for (p1 : Package | p.nestedPackage)]
+[if (isGeneratePackage(p))]
 [generatePackage(p1)/]
 [iteratePackages(p1)/]
+[/if]
 [/for]
 [/template]
 
