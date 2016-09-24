@@ -131,6 +131,10 @@ contract [aClass.name/][contractIs(aClass)/] {
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
 	[printEventDefinition(op)/]
 [/for]
+[for (op : Operation | aClass.allConstructors())]
+	[printConstructor(op)/]
+[/for]
+[comment deprecated /]
 	[printConstructor(aClass)/]
 [for (op : Operation | aClass.allAbstractFunctions())]
 	[printFunctionImplementation(op)/]
@@ -289,6 +293,21 @@ function [printFunctionDeclaration(aOperation)/];
 [/if]
 [/template]
 
+[**
+ * Prints a constructor.
+*/]
+[template public printConstructor (aOperation : Operation) ? (hasStereotype(aOperation, 'Constructor'))]
+
+[printFunctionComments(aOperation)/]
+function [aOperation.name/]([printParameters(aOperation,ParameterDirectionKind::_in)/]) [aOperation.visibility()/] [printModifier(aOperation)/] [printReturn(aOperation)/] {
+[if(not aOperation.getStereotypeValue('Constructor', 'functionCode').oclIsUndefined())]
+	[aOperation.printCode()/]
+[/if]
+	//[protected(aOperation.owner.oclAsType(NamedElement).name+'.constructor.'+aOperation.name+operationParameters(aOperation))]
+	//TODO: implement
+	//[/protected]
+}
+[/template]
 
 [**
  * Print a complete function with doc.
@@ -303,8 +322,7 @@ function [printFunctionDeclaration(aOperation)/] {
 	//[protected(aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name+operationParameters(aOperation))]
 	//TODO: implement
 	//[/protected]
-}
-[/template]
+}[/template]
 
 [template private operationParameters(op : Operation)]
 [for (p : Parameter | op.allInParameters())]_[p.type.name/][/for]

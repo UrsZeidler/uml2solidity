@@ -78,6 +78,11 @@ or not pa.allInterfaces()->isEmpty() /]
 	->select(hasStereotype('Function')) 
 	->sortedBy(indexInContainer(oclAsType(Operation))) /]
 
+[query public allConstructors(aClass : Class) : OrderedSet(Operation) = aClass.allOwnedElements()
+	->selectByType(Operation)
+	->select(hasStereotype('Constructor')) 
+	->sortedBy(indexInContainer(oclAsType(Operation))) /]
+
 [query public allAbstractFunctions(aClass : Class) : Sequence(Operation) = aClass.allSuperTypes()
 	->collect(ownedElement)
 	->selectByKind(Operation)
