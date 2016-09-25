@@ -33,6 +33,7 @@ find out more in the docs
  * [an example](https://github.com/UrsZeidler/uml2solidity/wiki/SolidityCode#an-example)
 * [profile definition](https://github.com/UrsZeidler/uml2solidity/wiki/Contracts)
 * [preferences](https://github.com/UrsZeidler/uml2solidity/wiki/Preferences)
+* [generated JS code](https://github.com/UrsZeidler/uml2solidity/wiki/JSCode)
 
 
 you can `tip the coder` by sending some ether : 0x25b2ce55746f54d88e9fc4d2f0f85e879c30bb05
