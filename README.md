@@ -37,7 +37,7 @@ find out more in the docs
 
 
 you can `tip the coder` by sending some ether : 0x25b2ce55746f54d88e9fc4d2f0f85e879c30bb05
-
+you can `tip the etc community` by sending some ethers : 0x95D80084D4Fc2CB2063B765676fb328930935e5B
  
  
  License
