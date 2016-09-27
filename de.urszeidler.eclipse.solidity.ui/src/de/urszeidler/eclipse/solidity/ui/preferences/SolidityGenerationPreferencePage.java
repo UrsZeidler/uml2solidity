@@ -56,6 +56,11 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_MARKDOWN, "generate markdown report",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		
+		addField(new StringFieldEditor(PreferenceConstants.GENERATE_ABI_TARGET, "generate abi to directory", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_ABI, "generate abi for each contract",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		
 		addField(new MultiLineTextFieldEditor(PreferenceConstants.CONTRACT_FILE_HEADER, "solidity file header", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 	}

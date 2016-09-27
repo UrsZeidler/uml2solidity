@@ -24,6 +24,8 @@ public class PreferenceConstants {
 	public static final String GENERATE_JS_CONTROLLER_TARGET = "GENERATE_JS_CONTROLLER_TARGET";
 	public static final String GENERATE_JS_TEST = "GENERATE_JS_CONTROLLER";
 	public static final String GENERATE_JS_TEST_TARGET = "GENERATE_JS_TEST_TARGET";
+	public static final String GENERATE_ABI_TARGET = "GENERATE_ABI_TARGET";
+	public static final String GENERATE_ABI = "GENERATE_ABI";
 	
 	public static final String GENERATOR_PROJECT_SETTINGS = "COMPILE_CONTRACTS_PROJECT_SETTINGS";
 	public static final String CONTRACT_FILE_HEADER = "CONTRACT_FILE_HEADER";

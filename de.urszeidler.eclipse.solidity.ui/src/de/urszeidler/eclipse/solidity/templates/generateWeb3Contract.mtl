@@ -17,7 +17,7 @@
 */]
 [template private iteratePackages(p : Package)]
 [for (p1 : Package | p.nestedPackage)]
-[if (isGeneratePackage(p))]
+[if (isGeneratePackage(p1))]
 [generatePackage(p1)/]
 [iteratePackages(p1)/]
 [/if]
@@ -28,15 +28,31 @@
  * Generate the web3 for the given package.
 */]
 [template public generatePackage (p : Package)?(isGeneratePackage(p)) ]
+[if (p.generateWeb3())]
 [file (p.getJsControllerDirectory()+ '/' + p.name+'Web3.js', false, 'UTF-8')]
 [printAllContracts(p)/]
 [/file]
+[/if]
+[if (p.generateAbi())]
+[for (	aClass : Class | p.allContracts())]
+[file (p.getAbiDirectory()+ '/' + aClass.name+'.json', false, 'UTF-8')]
+[printAbi(aClass)/]
+[/file]
+[/for]
+[/if]
 [/template]
 
 [template public printAllContracts (p : Package) ]
 
 [for (	aClass : Class | p.allContracts())]
-var [aClass.name/]Contract = web3.eth.contract([ '[' /]
+var [aClass.name/]Contract = web3.eth.contract([printAbi(aClass)/]);   
+
+[/for]
+
+[/template]
+
+[template public printAbi (aClass : Class) ]
+[ '[' /]
 [for (p : Property | aClass.allSubAttributes())]
 {"constant":true,"inputs":[ '[' /][ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[toAbiType(p.type)/]"}[ ']' /],"type":"function"},
 [/for]
@@ -54,10 +70,7 @@ var [aClass.name/]Contract = web3.eth.contract([ '[' /]
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))separator (',')]
 [printEventSignature(op)/]
 [/for]
-[ ']' /] );   
-
-[/for]
-
+[ ']' /]
 [/template]
 
 [template public printMapping(key : Type,value:Type, p:Property)]

@@ -164,6 +164,36 @@ public class Uml2Service {
 		return store.getString(PreferenceConstants.GENERATE_JS_TEST_TARGET);
 	}
 
+	/**
+	 * Should abi files for each class being generated.
+	 * @param an element
+	 * @return
+	 */
+	public static Boolean generateAbi(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(PreferenceConstants.GENERATE_ABI);
+	}
+
+	/**
+	 * Returns the directory for the abi generation.
+	 * @param an element
+	 * @return
+	 */
+	public static String getAbiDirectory(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.GENERATE_ABI_TARGET);
+	}
+
+	/**
+	 * Should web3 file being generated.
+	 * @param an element
+	 * @return
+	 */
+	public static Boolean generateWeb3(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(PreferenceConstants.GENERATE_WEB3);
+	}
+
 
 	/**
 	 * Get the preference store:

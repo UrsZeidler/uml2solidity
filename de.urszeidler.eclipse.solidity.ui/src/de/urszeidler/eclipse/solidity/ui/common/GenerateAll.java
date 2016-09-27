@@ -88,8 +88,8 @@ public class GenerateAll {
 		if (!targetFolder.getLocation().toFile().exists()) {
 			targetFolder.getLocation().toFile().mkdirs();
 		}
-		IPreferenceStore store = PreferenceConstants.getPreferenceStore(targetFolder.getProject());		
-		
+		IPreferenceStore store = PreferenceConstants.getPreferenceStore(targetFolder.getProject());
+
 		monitor.subTask("Loading...");
 		GenerateContracts gen0 = new GenerateContracts(modelURI, targetFolder.getLocation().toFile(), arguments);
 		monitor.worked(1);
@@ -99,7 +99,8 @@ public class GenerateAll {
 		gen0.setGenerationID(generationID);
 		monitor.subTask("generate solidity");
 		gen0.doGenerate(BasicMonitor.toMonitor(monitor));
-		if(monitor.isCanceled())return;
+		if (monitor.isCanceled())
+			return;
 		if (store.getBoolean(PreferenceConstants.GENERATE_HTML)) {
 			GenerateHtml generateHtml = new GenerateHtml(modelURI, targetFolder.getLocation().toFile(), arguments);
 			monitor.worked(1);
@@ -110,30 +111,29 @@ public class GenerateAll {
 			monitor.subTask("generate html");
 			generateHtml.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
-		if(monitor.isCanceled())return;
-		if (store.getBoolean(PreferenceConstants.GENERATE_WEB3)) {
-			GenerateWeb3Contract generateWeb3Contract = new GenerateWeb3Contract(modelURI,
-					targetFolder.getLocation().toFile(), arguments);
-			monitor.worked(1);
-			generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
-					"de.urszeidler.eclipse.solidity.ui",
-					"de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract", modelURI.toString(),
-					targetFolder.getFullPath().toString(), new ArrayList<String>());
-			generateWeb3Contract.setGenerationID(generationID);
-			monitor.subTask("generate web3");
-			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
-		}
-		if(monitor.isCanceled())return;
+		if (monitor.isCanceled())
+			return;
+		GenerateWeb3Contract generateWeb3Contract = new GenerateWeb3Contract(modelURI,
+				targetFolder.getLocation().toFile(), arguments);
+		monitor.worked(1);
+		generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
+				"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract",
+				modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
+		generateWeb3Contract.setGenerationID(generationID);
+		monitor.subTask("generate web3");
+		generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
+		if (monitor.isCanceled())
+			return;
 		if (store.getBoolean(PreferenceConstants.GENERATE_MIX)) {
-			GenerateMixConfig generateWeb3Contract = new GenerateMixConfig(modelURI,
+			GenerateMixConfig generateMix = new GenerateMixConfig(modelURI,
 					targetFolder.getLocation().toFile(), arguments);
 			monitor.worked(1);
 			generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
 					"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateMixConfig",
 					modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
-			generateWeb3Contract.setGenerationID(generationID);
+			generateMix.setGenerationID(generationID);
 			monitor.subTask("generate mix");
-			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
+			generateMix.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
 
 		final String docTarget = store.getString(PreferenceConstants.GENERATION_TARGET_DOC);
@@ -143,33 +143,34 @@ public class GenerateAll {
 		}
 
 		if (store.getBoolean(PreferenceConstants.GENERATE_MARKDOWN)) {
-			GenerateMarkDown generateWeb3Contract = new GenerateMarkDown(modelURI, target1.getLocation().toFile(),
+			GenerateMarkDown generateMarkdown = new GenerateMarkDown(modelURI, target1.getLocation().toFile(),
 					arguments);
 			monitor.worked(1);
 			generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
 					"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateMarkDown",
 					modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
-			generateWeb3Contract.setGenerationID(generationID);
+			generateMarkdown.setGenerationID(generationID);
 			monitor.subTask("generate markdown");
-			generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
+			generateMarkdown.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
-		IPreferenceStore store1 = de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.getPreferenceStore(targetFolder.getProject());
+		IPreferenceStore store1 = de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants
+				.getPreferenceStore(targetFolder.getProject());
 		if (store1.getBoolean(
 				de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS)) {
-			
+
 			files = gen0.getFiles();
-			if(files.isEmpty())return;
+			if (files.isEmpty())
+				return;
 			String compile_folder = store1.getString(
-							de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
+					de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
 			IContainer target = targetFolder.getProject().getFolder(compile_folder);
 			if (!target.getLocation().toFile().exists()) {
 				target.getLocation().toFile().mkdirs();
 			}
 			monitor.subTask("compile code");
-			StartCompiler.startCompiler(target.getLocation().toFile(), files,store1);
+			StartCompiler.startCompiler(target.getLocation().toFile(), files, store1);
 		}
 	}
-
 
 	/**
 	 * Finds the template in the plug-in. Returns the template plug-in URI.

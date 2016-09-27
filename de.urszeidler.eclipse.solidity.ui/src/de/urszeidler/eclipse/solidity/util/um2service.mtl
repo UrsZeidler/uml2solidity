@@ -31,6 +31,15 @@
 [query public generateJsTests(class : NamedElement) : Boolean
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateJsTests(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
 /]
+[query public getAbiDirectory(class : NamedElement) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getAbiDirectory(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public generateAbi(class : NamedElement) : Boolean
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateAbi(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public generateWeb3(class : NamedElement) : Boolean
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateWeb3(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
 
 [query public isGeneratePackage(pa : Package) : Boolean = 
 not pa.allContracts()->isEmpty() 

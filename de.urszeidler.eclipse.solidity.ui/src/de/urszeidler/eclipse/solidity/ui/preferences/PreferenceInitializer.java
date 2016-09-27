@@ -30,6 +30,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET, "js");
 		store.setDefault(PreferenceConstants.GENERATE_JS_TEST, true);
 		store.setDefault(PreferenceConstants.GENERATE_JS_TEST_TARGET, "test");
+		store.setDefault(PreferenceConstants.GENERATE_ABI_TARGET, "abi");
+		store.setDefault(PreferenceConstants.GENERATE_ABI, true);
 
 		store.setDefault(PreferenceConstants.GENERATOR_PROJECT_SETTINGS, false);
 	}
