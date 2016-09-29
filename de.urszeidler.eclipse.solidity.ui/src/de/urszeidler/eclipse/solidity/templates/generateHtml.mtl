@@ -453,7 +453,83 @@ function Test[aClass.name/](contract) {
 [printJsModelWrapper(aClass)/]
 [printJsGuiFactory(aClass)/]
 [printJsGuiController(aClass)/]
+[printJsManager(aClass)/]
+[printJsGuiManager(aClass)/]
 
+function [aClass.name/]Deployment(guiId){
+//[protected(aClass.name+'_deployment_js')]
+//TODO: implement
+//[/protected]
+
+}
+//[protected('custom_'+aClass.name+'_js')]
+//TODO: implement
+//[/protected]
+[/template]
+
+
+[**
+ * Print a js guimannager, holding n managers.
+*/]
+[template public printJsGuiManager (aClass : Class) ]
+//Manages a list of [aClass.name/]Manager uses the guid id to place the gui which is also the eventlogPrefix
+function [aClass.name/]GuiMananger(guiId){
+	this.prefix = guiId;
+	this.managers=new Array();	//[ '[' /][ ']' /];		
+	this.guiFunction = null;
+	
+	this.addManager = function(contract) {
+		var m = new [aClass.name/]Manager(contract.address,contract,this.prefix);
+		m.eventlogPrefix = this.prefix;
+		m.watchEvents();
+		if(this.guiFunction!=null)
+			m.guiFunction = this.guiFunction;
+		this.managers.push(m);
+		//manager.addGui();
+	}
+			
+	this.clearGui = function(e){
+		if(e==null)
+			e = document.getElementById(this.prefix);
+		if(e!==undefined)
+			e.innerHTML ='';
+	}
+			
+	this.displayGui = function(e){
+		if(e==null)
+			e = document.getElementById(this.prefix);
+		if(e==undefined) return;
+		for (i in this.managers) {
+			var manager = this.managers[ '[' /]i[ ']' /] ;
+			var elemDiv = document.createElement('div');
+			elemDiv.id= manager.prefix + 'GuiContainer';//'[aClass.name/]_gui';
+			e.appendChild(elemDiv);
+			if(this.guiFunction==null)
+				elemDiv.innerHTML = manager.createGui(manager.g);
+			else elemDiv.innerHTML = this.guiFunction(manager.g);
+			manager.c.bindGui();
+		}
+	}
+	this.displaySimpleGui = function(){
+		for (i in this.managers) {
+			var manager = this.managers[ '[' /]i[ ']' /] ;
+			manager.addGui(null);
+		}
+	}
+
+	this.updateGui = function(){
+		for (i in this.managers) {
+			this.managers[ '[' /]i[ ']' /].updateGui();
+		}
+//		console.log('update');
+	}
+}// end of gui mananger
+[/template]
+
+[**
+ * Print the Js glue code mananer.
+*/]
+[template public printJsManager (aClass : Class) ]
 //class as GlueCode [aClass.name/]Manager
 //uses prefix + 'GuiContainer'
 function [aClass.name/]Manager(prefix,contract,containerId) {
@@ -544,69 +620,6 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 	}
 
 }// end of manager
-
-//Manages a list of [aClass.name/]Manager uses the guid id to place the gui which is also the eventlogPrefix
-function [aClass.name/]GuiMananger(guiId){
-	this.prefix = guiId;
-	this.managers=new Array();	//[ '[' /][ ']' /];		
-	this.guiFunction = null;
-	
-	this.addManager = function(contract) {
-		var m = new [aClass.name/]Manager(contract.address,contract,this.prefix);
-		m.eventlogPrefix = this.prefix;
-		m.watchEvents();
-		if(this.guiFunction!=null)
-			m.guiFunction = this.guiFunction;
-		this.managers.push(m);
-		//manager.addGui();
-	}
-			
-	this.clearGui = function(e){
-		if(e==null)
-			e = document.getElementById(this.prefix);
-		if(e!==undefined)
-			e.innerHTML ='';
-	}
-			
-	this.displayGui = function(e){
-		if(e==null)
-			e = document.getElementById(this.prefix);
-		if(e==undefined) return;
-		for (i in this.managers) {
-			var manager = this.managers[ '[' /]i[ ']' /] ;
-			var elemDiv = document.createElement('div');
-			elemDiv.id= manager.prefix + 'GuiContainer';//'[aClass.name/]_gui';
-			e.appendChild(elemDiv);
-			if(this.guiFunction==null)
-				elemDiv.innerHTML = manager.createGui(manager.g);
-			else elemDiv.innerHTML = this.guiFunction(manager.g);
-			manager.c.bindGui();
-		}
-	}
-	this.displaySimpleGui = function(){
-		for (i in this.managers) {
-			var manager = this.managers[ '[' /]i[ ']' /] ;
-			manager.addGui(null);
-		}
-	}
-
-	this.updateGui = function(){
-		for (i in this.managers) {
-			this.managers[ '[' /]i[ ']' /].updateGui();
-		}
-//		console.log('update');
-	}
-}// end of gui mananger
-
-function [aClass.name/]Deployment(guiId){
-//[protected(aClass.name+'_deployment_js')]
-//TODO: implement
-//[/protected]
-
-}
-//[protected('custom_'+aClass.name+'_js')]
-//TODO: implement
-//[/protected]
 [/template]
 
 [**
