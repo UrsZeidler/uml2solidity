@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2016 Urs Zeidler
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Urs Zeidler - initial API and implementation
+ *******************************************************************************/
 package de.urszeidler.eclipse.solidity.ui.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -42,24 +52,36 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_WEB3, "generate web3 interface",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+
+		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
+
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_JS_CONTROLLER, "generate js controller",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET, "directory for js controller", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+
+		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
+
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_JS_TEST, "generate js test code",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.GENERATE_JS_TEST_TARGET, "directory for js test code", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 
-		addField(new StringFieldEditor(PreferenceConstants.GENERATION_TARGET_DOC, "generate doc to directory", -1,
-				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
+		
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_MARKDOWN, "generate markdown report",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
-		
-		addField(new StringFieldEditor(PreferenceConstants.GENERATE_ABI_TARGET, "generate abi to directory", -1,
+		addField(new StringFieldEditor(PreferenceConstants.GENERATION_TARGET_DOC, "generate doc to directory", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+
+		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
+		
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_ABI, "generate abi for each contract",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.GENERATE_ABI_TARGET, "generate abi to directory", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+
+		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
 		
 		addField(new MultiLineTextFieldEditor(PreferenceConstants.CONTRACT_FILE_HEADER, "solidity file header", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
