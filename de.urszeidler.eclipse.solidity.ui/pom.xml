@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.urszeidler.eclipse.solidity.ui</groupId>
   <artifactId>de.urszeidler.eclipse.solidity.ui</artifactId>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.6-SNAPSHOT</version>
    <packaging>eclipse-plugin</packaging>
    
  <properties>  
@@ -12,7 +12,7 @@
  <parent>  
   <groupId>de.urszeidler.eclipse.solidity.master</groupId>  
   <artifactId>de.urszeidler.eclipse.solidity.master</artifactId>  
-  <version>1.0.5-SNAPSHOT</version>  
+  <version>1.0.6-SNAPSHOT</version>  
   <relativePath>../de.urszeidler.eclipse.solidity.master</relativePath>  
  </parent>  
   
