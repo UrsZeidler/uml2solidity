@@ -59,6 +59,9 @@
 ## contract: [aClass.name/]
 
     overview:
+[for (op : Operation | aClass.allConstructors())]
+	constructor [aClass.name/]([printParameters(op,ParameterDirectionKind::_in)/])
+[/for]
 [for (op : Operation | aClass.allAbstractFunctions())]
 	abstract function [printFunctionDeclaration(op)/]
 [/for]
