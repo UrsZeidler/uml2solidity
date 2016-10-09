@@ -24,6 +24,7 @@
 .contract {
 	border-style: solid;
 	border-width: 1px;
+	margin-bottom: 4px;
 	} 
 .contract_attributes{
 	border-style: solid;
@@ -36,24 +37,47 @@
 .function_execution{}
 .function_parameter{}
 .function_result{}
-.failed_state{
+.testTable {
+	display: table;
+	width: auto;
+	border-spacing: 5px; /*cellspacing:poor IE support for  this*/
+	/* border-collapse:separate;*/
+}
+.testRow {
+	display: table-row;
+	width: auto;
+}
+.testCell {
+	float: left; /*fix for  buggy browsers*/
+	display: table-column;
+}
+.failed_state {
 	border-style: solid;
 	border-width: 1px;
 	border-color: red;
+	float: left;
+	display: table-column;
 }
-
+.pass_state {
+	border-style: solid;
+	border-width: 1px;
+	border-color: green;
+	float: left;
+	display: table-column;
+}
 </style>
 </head>
 <body bgcolor='#E6E6FA'>
 	<h1>Tests for [p.name/]</h1>
 
 
-<div id="all-testResult" ></div>
+<div id="all-testResult" class="testTable"></div>
 <h1>Events</h1>
 <div id="eventLog" ></div>
 
 <!--[protected('Custom_html_'+p.name+ ' -->')]
-	//TODO: implement
+
+
 <!--[/protected]-->
 
 
@@ -138,6 +162,11 @@ event_[op.name/].watch(function(error,result){
 [printTestHtml(p)/]
 [/file]
 [file (p.name+'.html', false, 'UTF-8')]
+[printHtmlPage(p)/]
+[/file]
+[/template]
+
+[template public printHtmlPage (p : Package) ]
 <!doctype>
 <html>
 <head>
@@ -157,21 +186,7 @@ event_[op.name/].watch(function(error,result){
 
 <!-- start of style -->
 <style>
-.contract {
-	border-style: solid;
-	border-width: 1px;
-	} 
-.contract_attributes{
-	border-style: solid;
-	border-width: 1px;
-	} 
-.Struct_Mapping{}
-.Value_Mapping{}
-.contract_attribute{}
-.contract_attribute_value{}
-.function_execution{}
-.function_parameter{}
-.function_result{}
+[basicStyle(p)/]
 
 </style>
 </head>
@@ -187,11 +202,27 @@ event_[op.name/].watch(function(error,result){
 
 [printAllContractAdresses(p)/]
 
-
-
 </body>
 </html>
-[/file]
+[/template]
+
+[template public basicStyle (p : Package) ]
+.contract {
+	border-style: solid;
+	border-width: 1px;
+	margin-bottom: 4px;
+	} 
+.contract_attributes{
+	border-style: solid;
+	border-width: 1px;
+	} 
+.Struct_Mapping{}
+.Value_Mapping{}
+.contract_attribute{}
+.contract_attribute_value{}
+.function_execution{}
+.function_parameter{}
+.function_result{}
 [/template]
 
 [template public printSimplePageObject (aPackage : Package) ]
@@ -415,12 +446,26 @@ function Test[aClass.name/](contract) {
 		var e = document.getElementById(this.prefix+'-'+this.messageBlockId);
 		var elemDiv = document.createElement('div');
 		elemDiv.id= this.prefix+'-'+testName;
-		elemDiv.innerText = testMessage;
-		if(!state)
-			elemDiv.className = 'failed_state'
+		elemDiv.className='testRow';
+		elemDiv.text=testMessage;
+		var stateDiv = document.createElement('div');
+		if(state){
+			elemDiv.innerHTML = '<div class="pass_state">P</div><div class="testCell">'+testMessage+'</div>';
+		}else{
+			elemDiv.innerHTML = '<div class="failed_state">F</div><div class="testCell">'+testMessage+'</div>';
+		}
 		e.appendChild(elemDiv);
 	}
-	
+
+	//assertEquals
+	this.testAE=function(testName,testMessage,expected,value) {
+		if(expected==value)
+			this.printTest(testName, testMessage, true);
+		else
+			this.printTest(testName, testMessage+': expected '+expected+' got '+value, false);
+	}
+
+	//test the attributes after setup	
 	this.testAttributes=function() {
 	//[protected('attributeTests_'+aClass.name)]
 	//TODO: implement
@@ -438,7 +483,7 @@ function Test[aClass.name/](contract) {
 [/for]
 //	var res = this.test_instance.[op.name/]([for (p : Parameter | op.allInParameters())separator (',')] p_[p.name/][/for]);
 //	var state = res==="";		
-		this.printTest("test[op.name/]", "executed: test[op.functionName()/]", false);		
+		this.testAE("test[op.name/]", "executed: test[op.functionName()/]",true, false);		
 		//[/protected]
 	}
 [/for]
@@ -457,15 +502,35 @@ function Test[aClass.name/](contract) {
 [printJsManager(aClass)/]
 [printJsGuiManager(aClass)/]
 
+[printDeployer(aClass)/]
+//[protected('custom_'+aClass.name+'_js')]
+//TODO: implement
+//[/protected]
+[/template]
+
+[template public printDeployer (aClass : Class, aClass1 : Class) ]
+//deploys the contract
 function [aClass.name/]Deployment(guiId){
+[for (op : Operation | aClass.allConstructors())]
+	this.deploy[op.functionName()/] = function(w3,[for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]){
+		var c = [aClass.name/].new(_name,_url,_description,{
+			from: account,
+			data: code,
+			gas:  providedGas
+		});
+		return c;
+	}
+	
+[/for]
+
+
+
 //[protected(aClass.name+'_deployment_js')]
 //TODO: implement
 //[/protected]
 
 }
-//[protected('custom_'+aClass.name+'_js')]
-//TODO: implement
-//[/protected]
+
 [/template]
 
 
