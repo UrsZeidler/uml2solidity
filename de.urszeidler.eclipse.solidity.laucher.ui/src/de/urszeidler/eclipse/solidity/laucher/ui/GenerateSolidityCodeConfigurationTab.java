@@ -5,6 +5,7 @@ package de.urszeidler.eclipse.solidity.laucher.ui;
 
 
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -21,6 +22,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
+import org.eclipse.ui.dialogs.ResourceSelectionDialog;
 
 import de.urszeidler.eclipse.solidity.laucher.core.GenerateUml2Solidity;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
@@ -73,7 +75,7 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String filePath = modelText.getText();
-				ResourceListSelectionDialog resourceListSelectionDialog = new ResourceListSelectionDialog(getShell(), null);
+				ResourceListSelectionDialog resourceListSelectionDialog = new ResourceListSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(),IResource.FILE);
 				resourceListSelectionDialog.open();
 				Object[] result2 = resourceListSelectionDialog.getResult();
 				
