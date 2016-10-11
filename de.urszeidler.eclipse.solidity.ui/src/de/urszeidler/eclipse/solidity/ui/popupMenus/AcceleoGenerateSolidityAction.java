@@ -122,4 +122,17 @@ public class AcceleoGenerateSolidityAction extends ActionDelegate implements IAc
 		}
 	}
 
+	public static void modelTransform(IContainer target, IProgressMonitor monitor, URI modelURI, List<? extends Object> arguments)
+			throws CoreException {
+		try {
+			GenerateAll generator = new GenerateAll(modelURI, target, arguments);
+			generator.doGenerate(monitor);
+		} catch (IOException e) {
+			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
+			Activator.getDefault().getLog().log(status);
+		} finally {
+			target.getProject().refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		}
+	}
+
 }

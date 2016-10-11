@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Laucher ui
+Bundle-SymbolicName: de.urszeidler.eclipse.solidity.laucher.ui;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Urs Zeidler
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.debug.ui,
+ de.urszeidler.eclipse.solidity.laucher.core;bundle-version="1.0.0",
+ org.eclipse.ui;bundle-version="3.108.0",
+ de.urszeidler.eclipse.solidity.ui;bundle-version="1.0.6",
+ org.eclipse.equinox.common;bundle-version="3.8.0",
+ org.eclipse.ui.ide;bundle-version="3.12.0"
