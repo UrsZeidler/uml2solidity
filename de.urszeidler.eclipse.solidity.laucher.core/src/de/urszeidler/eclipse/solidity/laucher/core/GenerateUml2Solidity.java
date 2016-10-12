@@ -3,7 +3,6 @@
  */
 package de.urszeidler.eclipse.solidity.laucher.core;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFolder;
@@ -35,23 +34,21 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
-		// TODO Auto-generated method stub
 		String modelUri = configuration.getAttribute(MODEL_URI, "");
-		final URI modelURI = URI.createURI(modelUri);// URI.createPlatformResourceURI(modelUri, true);
+		final URI modelURI = URI.createURI(modelUri);// URI.createPlatformResourceURI(modelUri,
+														// true);
 		String generationTarget = configuration.getAttribute(PreferenceConstants.GENERATION_TARGET, "");
 		final IFolder target = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(generationTarget));
+
 		
-		
+		//TODO initialize the data and set in the umlService class
 		boolean generateMixConfig = configuration.getAttribute(PreferenceConstants.GENERATE_MIX, false);
-		
-		
-		
+
 		IRunnableWithProgress operation = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) {
 				try {
-			        	IPreferenceStore store =  PreferenceConstants.getPreferenceStore(target.getProject());	// Activator.getDefault().getPreferenceStore();
-			        	final String gtarget = store.getString(PreferenceConstants.GENERATION_TARGET);
-						AcceleoGenerateSolidityAction.modelTransform(target, monitor, modelURI, new ArrayList<Object>());
+					IPreferenceStore store = PreferenceConstants.getPreferenceStore(target.getProject()); // Activator.getDefault().getPreferenceStore();
+					AcceleoGenerateSolidityAction.modelTransform(target, monitor, modelURI, new ArrayList<Object>());
 				} catch (CoreException e) {
 					throw new RuntimeException(e);
 				}
@@ -62,7 +59,7 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 		} catch (Exception e) {
 			IStatus status = new Status(IStatus.ERROR, "", e.getMessage(), e);
 			throw new CoreException(status);
-		} 
+		}
 	}
 
 }

@@ -1,6 +1,9 @@
 package de.urszeidler.eclipse.solidity.laucher.ui;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
@@ -12,8 +15,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 /**
  * @author uzeidler
@@ -52,6 +58,20 @@ public class GenerateJSCodeConfigurationTab extends AbstractLaunchConfigurationT
 		jsDirectoryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Button btnSelect = new Button(grpGenerateJsCode, SWT.NONE);
+		btnSelect.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IContainer initialRoot = ResourcesPlugin.getWorkspace().getRoot();
+				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(), initialRoot, false, "select js folder");
+				containerSelectionDialog.open();
+				Object[] result = containerSelectionDialog.getResult();
+				if (result != null && result.length==1) {	
+					IPath container = (IPath) result[0];				
+					jsDirectoryText.setText(container.toString());
+				}
+
+			}
+		});
 		btnSelect.setText("select");
 		
 		btnGenerateJsTestcode = new Button(grpGenerateJsCode, SWT.CHECK);
@@ -67,6 +87,19 @@ public class GenerateJSCodeConfigurationTab extends AbstractLaunchConfigurationT
 		testDirectoryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Button btnNewButton = new Button(grpGenerateJsCode, SWT.NONE);
+		btnNewButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IContainer initialRoot = ResourcesPlugin.getWorkspace().getRoot();
+				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(), initialRoot, false, "select test folder");
+				containerSelectionDialog.open();
+				Object[] result = containerSelectionDialog.getResult();
+				if (result != null && result.length==1) {	
+					IPath container = (IPath) result[0];				
+					testDirectoryText.setText(container.toString());
+				}
+			}
+		});
 		btnNewButton.setText("select");
 		
 		Label lblJsFileHeader = new Label(grpGenerateJsCode, SWT.NONE);
@@ -104,16 +137,18 @@ public class GenerateJSCodeConfigurationTab extends AbstractLaunchConfigurationT
 			btnGenerateJsCode.setSelection(configuration.getAttribute(PreferenceConstants.GENERATE_JS_CONTROLLER, true));
 			btnGenerateJsTestcode.setSelection(configuration.getAttribute(PreferenceConstants.GENERATE_JS_TEST, true));
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//TODO: log error
 		}
 
 	}
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		// TODO Automatisch generierter Methodenstub
-
+		configuration.setAttribute(PreferenceConstants.GENERATE_JS_CONTROLLER, btnGenerateJsCode.getSelection());
+		configuration.setAttribute(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET, jsDirectoryText.getText());
+		configuration.setAttribute(PreferenceConstants.GENERATE_JS_TEST, btnGenerateJsTestcode.getSelection());
+		configuration.setAttribute(PreferenceConstants.GENERATE_JS_TEST_TARGET, testDirectoryText.getText());
+		configuration.setAttribute("js_header", jsHeaderText.getText());
 	}
 
 	@Override

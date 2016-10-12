@@ -5,9 +5,12 @@ package de.urszeidler.eclipse.solidity.laucher.ui;
 
 
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
@@ -76,20 +79,13 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 			public void widgetSelected(SelectionEvent e) {
 				String filePath = modelText.getText();
 				ResourceListSelectionDialog resourceListSelectionDialog = new ResourceListSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(),IResource.FILE);
+				resourceListSelectionDialog.setInitialSelections(new Object[]{filePath});
 				resourceListSelectionDialog.open();
-				Object[] result2 = resourceListSelectionDialog.getResult();
-				
-				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), false, "");
-//				FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
-//				dialog.setText("Select a callchain model.");
-				containerSelectionDialog.open();
-				
-//				filePath = dialog.open();
-				if (filePath != null) {
-					Object[] result = containerSelectionDialog.getResult();
-					modelText.setText((String) result[0]);
+				Object[] result = resourceListSelectionDialog.getResult();				
+				if (result != null && result.length==1) {					
+					IFile file = (IFile) result[0];					
+					modelText.setText(file.getFullPath().toString());
 				}
-				
 			}
 		});
 		btnSelect.setText("select");
@@ -114,6 +110,19 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 		generationDirectoryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Button btnNewButton = new Button(grpSolidity, SWT.NONE);
+		btnNewButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IContainer initialRoot = ResourcesPlugin.getWorkspace().getRoot();
+				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(), initialRoot, false, "select contract folder");
+				containerSelectionDialog.open();
+				Object[] result = containerSelectionDialog.getResult();
+				if (result != null && result.length==1) {	
+					IPath container = (IPath) result[0];				
+					generationDirectoryText.setText(container.toString());
+				}
+			}
+		});
 		btnNewButton.setText("select");
 		
 		Label lblSolidityFileHeader = new Label(grpSolidity, SWT.NONE);
@@ -151,6 +160,20 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 		docDirectoryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Button btnNewButton_1 = new Button(grpDocumentation, SWT.NONE);
+		btnNewButton_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IContainer initialRoot = ResourcesPlugin.getWorkspace().getRoot();
+				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(), initialRoot, false, "select doc folder");
+				containerSelectionDialog.open();
+				Object[] result = containerSelectionDialog.getResult();
+				if (result != null && result.length==1) {	
+					IPath container = (IPath) result[0];				
+					docDirectoryText.setText(container.toString());
+				}
+
+			}
+		});
 		btnNewButton_1.setText("select");
 		
 		Group grpAbi = new Group(mainComposite, SWT.NONE);
@@ -170,10 +193,20 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 		abiDirectoryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Button btnSelect_1 = new Button(grpAbi, SWT.NONE);
+		btnSelect_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IContainer initialRoot = ResourcesPlugin.getWorkspace().getRoot();
+				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(), initialRoot, false, "select abi folder");
+				containerSelectionDialog.open();
+				Object[] result = containerSelectionDialog.getResult();
+				if (result != null && result.length==1) {	
+					IPath container = (IPath) result[0];				
+					abiDirectoryText.setText(container.toString());
+				}
+			}
+		});
 		btnSelect_1.setText("select");
-		
-		
-
 	}
 
 	/* (nicht-Javadoc)
@@ -210,8 +243,7 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 			docDirectoryText.setText(configuration.getAttribute(PreferenceConstants.GENERATION_TARGET_DOC, ""));
 			
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// TODO log message
 		}
 
 	}
@@ -221,7 +253,15 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 	 */
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		// TODO Automatisch generierter Methodenstub
+		configuration.setAttribute(GenerateUml2Solidity.MODEL_URI, modelText.getText());
+		configuration.setAttribute(PreferenceConstants.CONTRACT_FILE_HEADER, fileHeaderText.getText());
+		configuration.setAttribute(PreferenceConstants.GENERATE_ABI, btnGfenerateSingleAbi.getSelection());
+		configuration.setAttribute(PreferenceConstants.GENERATE_MARKDOWN, btnGenerateMarkdownReport.getSelection());
+		configuration.setAttribute(PreferenceConstants.GENERATE_MIX, btnGenerateMixConfig.getSelection());
+		//configuration.setAttribute(PreferenceConstants.GENERATE_WEB3, btnGenerateMarkdownReport);
+		configuration.setAttribute(PreferenceConstants.GENERATION_TARGET, generationDirectoryText.getText());
+		configuration.setAttribute(PreferenceConstants.GENERATION_TARGET_DOC, docDirectoryText.getText());
+		configuration.setAttribute(PreferenceConstants.CONTRACT_FILE_HEADER, fileHeaderText.getText());
 
 	}
 
