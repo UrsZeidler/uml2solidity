@@ -43,7 +43,9 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 		
 		//TODO initialize the data and set in the umlService class
 		boolean generateMixConfig = configuration.getAttribute(PreferenceConstants.GENERATE_MIX, false);
-
+		configuration.getAttribute("", "");
+		
+		
 		IRunnableWithProgress operation = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) {
 				try {

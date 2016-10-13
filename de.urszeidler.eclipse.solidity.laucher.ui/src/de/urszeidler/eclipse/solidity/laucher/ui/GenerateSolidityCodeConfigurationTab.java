@@ -5,6 +5,8 @@ package de.urszeidler.eclipse.solidity.laucher.ui;
 
 
 
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.*;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -14,6 +16,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -47,6 +50,7 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 	private Button btnGenerateMixHtml;
 	private Button btnGenerateMarkdownReport;
 	private Button btnGfenerateSingleAbi;
+	private Text text;
 
 	/* (nicht-Javadoc)
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
@@ -101,6 +105,12 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 		btnGenerateSolidityCode.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		btnGenerateSolidityCode.setText("generate Solidity code");
 		new Label(grpSolidity, SWT.NONE);
+		
+		Button btnCheckButton = new Button(grpSolidity, SWT.CHECK);
+		btnCheckButton.setText("Check Button");
+		
+		text = new Text(grpSolidity, SWT.BORDER);
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		
 		Label lblNewLabel = new Label(grpSolidity, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -214,14 +224,15 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 	 */
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
+		IPreferenceStore store = PreferenceConstants.getPreferenceStore(null);
 		configuration.setAttribute(GenerateUml2Solidity.MODEL_URI, "");
-		configuration.setAttribute(PreferenceConstants.CONTRACT_FILE_HEADER, "");
-		configuration.setAttribute(PreferenceConstants.GENERATE_ABI, true);
-		configuration.setAttribute(PreferenceConstants.GENERATE_MARKDOWN, true);
-		configuration.setAttribute(PreferenceConstants.GENERATE_MIX, true);
-		configuration.setAttribute(PreferenceConstants.GENERATE_WEB3, true);
-		configuration.setAttribute(PreferenceConstants.GENERATION_TARGET, "");
-		configuration.setAttribute(PreferenceConstants.GENERATION_TARGET_DOC, "");
+		configuration.setAttribute(CONTRACT_FILE_HEADER,store.getString(CONTRACT_FILE_HEADER) );
+		configuration.setAttribute(GENERATE_ABI, store.getBoolean(GENERATE_ABI));
+		configuration.setAttribute(GENERATE_MARKDOWN, store.getBoolean(GENERATE_MARKDOWN));
+		configuration.setAttribute(GENERATE_MIX, store.getBoolean(GENERATE_MIX));
+		configuration.setAttribute(GENERATE_WEB3, store.getBoolean(GENERATE_WEB3));
+		configuration.setAttribute(GENERATION_TARGET, store.getString(GENERATION_TARGET));
+		configuration.setAttribute(GENERATION_TARGET_DOC, store.getString(GENERATION_TARGET_DOC));
 		
 
 	}
@@ -232,15 +243,15 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		try {
-			btnGenerateMixConfig.setSelection(configuration.getAttribute(PreferenceConstants.GENERATE_MIX, true));
-			btnGenerateMixHtml.setSelection(configuration.getAttribute(PreferenceConstants.GENERATE_HTML, true));
-			btnGenerateMarkdownReport.setSelection(configuration.getAttribute(PreferenceConstants.GENERATE_MARKDOWN, true));
+			btnGenerateMixConfig.setSelection(configuration.getAttribute(GENERATE_MIX, true));
+			btnGenerateMixHtml.setSelection(configuration.getAttribute(GENERATE_HTML, true));
+			btnGenerateMarkdownReport.setSelection(configuration.getAttribute(GENERATE_MARKDOWN, true));
 //			btnGenerateSolidityCode.set
-			btnGfenerateSingleAbi.setSelection(configuration.getAttribute(PreferenceConstants.GENERATE_ABI, true));
-			fileHeaderText.setText(configuration.getAttribute(PreferenceConstants.CONTRACT_FILE_HEADER, ""));
+			btnGfenerateSingleAbi.setSelection(configuration.getAttribute(GENERATE_ABI, true));
+			fileHeaderText.setText(configuration.getAttribute(CONTRACT_FILE_HEADER, ""));
 			modelText.setText(configuration.getAttribute(GenerateUml2Solidity.MODEL_URI, ""));
-			generationDirectoryText.setText(configuration.getAttribute("", ""));
-			docDirectoryText.setText(configuration.getAttribute(PreferenceConstants.GENERATION_TARGET_DOC, ""));
+			generationDirectoryText.setText(configuration.getAttribute(GENERATION_TARGET, ""));
+			docDirectoryText.setText(configuration.getAttribute(GENERATION_TARGET_DOC, ""));
 			
 		} catch (CoreException e) {
 			// TODO log message
@@ -254,14 +265,15 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(GenerateUml2Solidity.MODEL_URI, modelText.getText());
-		configuration.setAttribute(PreferenceConstants.CONTRACT_FILE_HEADER, fileHeaderText.getText());
-		configuration.setAttribute(PreferenceConstants.GENERATE_ABI, btnGfenerateSingleAbi.getSelection());
-		configuration.setAttribute(PreferenceConstants.GENERATE_MARKDOWN, btnGenerateMarkdownReport.getSelection());
-		configuration.setAttribute(PreferenceConstants.GENERATE_MIX, btnGenerateMixConfig.getSelection());
+		configuration.setAttribute(CONTRACT_FILE_HEADER, fileHeaderText.getText());
+		configuration.setAttribute(GENERATE_ABI, btnGfenerateSingleAbi.getSelection());
+		configuration.setAttribute(GENERATE_MARKDOWN, btnGenerateMarkdownReport.getSelection());
+		configuration.setAttribute(GENERATE_MIX, btnGenerateMixConfig.getSelection());
+		configuration.setAttribute(GENERATE_HTML, btnGenerateMixHtml.getSelection());
 		//configuration.setAttribute(PreferenceConstants.GENERATE_WEB3, btnGenerateMarkdownReport);
-		configuration.setAttribute(PreferenceConstants.GENERATION_TARGET, generationDirectoryText.getText());
-		configuration.setAttribute(PreferenceConstants.GENERATION_TARGET_DOC, docDirectoryText.getText());
-		configuration.setAttribute(PreferenceConstants.CONTRACT_FILE_HEADER, fileHeaderText.getText());
+		configuration.setAttribute(GENERATION_TARGET, generationDirectoryText.getText());
+		configuration.setAttribute(GENERATION_TARGET_DOC, docDirectoryText.getText());
+		configuration.setAttribute(CONTRACT_FILE_HEADER, fileHeaderText.getText());
 
 	}
 
