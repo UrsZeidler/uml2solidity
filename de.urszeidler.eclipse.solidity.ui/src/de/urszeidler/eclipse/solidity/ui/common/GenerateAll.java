@@ -33,6 +33,7 @@ import de.urszeidler.eclipse.solidity.templates.GenerateMarkDown;
 import de.urszeidler.eclipse.solidity.templates.GenerateMixConfig;
 import de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
+import de.urszeidler.eclipse.solidity.util.Uml2Service;
 
 /**
  * Main entry point of the 'Solidity' generation module.
@@ -88,7 +89,7 @@ public class GenerateAll {
 		if (!targetFolder.getLocation().toFile().exists()) {
 			targetFolder.getLocation().toFile().mkdirs();
 		}
-		IPreferenceStore store = PreferenceConstants.getPreferenceStore(targetFolder.getProject());
+		IPreferenceStore store = Uml2Service.getStore(null); //PreferenceConstants.getPreferenceStore(targetFolder.getProject());
 
 		monitor.subTask("Loading...");
 		GenerateContracts gen0 = new GenerateContracts(modelURI, targetFolder.getLocation().toFile(), arguments);

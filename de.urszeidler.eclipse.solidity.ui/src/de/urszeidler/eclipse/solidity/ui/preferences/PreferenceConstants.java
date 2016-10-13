@@ -30,6 +30,10 @@ public class PreferenceConstants {
 	public static final String GENERATOR_PROJECT_SETTINGS = "COMPILE_CONTRACTS_PROJECT_SETTINGS";
 	public static final String CONTRACT_FILE_HEADER = "CONTRACT_FILE_HEADER";
 
+	public static final String VERSION_PRAGMA = "version_pragma";
+	public static final String ENABLE_VERSION = "enable_version";
+
+	
 	
 	public static IPreferenceStore getPreferenceStore(IProject project) {
 		if (project != null) {

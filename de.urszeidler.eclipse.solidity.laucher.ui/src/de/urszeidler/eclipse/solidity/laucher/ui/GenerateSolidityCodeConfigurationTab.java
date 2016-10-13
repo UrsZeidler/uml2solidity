@@ -5,6 +5,13 @@ package de.urszeidler.eclipse.solidity.laucher.ui;
 
 
 
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.CONTRACT_FILE_HEADER;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_ABI;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_HTML;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_MARKDOWN;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_MIX;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_WEB3;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_TARGET;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.*;
 
 import org.eclipse.core.resources.IContainer;
@@ -18,28 +25,27 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
-import org.eclipse.ui.dialogs.ResourceSelectionDialog;
 
 import de.urszeidler.eclipse.solidity.laucher.core.GenerateUml2Solidity;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 
 /**
  * @author uzeidler
  *
  */
 public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigurationTab {
+	private static final String GENERATE_CONTRACT_FILES = "GENERATE_CONTRACT_FILES";
 	private Text modelText;
 	private Text generationDirectoryText;
 	private Text fileHeaderText;
@@ -50,7 +56,8 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 	private Button btnGenerateMixHtml;
 	private Button btnGenerateMarkdownReport;
 	private Button btnGfenerateSingleAbi;
-	private Text text;
+	private Text versionText;
+	private Button btnVersionAbove;
 
 	/* (nicht-Javadoc)
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
@@ -58,7 +65,6 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	@SuppressWarnings("restriction")
 	@Override
 	public void createControl(Composite parent) {
 		Composite mainComposite = new Composite(parent, SWT.NONE);
@@ -106,11 +112,18 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 		btnGenerateSolidityCode.setText("generate Solidity code");
 		new Label(grpSolidity, SWT.NONE);
 		
-		Button btnCheckButton = new Button(grpSolidity, SWT.CHECK);
-		btnCheckButton.setText("Check Button");
+		btnVersionAbove = new Button(grpSolidity, SWT.CHECK);
+		btnVersionAbove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				versionText.setEnabled(btnVersionAbove.getSelection());
+				
+			}
+		});
+		btnVersionAbove.setText("version above 0.4.0");
 		
-		text = new Text(grpSolidity, SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		versionText = new Text(grpSolidity, SWT.BORDER);
+		versionText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		
 		Label lblNewLabel = new Label(grpSolidity, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -226,6 +239,8 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		IPreferenceStore store = PreferenceConstants.getPreferenceStore(null);
 		configuration.setAttribute(GenerateUml2Solidity.MODEL_URI, "");
+
+		configuration.setAttribute(GENERATE_CONTRACT_FILES,store.getString(GENERATE_CONTRACT_FILES) );
 		configuration.setAttribute(CONTRACT_FILE_HEADER,store.getString(CONTRACT_FILE_HEADER) );
 		configuration.setAttribute(GENERATE_ABI, store.getBoolean(GENERATE_ABI));
 		configuration.setAttribute(GENERATE_MARKDOWN, store.getBoolean(GENERATE_MARKDOWN));
@@ -233,7 +248,8 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 		configuration.setAttribute(GENERATE_WEB3, store.getBoolean(GENERATE_WEB3));
 		configuration.setAttribute(GENERATION_TARGET, store.getString(GENERATION_TARGET));
 		configuration.setAttribute(GENERATION_TARGET_DOC, store.getString(GENERATION_TARGET_DOC));
-		
+		configuration.setAttribute(ENABLE_VERSION, false);
+		configuration.setAttribute(VERSION_PRAGMA, "");
 
 	}
 
@@ -252,7 +268,8 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 			modelText.setText(configuration.getAttribute(GenerateUml2Solidity.MODEL_URI, ""));
 			generationDirectoryText.setText(configuration.getAttribute(GENERATION_TARGET, ""));
 			docDirectoryText.setText(configuration.getAttribute(GENERATION_TARGET_DOC, ""));
-			
+			btnVersionAbove.setEnabled(configuration.getAttribute(ENABLE_VERSION, false));
+			versionText.setText(configuration.getAttribute(VERSION_PRAGMA, ""));
 		} catch (CoreException e) {
 			// TODO log message
 		}
@@ -274,6 +291,9 @@ public class GenerateSolidityCodeConfigurationTab extends AbstractLaunchConfigur
 		configuration.setAttribute(GENERATION_TARGET, generationDirectoryText.getText());
 		configuration.setAttribute(GENERATION_TARGET_DOC, docDirectoryText.getText());
 		configuration.setAttribute(CONTRACT_FILE_HEADER, fileHeaderText.getText());
+		
+		configuration.setAttribute(ENABLE_VERSION, btnVersionAbove.getSelection());
+		configuration.setAttribute(VERSION_PRAGMA, versionText.getText());
 
 	}
 

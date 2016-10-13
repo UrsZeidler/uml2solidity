@@ -26,6 +26,8 @@ import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
  */
 public class Uml2Service {
 
+	private static IPreferenceStore store = null;
+
 	/**
 	 * Returns true when the stereotype is applied to the {@link Element}.
 	 * 
@@ -116,7 +118,9 @@ public class Uml2Service {
 
 	/**
 	 * Returns the header for a solidity file.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static String getSolidityFileHeader(NamedElement clazz) {
@@ -126,7 +130,9 @@ public class Uml2Service {
 
 	/**
 	 * Returns the directory for the js file.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static String getJsControllerDirectory(NamedElement clazz) {
@@ -136,7 +142,9 @@ public class Uml2Service {
 
 	/**
 	 * Should the js controller being generated.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static Boolean generateJsController(NamedElement clazz) {
@@ -146,7 +154,9 @@ public class Uml2Service {
 
 	/**
 	 * Should the js tests being generated.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static Boolean generateJsTests(NamedElement clazz) {
@@ -156,7 +166,9 @@ public class Uml2Service {
 
 	/**
 	 * Returns the directory for the tests generation.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static String getJsTestsDirectory(NamedElement clazz) {
@@ -166,7 +178,9 @@ public class Uml2Service {
 
 	/**
 	 * Should abi files for each class being generated.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static Boolean generateAbi(NamedElement clazz) {
@@ -176,7 +190,9 @@ public class Uml2Service {
 
 	/**
 	 * Returns the directory for the abi generation.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static String getAbiDirectory(NamedElement clazz) {
@@ -186,7 +202,9 @@ public class Uml2Service {
 
 	/**
 	 * Should web3 file being generated.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static Boolean generateWeb3(NamedElement clazz) {
@@ -194,20 +212,29 @@ public class Uml2Service {
 		return store.getBoolean(PreferenceConstants.GENERATE_WEB3);
 	}
 
-
 	/**
 	 * Get the preference store:
+	 * 
 	 * @param clazz
 	 * @return
 	 */
-	private static IPreferenceStore getStore(NamedElement clazz) {
+	public static IPreferenceStore getStore(NamedElement clazz) {
+		if (Uml2Service.store != null)
+			return Uml2Service.store;
+
 		IProject project = null;
-		URI eUri = clazz.eResource().getURI();
-		if (eUri.isPlatformResource()) {
-			String platformString = eUri.toPlatformString(true);
-			project = ResourcesPlugin.getWorkspace().getRoot().findMember(platformString).getProject();
+		if (clazz != null) {
+			URI eUri = clazz.eResource().getURI();
+			if (eUri.isPlatformResource()) {
+				String platformString = eUri.toPlatformString(true);
+				project = ResourcesPlugin.getWorkspace().getRoot().findMember(platformString).getProject();
+			}
 		}
 		IPreferenceStore store = PreferenceConstants.getPreferenceStore(project);
 		return store;
+	}
+
+	public static void setStore(IPreferenceStore store) {
+		Uml2Service.store = store;
 	}
 }
