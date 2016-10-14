@@ -13,6 +13,7 @@ import de.urszeidler.eclipse.solidity.ui.Activator;
  */
 public class PreferenceConstants {
 
+	public static final String GENERATE_CONTRACT_FILES = "GENERATE_CONTRACT_FILES";
 	public static final String GENERATION_TARGET = "GENERATION_TARGET";
 	public static final String GENERATION_TARGET_DOC = "GENERATION_TARGET_DOC";
 
@@ -20,6 +21,8 @@ public class PreferenceConstants {
 	public static final String GENERATE_HTML = "GENERATE_HTML";	
 	public static final String GENERATE_MIX = "GENERATE_MIX";
 	public static final String GENERATE_MARKDOWN = "GENERATE_MARKDOWN";
+	
+	public static final String JS_FILE_HEADER = "JS_FILE_HEADER";
 	public static final String GENERATE_JS_CONTROLLER = "GENERATE_JS_CONTROLLER";
 	public static final String GENERATE_JS_CONTROLLER_TARGET = "GENERATE_JS_CONTROLLER_TARGET";
 	public static final String GENERATE_JS_TEST = "GENERATE_JS_CONTROLLER";

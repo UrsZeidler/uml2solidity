@@ -85,7 +85,7 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 			e.printStackTrace();
 		}
 //		try {
-//			PlatformUI.getWorkbench().getProgressService().run(true, true, operation);
+//			PlatformUI.getWorkbench().getProgressService().busyCursorWhile(operation);//.run(true, true, operation);
 //		} catch (Exception e) {
 //			IStatus status = new Status(IStatus.ERROR, "", e.getMessage(), e);
 //			throw new CoreException(status);

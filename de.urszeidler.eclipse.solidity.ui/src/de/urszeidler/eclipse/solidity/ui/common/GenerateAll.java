@@ -90,49 +90,60 @@ public class GenerateAll {
 			targetFolder.getLocation().toFile().mkdirs();
 		}
 		IPreferenceStore store = Uml2Service.getStore(null); //PreferenceConstants.getPreferenceStore(targetFolder.getProject());
-
-		monitor.subTask("Loading...");
+		if(monitor!=null)
+			monitor.subTask("Loading...");
 		GenerateContracts gen0 = new GenerateContracts(modelURI, targetFolder.getLocation().toFile(), arguments);
-		monitor.worked(1);
+		if(monitor!=null)
+			monitor.worked(1);
 		String generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
 				"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateContracts",
 				modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 		gen0.setGenerationID(generationID);
-		monitor.subTask("generate solidity");
+		if(monitor!=null)
+			monitor.subTask("generate solidity");
 		gen0.doGenerate(BasicMonitor.toMonitor(monitor));
+		if(monitor!=null)
 		if (monitor.isCanceled())
 			return;
 		if (store.getBoolean(PreferenceConstants.GENERATE_HTML)) {
 			GenerateHtml generateHtml = new GenerateHtml(modelURI, targetFolder.getLocation().toFile(), arguments);
+			if(monitor!=null)
 			monitor.worked(1);
 			generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
 					"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateHtml",
 					modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateHtml.setGenerationID(generationID);
+			if(monitor!=null)
 			monitor.subTask("generate html");
 			generateHtml.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
+		if(monitor!=null)
 		if (monitor.isCanceled())
 			return;
 		GenerateWeb3Contract generateWeb3Contract = new GenerateWeb3Contract(modelURI,
 				targetFolder.getLocation().toFile(), arguments);
+		if(monitor!=null)
 		monitor.worked(1);
 		generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
 				"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract",
 				modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 		generateWeb3Contract.setGenerationID(generationID);
+		if(monitor!=null)
 		monitor.subTask("generate web3");
 		generateWeb3Contract.doGenerate(BasicMonitor.toMonitor(monitor));
+		if(monitor!=null)
 		if (monitor.isCanceled())
 			return;
 		if (store.getBoolean(PreferenceConstants.GENERATE_MIX)) {
 			GenerateMixConfig generateMix = new GenerateMixConfig(modelURI,
 					targetFolder.getLocation().toFile(), arguments);
+			if(monitor!=null)
 			monitor.worked(1);
 			generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
 					"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateMixConfig",
 					modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateMix.setGenerationID(generationID);
+			if(monitor!=null)
 			monitor.subTask("generate mix");
 			generateMix.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
@@ -146,11 +157,13 @@ public class GenerateAll {
 		if (store.getBoolean(PreferenceConstants.GENERATE_MARKDOWN)) {
 			GenerateMarkDown generateMarkdown = new GenerateMarkDown(modelURI, target1.getLocation().toFile(),
 					arguments);
+			if(monitor!=null)
 			monitor.worked(1);
 			generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
 					"de.urszeidler.eclipse.solidity.ui", "de.urszeidler.eclipse.solidity.templates.GenerateMarkDown",
 					modelURI.toString(), targetFolder.getFullPath().toString(), new ArrayList<String>());
 			generateMarkdown.setGenerationID(generationID);
+			if(monitor!=null)
 			monitor.subTask("generate markdown");
 			generateMarkdown.doGenerate(BasicMonitor.toMonitor(monitor));
 		}
@@ -168,6 +181,7 @@ public class GenerateAll {
 			if (!target.getLocation().toFile().exists()) {
 				target.getLocation().toFile().mkdirs();
 			}
+			if(monitor!=null)
 			monitor.subTask("compile code");
 			StartCompiler.startCompiler(target.getLocation().toFile(), files, store1);
 		}
