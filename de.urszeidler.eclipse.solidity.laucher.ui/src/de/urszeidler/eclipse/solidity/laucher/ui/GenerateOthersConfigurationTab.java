@@ -4,18 +4,16 @@
 package de.urszeidler.eclipse.solidity.laucher.ui;
 
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_ABI;
-import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_JS_TEST_TARGET;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_ABI_TARGET;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_MARKDOWN;
-import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.*;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_TARGET_DOC;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;

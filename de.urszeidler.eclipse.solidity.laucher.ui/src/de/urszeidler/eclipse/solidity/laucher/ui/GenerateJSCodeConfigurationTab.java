@@ -1,33 +1,36 @@
 package de.urszeidler.eclipse.solidity.laucher.ui;
 
-import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.*;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_JS_CONTROLLER;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_JS_TEST;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_JS_TEST_TARGET;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_WEB3;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.JS_FILE_HEADER;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 import de.urszeidler.eclipse.solidity.laucher.Activator;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.ModifyEvent;
 
 /**
  * @author uzeidler

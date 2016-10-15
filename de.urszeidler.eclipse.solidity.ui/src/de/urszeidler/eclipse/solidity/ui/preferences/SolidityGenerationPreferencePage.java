@@ -45,20 +45,27 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 	public void createFieldEditors() {
 		addField(new StringFieldEditor(PreferenceConstants.GENERATION_TARGET, "generate to directory", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+		addField(new MultiLineTextFieldEditor(PreferenceConstants.CONTRACT_FILE_HEADER, "solidity file header", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 
+		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
+		
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_HTML, "generate mix html",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_MIX, "generate mix config",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_WEB3, "generate web3 interface",
-				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
-
+		
 		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
 
+		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_WEB3, "generate web3 interface",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_JS_CONTROLLER, "generate js controller",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET, "directory for js controller", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+		addField(new MultiLineTextFieldEditor(PreferenceConstants.JS_FILE_HEADER, "js file header", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+
 
 		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
 
@@ -81,10 +88,6 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 		addField(new StringFieldEditor(PreferenceConstants.GENERATE_ABI_TARGET, "generate abi to directory", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 
-		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
-		
-		addField(new MultiLineTextFieldEditor(PreferenceConstants.CONTRACT_FILE_HEADER, "solidity file header", -1,
-				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 	}
 
 	/*

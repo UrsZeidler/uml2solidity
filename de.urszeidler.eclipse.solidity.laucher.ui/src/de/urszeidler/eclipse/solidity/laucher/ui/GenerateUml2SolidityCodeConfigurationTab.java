@@ -4,29 +4,27 @@
 package de.urszeidler.eclipse.solidity.laucher.ui;
 
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.CONTRACT_FILE_HEADER;
-import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_ABI;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.ENABLE_VERSION;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_CONTRACT_FILES;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_HTML;
-import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_MARKDOWN;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_MIX;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_WEB3;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_TARGET;
-import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.*;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.VERSION_PRAGMA;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.internal.ui.IInternalDebugUIConstants;
-import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
-import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -43,8 +41,6 @@ import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 import de.urszeidler.eclipse.solidity.laucher.Activator;
 import de.urszeidler.eclipse.solidity.laucher.core.GenerateUml2Solidity;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.ModifyEvent;
 
 /**
  * @author uzeidler
@@ -96,7 +92,6 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 		btnSelect.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String filePath = modelText.getText();
 				ResourceListSelectionDialog resourceListSelectionDialog = new ResourceListSelectionDialog(getShell(),
 						ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE) {
 
