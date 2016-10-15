@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+<!--
    <extension point="org.eclipse.ui.popupMenus">
       <objectContribution
             adaptable="true"
@@ -19,6 +20,7 @@
                menubarPath="org.eclipse.acceleo.module.menu/acceleo"/>
       </objectContribution>
    </extension>
+   -->
    <extension
          point="org.eclipse.emf.ecore.uri_mapping">
       <mapping
@@ -68,9 +70,10 @@
             class="de.urszeidler.eclipse.solidity.ui.preferences.PreferenceInitializer">
       </initializer>
    </extension>
+   <!--
    <extension
          point="org.eclipse.ui.menus">
-         <!-- this is the legacy toolbar for papyrus 1.x -->
+         
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.eclipse.papyrus.uml.diagram.ui.toolbar">
          <toolbar
@@ -149,7 +152,6 @@
             </visibleWhen>
          </toolbar>
       </menuContribution>
-
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -159,6 +161,7 @@
             name="Generate Solidity">
       </command>
    </extension>
+-->
    <extension
          point="org.eclipse.papyrus.uml.extensionpoints.UMLLibrary">
       <library

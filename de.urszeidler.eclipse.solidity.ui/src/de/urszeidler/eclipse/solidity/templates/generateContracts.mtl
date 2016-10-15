@@ -206,7 +206,7 @@ enum [en.name/] { [for (l : EnumerationLiteral | en.ownedLiteral)separator (',')
 modifier [aConstraint.name/][if (hasStereotype(aConstraint, 'ParameterModifier'))]([aConstraint.getStereotypeValue('ParameterModifier', 'parameters')/])[/if]
 {
     [aConstraint.specification.oclAsType(LiteralString).value/]
-    _
+    _[if (aClass.enableVersion())];[/if]
 }
 [/template]
 

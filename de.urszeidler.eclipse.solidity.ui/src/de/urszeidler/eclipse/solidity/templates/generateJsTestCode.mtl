@@ -39,3 +39,185 @@
 [printTestHtml(p)/]
 [/file]
 [/template]
+
+[template public printTestJavascriptForClass (aClass : Class) ? (aClass.isContract() ) ]
+[printJsModelWrapper(aClass)/]
+
+//test class for [aClass.name/]
+function Test[aClass.name/](contract) {
+	
+	this.test_instance = contract;
+	this.model = new [aClass.name/]Model(contract);
+	this.prefix='';
+	this.messageBlockId = "testResult";
+	var self = this;
+
+	this.testSetup=function(){
+		//[protected('testSetup_'+aClass.name)]
+		//TODO: implement
+		//[/protected]
+	}
+
+	this.allTests=function(){
+		this.testSetup();
+		this.testAttributes();
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+		this.test[op.functionName()/]();
+[/for]	
+		this.customTests();
+	
+		//[protected('allTests_'+aClass.name)]
+		//TODO: implement
+		//[/protected]
+
+	}
+	
+	//print the test result
+	this.printTest=function(testName,testMessage,state){
+		var e = document.getElementById(this.prefix+'-'+this.messageBlockId);
+		var elemDiv = document.createElement('div');
+		elemDiv.id= this.prefix+'-'+testName;
+		elemDiv.className='testRow';
+		elemDiv.text=testMessage;
+		var stateDiv = document.createElement('div');
+		if(state){
+			elemDiv.innerHTML = '<div class="pass_state">P</div><div class="testCell">'+testMessage+'</div>';
+		}else{
+			elemDiv.innerHTML = '<div class="failed_state">F</div><div class="testCell">'+testMessage+'</div>';
+		}
+		e.appendChild(elemDiv);
+	}
+
+	//assertEquals
+	this.testAE=function(testName,testMessage,expected,value) {
+		if(expected==value)
+			this.printTest(testName, testMessage, true);
+		else
+			this.printTest(testName, testMessage+': expected '+expected+' got '+value, false);
+	}
+
+	//test the attributes after setup	
+	this.testAttributes=function() {
+	//[protected('attributeTests_'+aClass.name)]
+	//TODO: implement
+	//[/protected]
+	}
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+
+	//Test for [op.functionName()/]
+	this.test[op.functionName()/]=function() {
+		//[protected('test_'+op.functionName())]
+		//TODO: implement
+//console.log('test[op.functionName()/]');
+[for (p : Parameter | op.allInParameters())]
+//	var p_[p.name/] = '';
+[/for]
+//	var res = this.test_instance.[op.name/]([for (p : Parameter | op.allInParameters())separator (',')] p_[p.name/][/for]);
+//	var state = res==="";		
+		this.testAE("test[op.name/]", "executed: test[op.functionName()/]",true, false);		
+		//[/protected]
+	}
+[/for]
+	this.customTests=function() {
+		//[protected('test_'+aClass.name+'_custom tests')]
+		//
+		//[/protected]
+	}
+}
+[/template]
+
+
+[template public printTestHtml (p : Package) ]
+<!doctype>
+<html>
+<head>
+<script type='text/javascript' src="[p.name/]-test.js">
+</script>
+<style>
+[basicStyle(p)/]
+.testTable {
+	display: table;
+	width: auto;
+	border-spacing: 5px; /*cellspacing:poor IE support for  this*/
+	/* border-collapse:separate;*/
+}
+.testRow {
+	display: table-row;
+	width: auto;
+}
+.testCell {
+	float: left; /*fix for  buggy browsers*/
+	display: table-column;
+}
+.failed_state {
+	border-style: solid;
+	border-width: 1px;
+	border-color: red;
+	float: left;
+	display: table-column;
+}
+.pass_state {
+	border-style: solid;
+	border-width: 1px;
+	border-color: green;
+	float: left;
+	display: table-column;
+}
+</style>
+</head>
+<body bgcolor='#E6E6FA'>
+	<h1>Tests for [p.name/]</h1>
+
+
+<div id="all-testResult" class="testTable"></div>
+<h1>Events</h1>
+<div id="eventLog" ></div>
+
+<!--[protected('Custom_html_'+p.name+ ' -->')]
+
+
+<!--[/protected]-->
+
+
+<script type='text/javascript'>
+
+web3.eth.defaultAccount = web3.eth.accounts[ '[' /]0[ ']' /];
+[for (	aClass : Class | p.allContracts())]
+// execute all [aClass.name/] tests if set 
+if(contracts[ '[' /]'[aClass.name/]'[ ']' /] !=undefined){
+	var contract = contracts[ '[' /]'[aClass.name/]'[ ']' /].contract;
+	var instance = new Test[aClass.name/](contract);
+	instance.prefix = 'all';
+
+[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+var event_[op.name/] = contract.[op.name/]({},{fromBlock: 0});
+event_[op.name/].watch(function(error,result){
+	if(!error){
+		var e = document.getElementById('eventLog');
+		var elemDiv = document.createElement('div');
+		elemDiv.id= result.blockNumber +'event';
+		e.appendChild(elemDiv);
+		//console.log(result.address+ 'eventLog'+result.blockHash+' '+result.blockNumber+' '+result.args.name+' '+result.args.succesful+' ');
+		elemDiv.innerHTML = '<div class="eventRow">'
+[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
+        +'<div class="eventValue">'+result.args.[p.name/]+'</div>'
+[/for]
++ '</div>';
+		}else
+		console.log(error);
+	});
+[/for]
+
+
+//console.log(instance+'-->');
+	instance.allTests();
+}[/for]
+	//[protected('moreCustomTests_'+p.name)]
+	//TODO: implement
+	//[/protected]
+
+</script>
+</body>
+</html>
+[/template]
+

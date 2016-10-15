@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -174,7 +176,18 @@ public class Uml2Service {
 	 */
 	public static String getJsControllerDirectory(NamedElement clazz) {
 		IPreferenceStore store = getStore(clazz);
-		return store.getString(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET);
+		String c_target = store.getString(PreferenceConstants.GENERATION_TARGET);
+		Path c_path = new Path(c_target);
+		
+		String js_target = store.getString(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET);
+		Path js_path = new Path(js_target);
+		
+		IPath makeRelativeTo = js_path.makeRelativeTo(c_path);
+		
+		if (makeRelativeTo!=null) {
+			return makeRelativeTo.toString();
+		}
+		return js_target;
 	}
 
 	/**
