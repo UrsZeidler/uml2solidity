@@ -22,11 +22,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.internal.ui.IInternalDebugUIConstants;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -37,6 +40,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 
+import de.urszeidler.eclipse.solidity.laucher.Activator;
 import de.urszeidler.eclipse.solidity.laucher.core.GenerateUml2Solidity;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
 import org.eclipse.swt.events.ModifyListener;
@@ -96,18 +100,14 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 				ResourceListSelectionDialog resourceListSelectionDialog = new ResourceListSelectionDialog(getShell(),
 						ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE) {
 
-					
 					@Override
-							public void create() {
-								// TODO Auto-generated method stub
-								super.create();
-								
-								refresh(true);
-							}
+					public void create() {
+						super.create();
+						refresh(true);
+					}
 
 					@Override
 					protected String adjustPattern() {
-						// TODO Auto-generated method stub
 						String adjustPattern = super.adjustPattern();
 						if (adjustPattern == null || adjustPattern.isEmpty())
 							return "*.uml";
@@ -116,7 +116,6 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 					}
 
 				};
-				resourceListSelectionDialog.setInitialSelections(new Object[] { filePath });
 				resourceListSelectionDialog.open();
 				Object[] result = resourceListSelectionDialog.getResult();
 				if (result != null && result.length == 1) {
@@ -232,102 +231,6 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 		btnGenerateMixHtml.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
 		btnGenerateMixHtml.setText("generate mix html");
 
-		// Group grpDocumentation = new Group(mainComposite, SWT.NONE);
-		// grpDocumentation.setLayout(new GridLayout(3, false));
-		// grpDocumentation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-		// false, false, 1, 1));
-		// grpDocumentation.setText("documentation");
-		//
-		// btnGenerateMarkdownReport = new Button(grpDocumentation, SWT.CHECK);
-		// btnGenerateMarkdownReport.addSelectionListener(new SelectionAdapter()
-		// {
-		// @Override
-		// public void widgetSelected(SelectionEvent e) {
-		// setDirty(true);
-		// updateLaunchConfigurationDialog();
-		// }
-		// });
-		// btnGenerateMarkdownReport.setLayoutData(new GridData(SWT.LEFT,
-		// SWT.CENTER, false, false, 2, 1));
-		// btnGenerateMarkdownReport.setText("generate markdown report");
-		// new Label(grpDocumentation, SWT.NONE);
-		//
-		// Label lblNewLabel_1 = new Label(grpDocumentation, SWT.NONE);
-		// lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
-		// false, false, 1, 1));
-		// lblNewLabel_1.setText("generate doc directory");
-		//
-		// docDirectoryText = new Text(grpDocumentation, SWT.BORDER);
-		// docDirectoryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-		// true, false, 1, 1));
-		//
-		// Button btnNewButton_1 = new Button(grpDocumentation, SWT.NONE);
-		// btnNewButton_1.addSelectionListener(new SelectionAdapter() {
-		// @Override
-		// public void widgetSelected(SelectionEvent e) {
-		// IContainer initialRoot = ResourcesPlugin.getWorkspace().getRoot();
-		// ContainerSelectionDialog containerSelectionDialog = new
-		// ContainerSelectionDialog(getShell(),
-		// initialRoot, false, "select doc folder");
-		// containerSelectionDialog.open();
-		// Object[] result = containerSelectionDialog.getResult();
-		// if (result != null && result.length == 1) {
-		// IPath container = (IPath) result[0];
-		// docDirectoryText.setText(container.toString());
-		// setDirty(true);
-		// updateLaunchConfigurationDialog();
-		// }
-		//
-		// }
-		// });
-		// btnNewButton_1.setText("select");
-		//
-		// Group grpAbi = new Group(mainComposite, SWT.NONE);
-		// grpAbi.setLayout(new GridLayout(3, false));
-		// grpAbi.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false,
-		// 1, 1));
-		// grpAbi.setText("abi");
-		//
-		// btnGfenerateSingleAbi = new Button(grpAbi, SWT.CHECK);
-		// btnGfenerateSingleAbi.addSelectionListener(new SelectionAdapter() {
-		// @Override
-		// public void widgetSelected(SelectionEvent e) {
-		// setDirty(true);
-		// updateLaunchConfigurationDialog();
-		// }
-		// });
-		// btnGfenerateSingleAbi.setLayoutData(new GridData(SWT.LEFT,
-		// SWT.CENTER, false, false, 3, 1));
-		// btnGfenerateSingleAbi.setText("generate single abi file");
-		//
-		// Label lblDirectory = new Label(grpAbi, SWT.NONE);
-		// lblDirectory.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-		// false, 1, 1));
-		// lblDirectory.setText("directory");
-		//
-		// abiDirectoryText = new Text(grpAbi, SWT.BORDER);
-		// abiDirectoryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-		// true, false, 1, 1));
-		//
-		// Button btnSelect_1 = new Button(grpAbi, SWT.NONE);
-		// btnSelect_1.addSelectionListener(new SelectionAdapter() {
-		// @Override
-		// public void widgetSelected(SelectionEvent e) {
-		// IContainer initialRoot = ResourcesPlugin.getWorkspace().getRoot();
-		// ContainerSelectionDialog containerSelectionDialog = new
-		// ContainerSelectionDialog(getShell(),
-		// initialRoot, false, "select abi folder");
-		// containerSelectionDialog.open();
-		// Object[] result = containerSelectionDialog.getResult();
-		// if (result != null && result.length == 1) {
-		// IPath container = (IPath) result[0];
-		// abiDirectoryText.setText(container.toString());
-		// setDirty(true);
-		// updateLaunchConfigurationDialog();
-		// }
-		// }
-		// });
-		// btnSelect_1.setText("select");
 	}
 
 	/*
@@ -342,20 +245,13 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 		IPreferenceStore store = PreferenceConstants.getPreferenceStore(null);
 		configuration.setAttribute(GenerateUml2Solidity.MODEL_URI, "");
 
-		configuration.setAttribute(GENERATE_CONTRACT_FILES, store.getString(GENERATE_CONTRACT_FILES));
+		configuration.setAttribute(GENERATE_CONTRACT_FILES, store.getBoolean(GENERATE_CONTRACT_FILES));
+		configuration.setAttribute(GENERATION_TARGET, store.getString(GENERATION_TARGET));
 		configuration.setAttribute(CONTRACT_FILE_HEADER, store.getString(CONTRACT_FILE_HEADER));
 		configuration.setAttribute(GENERATE_MIX, store.getBoolean(GENERATE_MIX));
 		configuration.setAttribute(GENERATE_WEB3, store.getBoolean(GENERATE_WEB3));
-		configuration.setAttribute(GENERATION_TARGET, store.getString(GENERATION_TARGET));
-		configuration.setAttribute(ENABLE_VERSION, false);
-		configuration.setAttribute(VERSION_PRAGMA, "");
-
-		// configuration.setAttribute(GENERATE_ABI,
-		// store.getBoolean(GENERATE_ABI));
-		// configuration.setAttribute(GENERATE_MARKDOWN,
-		// store.getBoolean(GENERATE_MARKDOWN));
-		// configuration.setAttribute(GENERATION_TARGET_DOC,
-		// store.getString(GENERATION_TARGET_DOC));
+		configuration.setAttribute(ENABLE_VERSION, store.getBoolean(ENABLE_VERSION));
+		configuration.setAttribute(VERSION_PRAGMA, store.getString(VERSION_PRAGMA));
 	}
 
 	/*
@@ -369,28 +265,24 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		IPreferenceStore store = PreferenceConstants.getPreferenceStore(null);
 		try {
-			btnGenerateSolidityCode.setSelection(configuration.getAttribute(GENERATE_CONTRACT_FILES, store.getBoolean(GENERATE_CONTRACT_FILES)));
+			btnGenerateSolidityCode.setSelection(
+					configuration.getAttribute(GENERATE_CONTRACT_FILES, store.getBoolean(GENERATE_CONTRACT_FILES)));
 			btnGenerateMixConfig.setSelection(configuration.getAttribute(GENERATE_MIX, store.getBoolean(GENERATE_MIX)));
 			btnGenerateMixHtml.setSelection(configuration.getAttribute(GENERATE_HTML, store.getBoolean(GENERATE_HTML)));
-			fileHeaderText.setText(configuration.getAttribute(CONTRACT_FILE_HEADER, ""));
 			modelText.setText(configuration.getAttribute(GenerateUml2Solidity.MODEL_URI, ""));
-			generationDirectoryText.setText(configuration.getAttribute(GENERATION_TARGET, ""));
-			btnVersionAbove.setEnabled(configuration.getAttribute(ENABLE_VERSION, store.getBoolean(ENABLE_VERSION)));
-			versionText.setText(configuration.getAttribute(VERSION_PRAGMA, ""));
-			// btnGenerateSolidityCode.set
-			// btnGenerateMarkdownReport.setSelection(configuration.getAttribute(GENERATE_MARKDOWN,
-			// true));
-			// btnGfenerateSingleAbi.setSelection(configuration.getAttribute(GENERATE_ABI,
-			// true));
-			// docDirectoryText.setText(configuration.getAttribute(GENERATION_TARGET_DOC,
-			// ""));
+			fileHeaderText
+					.setText(configuration.getAttribute(CONTRACT_FILE_HEADER, store.getString(CONTRACT_FILE_HEADER)));
+			generationDirectoryText
+					.setText(configuration.getAttribute(GENERATION_TARGET, store.getString(GENERATION_TARGET)));
+			versionText.setText(configuration.getAttribute(VERSION_PRAGMA, store.getString(VERSION_PRAGMA)));
+			versionText.setEnabled(configuration.getAttribute(ENABLE_VERSION, store.getBoolean(ENABLE_VERSION)));
 
 			IResource resource = findResource(configuration, generationDirectoryText.getText());
 			if (resource != null)
 				generationDirectoryText.setText(resource.getFullPath().toString());
 
 		} catch (CoreException e) {
-			// TODO log message
+			Activator.logError("Error initalizing from LauncheConfig", e);
 		}
 
 	}
@@ -408,21 +300,12 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 		configuration.setAttribute(CONTRACT_FILE_HEADER, fileHeaderText.getText());
 		configuration.setAttribute(GENERATE_MIX, btnGenerateMixConfig.getSelection());
 		configuration.setAttribute(GENERATE_HTML, btnGenerateMixHtml.getSelection());
-		// configuration.setAttribute(PreferenceConstants.GENERATE_WEB3,
-		// btnGenerateMarkdownReport);
 		configuration.setAttribute(GENERATE_CONTRACT_FILES, btnGenerateSolidityCode.getSelection());
 		configuration.setAttribute(GENERATION_TARGET, generationDirectoryText.getText());
 		configuration.setAttribute(CONTRACT_FILE_HEADER, fileHeaderText.getText());
 
 		configuration.setAttribute(ENABLE_VERSION, btnVersionAbove.getSelection());
 		configuration.setAttribute(VERSION_PRAGMA, versionText.getText());
-
-		// configuration.setAttribute(GENERATE_ABI,
-		// btnGfenerateSingleAbi.getSelection());
-		// configuration.setAttribute(GENERATE_MARKDOWN,
-		// btnGenerateMarkdownReport.getSelection());
-		// configuration.setAttribute(GENERATION_TARGET_DOC,
-		// docDirectoryText.getText());
 	}
 
 	/*
@@ -434,4 +317,15 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 	public String getName() {
 		return "generate Solidity";
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getImage()
+	 */
+	@Override
+	public Image getImage() {
+		return Activator.getDefault().getImageRegistry().get("UML2Solidity");
+	}
+
 }

@@ -127,6 +127,43 @@ public class Uml2Service {
 		IPreferenceStore store = getStore(clazz);
 		return store.getString(PreferenceConstants.CONTRACT_FILE_HEADER);
 	}
+	
+	/**
+	 * Returns the header for a js file.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static String getJsFileHeader(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.JS_FILE_HEADER);
+	}
+
+	/**
+	 * Write the Pragma in the contract code.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static Boolean enableVersion(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(PreferenceConstants.ENABLE_VERSION);
+	}
+
+
+	/**
+	 * Returns the header for a js file.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static String getVersionPragma(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.VERSION_PRAGMA);
+	}
 
 	/**
 	 * Returns the directory for the js file.
@@ -164,6 +201,19 @@ public class Uml2Service {
 		return store.getBoolean(PreferenceConstants.GENERATE_JS_TEST);
 	}
 
+	/**
+	 * Should the js controller being generated.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static Boolean generateContractCode(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(PreferenceConstants.GENERATE_CONTRACT_FILES);
+	}
+
+	
 	/**
 	 * Returns the directory for the tests generation.
 	 * 

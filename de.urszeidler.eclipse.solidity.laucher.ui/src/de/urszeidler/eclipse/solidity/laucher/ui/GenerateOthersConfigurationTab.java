@@ -20,6 +20,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
+import de.urszeidler.eclipse.solidity.laucher.Activator;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
 
 /**
@@ -85,7 +87,7 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 		btnNewButton_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IContainer initialRoot = ResourcesPlugin.getWorkspace().getRoot();
+				IContainer initialRoot = toContainer(docDirectoryText.getText());
 				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
 						initialRoot, false, "select doc folder");
 				containerSelectionDialog.open();
@@ -128,7 +130,7 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 		btnSelect_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IContainer initialRoot = ResourcesPlugin.getWorkspace().getRoot();
+				IContainer initialRoot = toContainer(abiDirectoryText.getText());
 				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
 						initialRoot, false, "select abi folder");
 				containerSelectionDialog.open();
@@ -142,13 +144,6 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 			}
 		});
 		btnSelect_1.setText("select");
-
-		inialize();
-	}
-
-	private void inialize() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/*
@@ -193,8 +188,7 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 				abiDirectoryText.setText(member.getFullPath().toString());
 
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Activator.logError("Error initalizing from LauncheConfig", e);
 		}
 
 	}
@@ -222,8 +216,15 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 	 */
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return "generate doc";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getImage()
+	 */
+	@Override
+	public Image getImage() {
+		return Activator.getDefault().getImageRegistry().get("OtherFiles");
 	}
 
 }

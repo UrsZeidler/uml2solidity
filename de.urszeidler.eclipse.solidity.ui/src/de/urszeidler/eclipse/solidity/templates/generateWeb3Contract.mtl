@@ -29,24 +29,24 @@
 */]
 [template public generatePackage (p : Package)?(isGeneratePackage(p)) ]
 [if (p.generateWeb3())]
-[file (p.getJsControllerDirectory()+ '/' + p.name+'Web3.js', false, 'UTF-8')]
-[printAllContracts(p)/]
+[file (p.name+'Web3.js', false, 'UTF-8')]
+[if (not p.getJsFileHeader().oclIsUndefined())][p.getJsFileHeader()/][/if]
+[printAllWeb3Contracts(p)/]
 [/file]
 [/if]
-[if (p.generateAbi())]
+[comment][if (p.generateAbi())]
 [for (	aClass : Class | p.allContracts())]
 [file (p.getAbiDirectory()+ '/' + aClass.name+'.json', false, 'UTF-8')]
 [printAbi(aClass)/]
 [/file]
 [/for]
-[/if]
+[/if][/comment]
 [/template]
 
-[template public printAllContracts (p : Package) ]
-
+[template public printAllWeb3Contracts (p : Package) ]
 [for (	aClass : Class | p.allContracts())]
+// contractVariable for [aClass.name/]
 var [aClass.name/]Contract = web3.eth.contract([printAbi(aClass)/]);   
-
 [/for]
 
 [/template]

@@ -35,6 +35,7 @@
 [template public generatePackage(p : Package)?(isGeneratePackage(p))]
 [file (p.name+'.sol', false, 'UTF-8')]
 [if (not p.getSolidityFileHeader().oclIsUndefined())][getSolidityFileHeader()/][/if]
+[if (p.enableVersion())][p.getVersionPragma()/][/if]
 [printCommentDoc(p.ownedComment)/]
 [for (pi : PackageImport | p.allImports() )]
 import [if (not pi.getStereotypeValue('Import', 'importFilter').oclIsUndefined())] [pi.getStereotypeValue('Import', 'importFilter')/] from [/if]"[pi.target.oclAsType(Package).toImport()/]";

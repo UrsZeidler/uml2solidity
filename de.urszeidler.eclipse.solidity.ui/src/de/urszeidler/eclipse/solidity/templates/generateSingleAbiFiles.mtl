@@ -1,0 +1,36 @@
+[comment encoding = UTF-8 /]
+[module generateSingleAbiFiles('http://www.eclipse.org/uml2/5.0.0/UML')/]
+[import de::urszeidler::eclipse::solidity::templates::generateWeb3Contract/]
+[import de::urszeidler::eclipse::solidity::util::um2service /]
+
+
+[template public generateSingleAbiFilesPackage(aModel : Model)]
+[comment @main/]
+[generatePackage(aModel)/]
+[iteratePackages(aModel)/]
+[/template]
+
+[**
+ * Iterates over the packages.
+*/]
+[template private iteratePackages(p : Package)]
+[for (p1 : Package | p.nestedPackage)]
+[if (isGeneratePackage(p1))]
+[generatePackage(p1)/]
+[iteratePackages(p1)/]
+[/if]
+[/for]
+[/template]
+
+[**
+ * Generate the web3 for the given package.
+*/]
+[template public generatePackage (p : Package)?(isGeneratePackage(p)) ]
+[if (p.generateAbi())]
+[for (	aClass : Class | p.allContracts())]
+[file ( aClass.name+'.json', false, 'UTF-8')]
+[printAbi(aClass)/]
+[/file]
+[/for]
+[/if]
+[/template]

@@ -16,8 +16,11 @@
 [query public getStereotypeListValue(class : Element, name : String,propertyname : String) : Sequence(Constraint)
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getStereotypeListValue(org.eclipse.uml2.uml.Element, java.lang.String, java.lang.String)', Sequence{class, name,propertyname})
 /]
-[query public getSolidityFileHeader(class : Package) : String
+[query public getSolidityFileHeader(class : NamedElement) : String
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getSolidityFileHeader(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public getJsFileHeader(class : NamedElement) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getJsFileHeader(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
 /]
 [query public getJsControllerDirectory(class : NamedElement) : String
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getJsControllerDirectory(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
@@ -36,6 +39,12 @@
 /]
 [query public generateAbi(class : NamedElement) : Boolean
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateAbi(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public getVersionPragma(class : NamedElement) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getVersionPragma(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public enableVersion(class : NamedElement) : Boolean
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'enableVersion(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
 /]
 [query public generateWeb3(class : NamedElement) : Boolean
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateWeb3(org.eclipse.uml2.uml.NamedElement)', Sequence{class})

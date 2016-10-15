@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -122,20 +123,33 @@ public class AcceleoGenerateSolidityAction extends ActionDelegate implements IAc
 			model.getProject().refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		}
 	}
-
-	public static void modelTransform(IContainer target, IProgressMonitor monitor, URI modelURI, List<? extends Object> arguments)
+	public static void modelTransform( IProgressMonitor monitor, IFile model, URI modelURI, List<? extends Object> arguments)
 			throws CoreException {
 		try {
+			IContainer target = model.getProject();//ResourcesPlugin.getWorkspace().getRoot();//model.getProject().getFolder(gtarget);
 			GenerateAll generator = new GenerateAll(modelURI, target, arguments);
-			if(monitor==null)
-				monitor = new NullProgressMonitor();
 			generator.doGenerate(monitor);
 		} catch (IOException e) {
 			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
 			Activator.getDefault().getLog().log(status);
 		} finally {
-			target.getProject().refreshLocal(IResource.DEPTH_INFINITE, monitor);
+			model.getProject().refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		}
 	}
+//
+//	public static void modelTransform(IContainer target, IProgressMonitor monitor, URI modelURI, List<? extends Object> arguments)
+//			throws CoreException {
+//		try {
+//			GenerateAll generator = new GenerateAll(modelURI, target, arguments);
+//			if(monitor==null)
+//				monitor = new NullProgressMonitor();
+//			generator.doGenerate(monitor);
+//		} catch (IOException e) {
+//			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
+//			Activator.getDefault().getLog().log(status);
+//		} finally {
+//			target.getProject().refreshLocal(IResource.DEPTH_INFINITE, monitor);
+//		}
+//	}
 
 }

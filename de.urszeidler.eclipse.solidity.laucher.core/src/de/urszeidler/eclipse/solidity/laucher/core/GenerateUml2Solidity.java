@@ -6,7 +6,11 @@ package de.urszeidler.eclipse.solidity.laucher.core;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -39,12 +43,17 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 		String modelUri = configuration.getAttribute(MODEL_URI, "");
 		final URI modelURI =  URI.createPlatformResourceURI(modelUri,
 														 true);
-		String generationTarget = configuration.getAttribute(PreferenceConstants.GENERATION_TARGET, "");
-		final IFolder target = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(generationTarget));
+		
+//		final String generationTarget = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();// configuration.getAttribute(PreferenceConstants.GENERATION_TARGET, "");
+		Path path = new Path(modelUri);
+		final IResource findMember = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+		if (findMember instanceof IFile) {
+		}else
+			throw new CoreException(Status.CANCEL_STATUS);
+		final IFile file = (IFile) findMember;
 
 		
 		//TODO initialize the data and set in the umlService class
-//		boolean generateMixConfig = configuration.getAttribute(PreferenceConstants.GENERATE_MIX, false);
 		final ILaunchConfiguration con1 = configuration;
 		//TODO: check out if this is a nice and simple way
 		Uml2Service.setStore(new PreferenceStore(){
@@ -67,29 +76,33 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 				return false;
 			}
 		});
+		configuration.getAttributes();
+		AcceleoGenerateSolidityAction.modelTransform(monitor, file,modelURI, new ArrayList<Object>());
 		
-		IRunnableWithProgress operation = new IRunnableWithProgress() {
-			public void run(IProgressMonitor monitor) {
-				try {
-					AcceleoGenerateSolidityAction.modelTransform(target, monitor, modelURI, new ArrayList<Object>());
-					Uml2Service.setStore(null);
-				} catch (CoreException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-		try {
-			operation.run(null);
-		} catch (InvocationTargetException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		
+//		IRunnableWithProgress operation = new IRunnableWithProgress() {
+//			public void run(IProgressMonitor monitor) {
+//				try {
+//					AcceleoGenerateSolidityAction.modelTransform(monitor, file,modelURI, new ArrayList<Object>());
+////					AcceleoGenerateSolidityAction.modelTransform(target, monitor, modelURI, new ArrayList<Object>());
+//					Uml2Service.setStore(null);
+//				} catch (CoreException e) {
+//					throw new RuntimeException(e);
+//				}
+//			}
+//		};
 //		try {
-//			PlatformUI.getWorkbench().getProgressService().busyCursorWhile(operation);//.run(true, true, operation);
-//		} catch (Exception e) {
-//			IStatus status = new Status(IStatus.ERROR, "", e.getMessage(), e);
-//			throw new CoreException(status);
+//			operation.run(monitor);
+//		} catch (InvocationTargetException | InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
 //		}
+////		try {
+////			PlatformUI.getWorkbench().getProgressService().busyCursorWhile(operation);//.run(true, true, operation);
+////		} catch (Exception e) {
+////			IStatus status = new Status(IStatus.ERROR, "", e.getMessage(), e);
+////			throw new CoreException(status);
+////		}
 	}
 
 }

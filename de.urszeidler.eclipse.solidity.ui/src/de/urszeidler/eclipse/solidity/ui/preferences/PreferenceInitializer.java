@@ -33,6 +33,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.GENERATE_JS_TEST_TARGET, "mix/test");
 		store.setDefault(PreferenceConstants.GENERATE_ABI_TARGET, "mix/abi");
 		store.setDefault(PreferenceConstants.GENERATE_ABI, true);
+		store.setDefault(PreferenceConstants.VERSION_PRAGMA, "pragma solidity ^0.4.0;");
 
 		store.setDefault(PreferenceConstants.GENERATOR_PROJECT_SETTINGS, false);
 		
