@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="de.urszeidler.eclipse.solidity.laucher.core.GenerateUml2Solidity"
+            id="de.urszeidler.eclipse.solidity.laucher.core.launch.uml2solidity"
+            modes="run"
+            name="generateUml2Solidity"
+            public="true">
+      </launchConfigurationType>
+   </extension>
+
+</plugin>

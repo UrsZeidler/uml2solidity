@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_N0uwUKKsEeWvY9GWZZMftw" name="types">
+  <packagedElement xmi:type="uml:Package" xmi:id="_U024IJODEeamY7dTCoYboQ" name="lang">
+    <ownedRule xmi:id="_YgZ80JODEeamY7dTCoYboQ" name="payable"/>
+  </packagedElement>
   <packagedElement xmi:type="uml:DataType" xmi:id="_W0LXkKKsEeWvY9GWZZMftw" name="string"/>
   <packagedElement xmi:type="uml:DataType" xmi:id="_Ym7uoKKsEeWvY9GWZZMftw" name="int"/>
   <packagedElement xmi:type="uml:DataType" xmi:id="_Z66fAKKsEeWvY9GWZZMftw" name="uint"/>

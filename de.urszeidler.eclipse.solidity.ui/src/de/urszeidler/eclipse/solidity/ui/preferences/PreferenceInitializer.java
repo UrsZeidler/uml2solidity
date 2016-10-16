@@ -21,19 +21,24 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		IPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator.PLUGIN_ID);
 		
 		store.setDefault(PreferenceConstants.GENERATE_HTML, true);
+		store.setDefault(PreferenceConstants.GENERATE_CONTRACT_FILES, true);
 		store.setDefault(PreferenceConstants.GENERATE_MIX, true);
 		store.setDefault(PreferenceConstants.GENERATE_WEB3, true);
 		store.setDefault(PreferenceConstants.GENERATE_MARKDOWN, true);
 		store.setDefault(PreferenceConstants.GENERATION_TARGET, "mix");
 		store.setDefault(PreferenceConstants.GENERATION_TARGET_DOC, "doc");
 		store.setDefault(PreferenceConstants.GENERATE_JS_CONTROLLER, true);
-		store.setDefault(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET, "js");
+		store.setDefault(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET, "mix/js");
 		store.setDefault(PreferenceConstants.GENERATE_JS_TEST, true);
-		store.setDefault(PreferenceConstants.GENERATE_JS_TEST_TARGET, "test");
-		store.setDefault(PreferenceConstants.GENERATE_ABI_TARGET, "abi");
+		store.setDefault(PreferenceConstants.GENERATE_JS_TEST_TARGET, "mix/test");
+		store.setDefault(PreferenceConstants.GENERATE_ABI_TARGET, "mix/abi");
 		store.setDefault(PreferenceConstants.GENERATE_ABI, true);
+		store.setDefault(PreferenceConstants.VERSION_PRAGMA, "pragma solidity ^0.4.0;");
 
 		store.setDefault(PreferenceConstants.GENERATOR_PROJECT_SETTINGS, false);
+		
+		store.setDefault(PreferenceConstants.JS_FILE_HEADER, "// file header");
+		store.setDefault(PreferenceConstants.CONTRACT_FILE_HEADER, "/**\n*\n*\n**/");
 	}
 
 }

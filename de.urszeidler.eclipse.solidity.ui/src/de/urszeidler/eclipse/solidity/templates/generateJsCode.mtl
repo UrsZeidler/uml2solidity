@@ -1,0 +1,39 @@
+[comment encoding = UTF-8 /]
+[module generateJsCode('http://www.eclipse.org/uml2/5.0.0/UML')/]
+
+[import de::urszeidler::eclipse::solidity::util::um2service /]
+[import de::urszeidler::eclipse::solidity::templates::generateWeb3Contract /]
+[import de::urszeidler::eclipse::solidity::templates::generateHtml/]
+
+
+[template public generateJsCodePackage(aModel : Model)]
+[comment @main/]
+[generatePackage(aModel)/]
+[iteratePackages(aModel)/]
+[/template]
+
+[**
+ * Iterates over the packages.
+*/]
+[template private iteratePackages(p : Package)]
+[for (p1 : Package | p.nestedPackage)]
+[if (isGeneratePackage(p1))]
+[generatePackage(p1)/]
+[/if]
+[iteratePackages(p1)/]
+[/for]
+[/template]
+
+[template public generatePackage(p : Package)?(isGeneratePackage(p)) ]
+[comment the controller js /]
+[if (p.generateJsController())]
+[file (p.name+'-main.js', false, 'UTF-8')]
+[if (not p.getJsFileHeader().oclIsUndefined())][p.getJsFileHeader()/][/if]
+[printAllWeb3Contracts(p)/]
+[for (	aClass : Class | p.allContracts())]
+[printJavascriptForClass(aClass)/]
+[/for]
+[printSimplePageObject(p)/]
+[/file]
+[/if]
+[/template]

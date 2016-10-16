@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -25,6 +27,8 @@ import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
  *
  */
 public class Uml2Service {
+
+	private static IPreferenceStore store = null;
 
 	/**
 	 * Returns true when the stereotype is applied to the {@link Element}.
@@ -116,27 +120,81 @@ public class Uml2Service {
 
 	/**
 	 * Returns the header for a solidity file.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static String getSolidityFileHeader(NamedElement clazz) {
 		IPreferenceStore store = getStore(clazz);
 		return store.getString(PreferenceConstants.CONTRACT_FILE_HEADER);
 	}
+	
+	/**
+	 * Returns the header for a js file.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static String getJsFileHeader(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.JS_FILE_HEADER);
+	}
+
+	/**
+	 * Write the Pragma in the contract code.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static Boolean enableVersion(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(PreferenceConstants.ENABLE_VERSION);
+	}
+
+
+	/**
+	 * Returns the header for a js file.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static String getVersionPragma(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.VERSION_PRAGMA);
+	}
 
 	/**
 	 * Returns the directory for the js file.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static String getJsControllerDirectory(NamedElement clazz) {
 		IPreferenceStore store = getStore(clazz);
-		return store.getString(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET);
+		String c_target = store.getString(PreferenceConstants.GENERATION_TARGET);
+		Path c_path = new Path(c_target);
+		
+		String js_target = store.getString(PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET);
+		Path js_path = new Path(js_target);
+		
+		IPath makeRelativeTo = js_path.makeRelativeTo(c_path);
+		
+		if (makeRelativeTo!=null) {
+			return makeRelativeTo.toString();
+		}
+		return js_target;
 	}
 
 	/**
 	 * Should the js controller being generated.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static Boolean generateJsController(NamedElement clazz) {
@@ -146,7 +204,9 @@ public class Uml2Service {
 
 	/**
 	 * Should the js tests being generated.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static Boolean generateJsTests(NamedElement clazz) {
@@ -155,8 +215,23 @@ public class Uml2Service {
 	}
 
 	/**
+	 * Should the js controller being generated.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static Boolean generateContractCode(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(PreferenceConstants.GENERATE_CONTRACT_FILES);
+	}
+
+	
+	/**
 	 * Returns the directory for the tests generation.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static String getJsTestsDirectory(NamedElement clazz) {
@@ -166,7 +241,9 @@ public class Uml2Service {
 
 	/**
 	 * Should abi files for each class being generated.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static Boolean generateAbi(NamedElement clazz) {
@@ -176,7 +253,9 @@ public class Uml2Service {
 
 	/**
 	 * Returns the directory for the abi generation.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static String getAbiDirectory(NamedElement clazz) {
@@ -186,7 +265,9 @@ public class Uml2Service {
 
 	/**
 	 * Should web3 file being generated.
-	 * @param an element
+	 * 
+	 * @param an
+	 *            element
 	 * @return
 	 */
 	public static Boolean generateWeb3(NamedElement clazz) {
@@ -194,20 +275,29 @@ public class Uml2Service {
 		return store.getBoolean(PreferenceConstants.GENERATE_WEB3);
 	}
 
-
 	/**
 	 * Get the preference store:
+	 * 
 	 * @param clazz
 	 * @return
 	 */
-	private static IPreferenceStore getStore(NamedElement clazz) {
+	public static IPreferenceStore getStore(NamedElement clazz) {
+		if (Uml2Service.store != null)
+			return Uml2Service.store;
+
 		IProject project = null;
-		URI eUri = clazz.eResource().getURI();
-		if (eUri.isPlatformResource()) {
-			String platformString = eUri.toPlatformString(true);
-			project = ResourcesPlugin.getWorkspace().getRoot().findMember(platformString).getProject();
+		if (clazz != null) {
+			URI eUri = clazz.eResource().getURI();
+			if (eUri.isPlatformResource()) {
+				String platformString = eUri.toPlatformString(true);
+				project = ResourcesPlugin.getWorkspace().getRoot().findMember(platformString).getProject();
+			}
 		}
 		IPreferenceStore store = PreferenceConstants.getPreferenceStore(project);
 		return store;
+	}
+
+	public static void setStore(IPreferenceStore store) {
+		Uml2Service.store = store;
 	}
 }

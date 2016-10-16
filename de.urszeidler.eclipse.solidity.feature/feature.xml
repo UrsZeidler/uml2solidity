@@ -2,7 +2,7 @@
 <feature
       id="de.urszeidler.eclipse.solidity.feature"
       label="Solidity modeling and generating Feature"
-      version="1.0.6.qualifier"
+      version="1.0.7.qualifier"
       provider-name="Urs Zeidler">
 
    <description url="https://github.com/UrsZeidler/uml2solidity">
@@ -249,6 +249,20 @@ any resulting litigation.
 
    <plugin
          id="de.urszeidler.eclipse.solidity.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.urszeidler.eclipse.solidity.laucher.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.urszeidler.eclipse.solidity.laucher.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

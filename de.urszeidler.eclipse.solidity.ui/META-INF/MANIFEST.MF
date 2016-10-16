@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Acceleo Solidity Module IDE Plug-in
 Bundle-SymbolicName: de.urszeidler.eclipse.solidity.ui;singleton:=true
-Bundle-Version: 1.0.6.qualifier
+Bundle-Version: 1.0.7.qualifier
 Bundle-Activator: de.urszeidler.eclipse.solidity.ui.Activator
 Bundle-Vendor: Urs Zeidler
-Require-Bundle: org.eclipse.ui,
+Require-Bundle: org.eclipse.ui;visibility:=reexport,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.emf.ecore,
@@ -28,4 +28,6 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true
 Export-Package: de.urszeidler.eclipse.solidity.templates,
+ de.urszeidler.eclipse.solidity.ui.common,
+ de.urszeidler.eclipse.solidity.ui.preferences,
  de.urszeidler.eclipse.solidity.util

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="de.urszeidler.eclipse.solidity.laucher.ui.Uml2SolidityLaunchConfigurationTabGroup"
+            description="Lauches the uml to solidity generator"
+            id="de.urszeidler.eclipse.solidity.laucher.ui.launchConfigurationTabGroup"
+            type="de.urszeidler.eclipse.solidity.laucher.core.launch.uml2solidity">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="de.urszeidler.eclipse.solidity.laucher.core.launch.uml2solidity"
+            icon="images/solidity16.png"
+            id="de.urszeidler.eclipse.solidity.laucher.ui.launchConfigurationTypeImage1">
+      </launchConfigurationTypeImage>
+   </extension>
+
+</plugin>
