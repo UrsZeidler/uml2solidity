@@ -29,6 +29,5 @@ Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true
 Export-Package: de.urszeidler.eclipse.solidity.templates,
  de.urszeidler.eclipse.solidity.ui.common,
- de.urszeidler.eclipse.solidity.ui.popupMenus,
  de.urszeidler.eclipse.solidity.ui.preferences,
  de.urszeidler.eclipse.solidity.util
