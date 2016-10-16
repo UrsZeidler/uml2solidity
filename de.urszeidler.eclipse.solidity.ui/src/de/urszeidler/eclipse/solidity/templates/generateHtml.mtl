@@ -125,7 +125,11 @@
 [/template]
 
 [template public printSimplePageObject (aPackage : Package) ]
-//the page Object for the [aPackage.name.toUpperFirst()/]Page.
+
+/**
+* A class to manage a single page dapp.
+* The [aPackage.name.toUpperFirst()/]Page object uses the managers to display the gui.
+**/
 function [aPackage.name.toUpperFirst()/]Page(prefix) {
 	this.prefix=prefix;
 	//[protected('page_'+aPackage.name+'_attributes')]
@@ -133,16 +137,21 @@ function [aPackage.name.toUpperFirst()/]Page(prefix) {
 	//[/protected]
 
 	
-// default Gui
-this.placeDefaultGui=function() {
-this.createDefaultGui();
+	/**
+	* Places the default gui in the page.
+	**/
+	this.placeDefaultGui=function() {
+	this.createDefaultGui();
 	[comment]var e = document.getElementById(this.prefix);
 	if(e!=null)
 		e.innerHTML = this.createDefaultGui();
 	else
 		console.log(this.prefix+' [aPackage.name/]_gui not found');[/comment]
-}
-// default Gui
+	}
+/**
+* Create the default Gui.
+* Use this method to customize the gui.
+**/
 this.createDefaultGui=function() {
 	//[protected('page_'+aPackage.name.toUpperFirst()+'_create_default_gui_functions')]
 		//TODO: implement
@@ -295,7 +304,7 @@ c.createDefaultGui();
 [template public functionName(op : Operation)]
 [op.owner.oclAsType(NamedElement).name/]_[op.name/][for (p : Parameter | op.allInParameters())]_[p.type.name/][/for][/template]
 
-[template public printJavaScript (p : Package) ]
+[comment][template private printJavaScript1 (p : Package) ]
 [for (	aClass : Class | p.allContracts())]
 <!-- javascript for [aClass.name/] -->
 <script type='text/javascript'  src="[aClass.getJsControllerDirectory()+ '/' + aClass.owner.oclAsType(NamedElement).name+'-'+aClass.name+'-controller.js'/]">
@@ -309,6 +318,14 @@ c.createDefaultGui();
 [/for]
 [/template]
 
+[template public printImportJavaScript (p : Package) ]
+[for (	aClass : Class | p.allContracts())]
+<!-- javascript for [aClass.name/] -->
+<script type='text/javascript'  src="[aClass.getJsControllerDirectory()+ '/' + aClass.owner.oclAsType(NamedElement).name+'-'+aClass.name+'-controller.js'/]">
+[comment][printJavascriptForClass(aClass)/][/comment]
+</script>
+[/for]
+[/template][/comment]
 
 
 [template public printJavascriptForClass (aClass : Class) ]
@@ -317,7 +334,6 @@ c.createDefaultGui();
 [printJsGuiController(aClass)/]
 [printJsManager(aClass)/]
 [printJsGuiManager(aClass)/]
-
 [printDeployer(aClass)/]
 //[protected('custom_'+aClass.name+'_js')]
 //TODO: implement
@@ -325,9 +341,17 @@ c.createDefaultGui();
 [/template]
 
 [template public printDeployer (aClass : Class, aClass1 : Class) ]
-//deploys the contract
+
+/**
+* Deploys the contract.
+* Each constructor is available.
+**/
 function [aClass.name/]Deployment(guiId){
 [for (op : Operation | aClass.allConstructors())]
+
+	/**
+	* Construct [aClass.name/].
+	**/
 	this.deploy[op.functionName()/] = function(account,code,providedGas,[for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]){
 		var c = [aClass.name/].new(_name,_url,_description,{
 			from: account,
@@ -336,17 +360,12 @@ function [aClass.name/]Deployment(guiId){
 		});
 		return c;
 	}
-	
 [/for]
-
-
 
 //[protected(aClass.name+'_deployment_js')]
 //TODO: implement
 //[/protected]
-
 }
-
 [/template]
 
 
@@ -354,12 +373,19 @@ function [aClass.name/]Deployment(guiId){
  * Print a js guimannager, holding n managers.
 */]
 [template public printJsGuiManager (aClass : Class) ]
-//Manages a list of [aClass.name/]Manager uses the guid id to place the gui which is also the eventlogPrefix
+
+/**
+* Manages a list of [aClass.name/]Manager uses the guid id to place the gui which is also the eventlogPrefix
+*/
 function [aClass.name/]GuiMananger(guiId){
 	this.prefix = guiId;
 	this.managers=new Array();	//[ '[' /][ ']' /];		
 	this.guiFunction = null;
 	
+	/**
+	* Add a contract to this manager.
+	* @namespace contract
+	*/
 	this.addManager = function(contract) {
 		var m = new [aClass.name/]Manager(contract.address,contract,this.prefix);
 		m.eventlogPrefix = this.prefix;
@@ -369,14 +395,22 @@ function [aClass.name/]GuiMananger(guiId){
 		this.managers.push(m);
 		//manager.addGui();
 	}
-			
+
+	/**
+	* Clears the element or the element with id 'prefix'.
+	* @e an element
+	*/
 	this.clearGui = function(e){
 		if(e==null)
 			e = document.getElementById(this.prefix);
 		if(e!==undefined)
 			e.innerHTML ='';
 	}
-			
+		
+	/**
+	* Displays all guis of the managed contracts.
+	* @e an element
+	*/
 	this.displayGui = function(e){
 		if(e==null)
 			e = document.getElementById(this.prefix);
@@ -392,13 +426,18 @@ function [aClass.name/]GuiMananger(guiId){
 			manager.c.bindGui();
 		}
 	}
+	/**
+	* Displays a simple gui.
+	*/
 	this.displaySimpleGui = function(){
 		for (i in this.managers) {
 			var manager = this.managers[ '[' /]i[ ']' /] ;
 			manager.addGui(null);
 		}
 	}
-
+	/**
+	* Update the gui.
+	*/
 	this.updateGui = function(){
 		for (i in this.managers) {
 			this.managers[ '[' /]i[ ']' /].updateGui();
@@ -412,8 +451,12 @@ function [aClass.name/]GuiMananger(guiId){
  * Print the Js glue code mananer.
 */]
 [template public printJsManager (aClass : Class) ]
-//class as GlueCode [aClass.name/]Manager
-//uses prefix + 'GuiContainer'
+
+/**
+* class as GlueCode [aClass.name/]Manager,
+* uses prefix + 'GuiContainer' as target element.
+* It combines a [aClass.name/]Controller as 'c' and a [aClass.name/]GuiFactory as 'g'.
+**/
 function [aClass.name/]Manager(prefix,contract,containerId) {
 	this.prefix = prefix;
 	var self = this;
@@ -426,7 +469,10 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 	this.containerId = containerId;
 	this.eventlogPrefix = '';
 	this.guiFunction = null;
-
+	
+	/**
+	* adds the gui element to the given 'e' element
+	**/
 	this.addGui = function(e) {
 		if(e==null)
 			e = document.getElementById(this.containerId);
@@ -448,11 +494,20 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 			console.log(this.prefix+'[aClass.name/]_address not found');
 		this.c.bindGui();
 	}	
+	
+	/**
+	* clears the given element 'e'.
+	**/
 	this.clearGui = function(e){
 		if(e==null)
 			e = document.getElementById(this.containerId);
 		e.innerHTML ='';
 	}
+
+	/**
+	* Create the gui with the given 'guiFactory'. Places an sceleton arount it.
+	* @return the gui txt used as innerHTML
+	**/
 	this.createGui = function(guifactory){
 		var txt ='';
 //[protected(aClass.name+'_create_gui_js')]
@@ -461,20 +516,35 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 		return guifactory.createSeletonGui(txt);
 
 	}
+
+	/**
+	* Create a small gui, only the attributes. Places an sceleton arount it.
+	**/	
 	this.createSmallGui = function(guifactory){
 		var txt ='';
 		txt = txt + guifactory.createAttributesGui();
 		return guifactory.createSeletonGui(txt);
 
 	}
+
+	/**
+	* Update the attributes.
+	**/
 	this.updateGui = function(){
 		this.c._updateAttributes();
 	}
+
+	/**
+	* Getter for the contract '[aClass.name/]' instance.
+	**/
 	this.getContract = function(){
 		return this.c.instance;
 	}
 
-//watch events
+	/**
+	* Watch for the contract events.
+	* The events are stored in an element with the id this.eventlogPrefix+'eventLog'.
+	**/
 	this.watchEvents=function(){
 	[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
 	var event_[op.name/] = contract.[op.name/]({},{fromBlock: 0});
@@ -508,19 +578,27 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
  * Print a simple js model wrapper
 */]
 [template public printJsModelWrapper (aClass : Class) ]
-//a simple bean class around the contract
-// the [aClass.name/]Model
+/**
+* A simple bean class around the contract.
+* The [aClass.name/]Model.
+**/
 function [aClass.name/]Model(contract) {
 this.contract = contract;
 [for (p : Property | aClass.allSubAttributes())]
-this.get[p.name.toUpperFirst()/] = function(){
-return contract.[p.name/](); 
-}
+	/**
+	* Getter for [p.name/].
+	**/
+	this.get[p.name.toUpperFirst()/] = function(){
+		return contract.[p.name/](); 
+	}
 [/for]
 [for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
-this.[op.name/] = function([for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]){
-return contract.[op.name/]([for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]); 
-}
+	/**
+	* Call [op.name/].
+	**/
+	this.[op.name/] = function([for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]){
+		return contract.[op.name/]([for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]); 
+	}
 [/for]
 }// end of function [aClass.name/]Model
 [/template]
@@ -530,7 +608,18 @@ return contract.[op.name/]([for (p : Parameter | op.allInParameters())separator 
  * Print the controller js
 */]
 [template public printJsGuiController (aClass : Class) ]
-// script for [aClass.name/] gui controller
+
+/**
+* Class [aClass.name/]Controller. 
+* The controller wrap's the 'instance' contract and binds all actions to document elements.
+* Parameters are taken from elements with self.prefix+'functionName_parameterName'
+*
+* self.prefix+'[aClass.name/]Controller.setAddress' - 
+* self.prefix+'[aClass.name/]_updateAttributes'     - 
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+* self.prefix+'[op.functionName()/] -
+[/for]
+*/
 function [aClass.name/]Controller() {
 
 	this.instance = undefined;
@@ -539,7 +628,9 @@ function [aClass.name/]Controller() {
 	this.eventlogPrefix = '';
 	var self = this;
 
-// bind buttons
+	/**
+	* Binds the element with the prefix-id to the corresponding element.
+	*/
 	this.bindGui=function() {
 		console.log('bind gui for:'+self.prefix);
 		var btn = document.getElementById(self.prefix+'[aClass.name/]Controller.setAddress');
@@ -558,21 +649,24 @@ function [aClass.name/]Controller() {
 		else console.log('[op.functionName()/] widget not bound');
 [/for]
 	}
-	// set function
+
+	/**
+	* Set the address.
+	*/
 	this.setAddress=function() {
-	var _address = document.getElementById(self.prefix+'[aClass.name/]_address');
-	if(_address==null)return;
+		var _address = document.getElementById(self.prefix+'[aClass.name/]_address');
+		if(_address==null)return;
 
-	self.[aClass.name/]_instance = [aClass.name/]Contract.at(_address.value);
-	self.contractAddress = _address.value;
-	self._updateAttributes();
-}
-[printUpdateAttributeFunction(aClass)/]
+		self.[aClass.name/]_instance = [aClass.name/]Contract.at(_address.value);
+		self.contractAddress = _address.value;
+		self._updateAttributes();
+	}
+	[printUpdateAttributeFunction(aClass)/]
 
-[printCallFunction(aClass,aClass,'')/]
+	[printCallFunction(aClass,aClass,'')/]
 //delegated calls
 [for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
-[printCallFunction(prop.type.oclAsType(Class),aClass,'delegate_')/]
+	[printCallFunction(prop.type.oclAsType(Class),aClass,'delegate_')/]
 [/for]
 
 }// end controller	
@@ -582,97 +676,127 @@ function [aClass.name/]Controller() {
  * Print the gui factory
 */]
 [template public printJsGuiFactory (aClass : Class) ]
-//gui factory [aClass.name/]
+
+/**
+* Gui factory [aClass.name/]
+**/
 function [aClass.name/]GuiFactory() {
 	this.prefix='';
 	
-// default Gui
-this.placeDefaultGui=function(e) {
-	if(e==null)
-		e = document.getElementById(this.prefix+'[aClass.name/]_gui');
-	if(e!=null)
-		e.innerHTML = this.createDefaultGui();
-	else
-		console.log(this.prefix+'[aClass.name/]_gui not found');
-}
-// default Gui
-this.createDefaultGui=function() {
-	return [for (it : String | printHtmlInterface(aClass).toString().tokenizeLine())separator ('+')]
-	'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
-[/for];
-}
+	/**
+	* Places the default gui to 'e' or an element with id='[aClass.name/]_gui'
+	*/
+	this.placeDefaultGui=function(e) {
+		if(e==null)
+			e = document.getElementById(this.prefix+'[aClass.name/]_gui');
+		if(e!=null)
+			e.innerHTML = this.createDefaultGui();
+		else
+			console.log(this.prefix+'[aClass.name/]_gui not found');
+	}
 
-//default attributes
-this.createAttributesGui=function() {
-	return [for (it : String | printContractAttributes(aClass).toString().tokenizeLine())separator ('+')]
-	'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
-[/for];
-}
+	/**
+	* The default generated gui with all actions and attributes.
+	*/
+	this.createDefaultGui=function() {
+		return [for (it : String | printHtmlInterface(aClass).toString().tokenizeLine())separator ('+')]
+		'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+	[/for];
+	}
 
-
-
+	/**
+	* Create the gui for the attributes.
+	*/
+	this.createAttributesGui=function() {
+		return [for (it : String | printContractAttributes(aClass).toString().tokenizeLine())separator ('+')]
+		'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+	[/for];
+	}
 [for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
-this.create[op.functionName()/]Gui=function() {
-return [for (it : String | printOperationUi(aClass,'',op).toString().tokenizeLine())separator ('+')]
-	'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
-[/for];
-}
-[/for]
 
+	/**
+	* Create the gui for the function [op.name/].
+	*/
+	this.create[op.functionName()/]Gui=function() {
+		return [for (it : String | printOperationUi(aClass,'',op).toString().tokenizeLine())separator ('+')]
+		'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+	[/for];
+	}
+[/for]
 [for (p : Property | aClass.allMappingSubAttributes())]
 [let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
 [if (value.oclIsTypeOf(Class) and value.hasStereotype('Struct'))]
-this.create[p.name/]StructGui=function() {
-return [for (it : String | printHtmlScructInterface(aClass, p, p.type, value ).toString().tokenizeLine())separator ('+')]
-	'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
-[/for];
-}
-
+	/**
+	* Create the gui for the [p.name/] struct element.
+	*/
+	this.create[p.name/]StructGui=function() {
+		return [for (it : String | printHtmlScructInterface(aClass, p, p.type, value ).toString().tokenizeLine())separator ('+')]
+		'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+	[/for];
+	}
 [/if][/let][/for]
 [for (p : Property | aClass.allKeyMappingSubAttributes())]
 [let key : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
 [if (p.type.oclIsTypeOf(Class)and p.type.hasStereotype('Struct'))]
-this.create[p.name/]StructGui=function() {
-return [for (it : String | printHtmlScructInterface(aClass,p, key, p.type.oclAsType(Class)).toString().tokenizeLine())separator ('+')]
-	'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
-[/for];
-}
+
+	/**
+	* Create the gui for the [p.name/] struct element.
+	*/
+	this.create[p.name/]StructGui=function() {
+		return [for (it : String | printHtmlScructInterface(aClass,p, key, p.type.oclAsType(Class)).toString().tokenizeLine())separator ('+')]
+		'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+	[/for];
+	}
 [/if][/let][/for]
 
-//print the contract div around
-this.createSeletonGui=function(inner) {
-	return 	'<!-- gui for [aClass.name/]_contract -->'
-+	'	<div class="contract" id="'+this.prefix+'[aClass.name/]_contract">'
-+ inner
-+'</div>';
-}
+	/**
+	* Create a div with '@inner' as inner elements.
+    * @inner - the inner text
+	*/
+	this.createSeletonGui=function(inner) {
+		return 	'<!-- gui for [aClass.name/]_contract -->'
+		+	'	<div class="contract" id="'+this.prefix+'[aClass.name/]_contract">'
+		+ inner
+		+'</div>';
+	}
 
 
 //eventguis
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
-this.create[op.name/]LogDataGui = function(prefix, blockHash, blockNumber
-[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
-,[p.name/][/for]
-) {
+
+	/**
+	* Create a gui for the [op.name/] event.
+    * @inner - the inner text
+	*/
+	this.create[op.name/]LogDataGui = function(prefix, blockHash, blockNumber
+	[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
+	,[p.name/][/for]
+	) {
 		return '<ul class="dapp-account-list"><li > '
         +'<a class="dapp-identicon dapp-small" style="background-image: url(identiconimage.png)"></a>'
 		+'<span>'+prefix+' ('+blockNumber+')</span>'
-[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
+	[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
         +'<span>'+[p.name/]+'</span>'
-[/for]
-        +' </li>'
-        ;
-}
+	[/for]
+        +' </li>';
+	}
 [/for]
 
 }//end guifactory
 [/template]
 
 [template public printUpdateAttributeFunction (aClass : Class) ]
-//update attributes
+
+/**
+* Update attributes.
+*
+[for (p : Property | aClass.allSubAttributes())]
+* prefix+'[aClass.name/]_[p.name/]_value' - 
+[/for]
+**/
 this._updateAttributes=function () {
-if(this.instance===null) return;
-// update attributes
+	if(this.instance===null) return;
+	// update attributes
 [for (p : Property | aClass.allSubAttributes())]
 	var [p.name/]_res = self.instance.[p.name/]();
 	var e = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value');
@@ -684,57 +808,57 @@ if(this.instance===null) return;
 [let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
 [if (value.oclIsTypeOf(Class) and value.hasStereotype('Struct'))]
 	var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
-if(e!=null){
-	var _key = e.value;
-	if(_key=='') return;
-	var [p.name/]_res = self.instance.[p.name/](_key);
-	if([p.name/]_res!=null){
+	if(e!=null){
+		var _key = e.value;
+		if(_key=='') return;
+		var [p.name/]_res = self.instance.[p.name/](_key);
+		if([p.name/]_res!=null){
 [for (p1 : Property | value.attribute)]
-	var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_[p1.name/]_value');
-	if(e1!=null)	
-		e1.innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
-[/for]
-	}}
-[else]
-var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
-if(e!=null){
-	var _key = e.value;
-	if(_key=='') return;
-	var [p.name/]_res = self.instance.[p.name/](_key);
-	if([p.name/]_res!=null){
-		var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value');
+		var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_[p1.name/]_value');
 		if(e1!=null)	
-			e1.innerText = [p.name/]_res;
-	}}
+			e1.innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
+[/for]
+		}}
+[else]
+	var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
+	if(e!=null){
+		var _key = e.value;
+		if(_key=='') return;
+		var [p.name/]_res = self.instance.[p.name/](_key);
+		if([p.name/]_res!=null){
+			var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value');
+			if(e1!=null)	
+				e1.innerText = [p.name/]_res;
+		}}
 [/if]
 [/let]
 [/for]
 [for (p : Property | aClass.allKeyMappingSubAttributes())]
 [let key : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
 [if (p.type.oclIsTypeOf(Class) and p.type.hasStereotype('Struct'))]
-var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
-if(e!=null){
-	var _key = e.value;
-	if(_key=='') return;
-	var [p.name/]_res = self.instance.[p.name/](_key);
-	if([p.name/]_res!=null){
+	var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
+	if(e!=null){
+		var _key = e.value;
+		if(_key=='') return;
+		var [p.name/]_res = self.instance.[p.name/](_key);
+		if([p.name/]_res!=null){
 [for (p1 : Property | p.type.oclAsType(Class).attribute)]
-	var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_[p1.name/]_value');
-	if(e1!=null)	
-		e1.innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
-[/for]
-	}}
-[else]
-var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
-if(e!=null){
-	var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
-	if(_key=='') return;
-	var [p.name/]_res = self.instance.[p.name/](_key);
-	if([p.name/]_res!=null){
-		var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value');
+		var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_[p1.name/]_value');
 		if(e1!=null)	
-			e1.innerText = [p.name/]_res;
-	}}
+			e1.innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
+[/for]
+		}}
+[else]
+	var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
+	if(e!=null){
+		var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
+		if(_key=='') return;
+		var [p.name/]_res = self.instance.[p.name/](_key);
+		if([p.name/]_res!=null){
+			var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value');
+			if(e1!=null)	
+				e1.innerText = [p.name/]_res;
+		}}
 [/if]
 [/let]
 [/for]
@@ -744,7 +868,14 @@ if(e!=null){
 [template private printCallFunction(aClass : Class,aContractClass : Class, prefix:String)]
 //call functions
 [for (op : Operation | aClass.allSubFunctions())]
-//function [prefix/][aClass.name/]_[op.name/]
+
+/**
+* Calls the contract function [prefix/][aClass.name/]_[op.name/].
+*
+[for (p : Parameter | op.allInParameters())]
+* this.prefix+'[prefix/][op.functionName()/]_[p.name/]' -
+[/for]
+**/
 this.[prefix/][op.functionName()/]=function() {
 [for (p : Parameter | op.allInParameters())]
 	var e = document.getElementById(self.prefix+'[prefix/][op.functionName()/]_[p.name/]');
