@@ -29,7 +29,6 @@ public class SeperatorFieldEditor extends FieldEditor {
 	 * 
 	 */
 	public SeperatorFieldEditor() {
-		// TODO Automatisch generierter Konstruktorstub
 	}
 
 	/**
@@ -39,7 +38,6 @@ public class SeperatorFieldEditor extends FieldEditor {
 	 */
 	public SeperatorFieldEditor(String name, String labelText, Composite parent) {
 		super(name, labelText, parent);
-		// TODO Automatisch generierter Konstruktorstub
 	}
 
 	/* (nicht-Javadoc)

@@ -18,7 +18,6 @@ public class Uml2SolidityLaunchConfigurationTabGroup extends AbstractLaunchConfi
 	 * 
 	 */
 	public Uml2SolidityLaunchConfigurationTabGroup() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/* (non-Javadoc)
