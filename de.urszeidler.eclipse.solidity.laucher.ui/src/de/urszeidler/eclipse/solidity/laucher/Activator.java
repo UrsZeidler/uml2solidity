@@ -43,9 +43,9 @@ public class Activator extends AbstractUIPlugin {
 	protected void initializeImageRegistry(ImageRegistry reg) {
 		ImageDescriptor image = imageDescriptorFromPlugin(PLUGIN_ID, "images/solidity16.png");
 		reg.put("UML2Solidity", image);
-		image = imageDescriptorFromPlugin(PLUGIN_ID, "images/solidity16.png");
+		image = imageDescriptorFromPlugin(PLUGIN_ID, "images/script_wiz.gif");
 		reg.put("JsCode", image);
-		image = imageDescriptorFromPlugin(PLUGIN_ID, "images/solidity16.png");
+		image = imageDescriptorFromPlugin(PLUGIN_ID, "images/help_topic.gif");
 		reg.put("OtherFiles", image);
 		super.initializeImageRegistry(reg);
 	}

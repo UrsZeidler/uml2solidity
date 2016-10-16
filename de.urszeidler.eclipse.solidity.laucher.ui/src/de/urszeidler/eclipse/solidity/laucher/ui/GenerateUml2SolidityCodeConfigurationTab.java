@@ -50,18 +50,14 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 	private Text modelText;
 	private Text generationDirectoryText;
 	private Text fileHeaderText;
-	// private Text docDirectoryText;
-	// private Text abiDirectoryText;
 	private Button btnGenerateSolidityCode;
 	private Button btnGenerateMixConfig;
 	private Button btnGenerateMixHtml;
-	// private Button btnGenerateMarkdownReport;
-	// private Button btnGfenerateSingleAbi;
 	private Text versionText;
 	private Button btnVersionAbove;
 
 	/*
-	 * (nicht-Javadoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.
@@ -141,7 +137,6 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 			public void widgetSelected(SelectionEvent e) {
 				setDirty(true);
 				updateLaunchConfigurationDialog();
-				// grpSolidity.setEnabled(btnGenerateSolidityCode.getSelection());
 			}
 		});
 		btnGenerateSolidityCode.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
@@ -229,7 +224,7 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 	}
 
 	/*
-	 * (nicht-Javadoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.
@@ -250,7 +245,7 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 	}
 
 	/*
-	 * (nicht-Javadoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.
@@ -283,7 +278,7 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 	}
 
 	/*
-	 * (nicht-Javadoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.
@@ -304,13 +299,13 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 	}
 
 	/*
-	 * (nicht-Javadoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName()
 	 */
 	@Override
 	public String getName() {
-		return "generate Solidity";
+		return "generate Solidity code";
 	}
 
 	/*
