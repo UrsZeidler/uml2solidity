@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>de.urszeidler.eclipse.solidity.laucher.ui</groupId>
+  <artifactId>de.urszeidler.eclipse.solidity.laucher.ui</artifactId>
+  <version>1.0.6-SNAPSHOT</version>
+   <packaging>eclipse-plugin</packaging>
+   
+ <properties>  
+  <tycho.version>0.24.0</tycho.version>  
+ </properties>  
+   
+ <parent>  
+  <groupId>de.urszeidler.eclipse.solidity.master</groupId>  
+  <artifactId>de.urszeidler.eclipse.solidity.master</artifactId>  
+  <version>1.0.6-SNAPSHOT</version>  
+  <relativePath>../de.urszeidler.eclipse.solidity.master</relativePath>  
+ </parent>  
+  
+    <pluginRepositories>
+   </pluginRepositories>
+  
+  
+  
+  <repositories>
+  </repositories>
+  
+  <dependencies>
+  </dependencies>
+  
+ <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-maven-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <resolver>p2</resolver>
+          <pomDependencies>consider</pomDependencies>
+        </configuration>
+      </plugin>
+ 
+ 
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-compiler-plugin</artifactId>
+          <version>${tycho.version}</version>
+          <configuration>
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
+        <plugin>
+          <!-- TODO remove workaround when https://issues.sonatype.org/browse/TYCHO-473 is fixed -->
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-source-plugin</artifactId>
+          <version>${tycho.version}</version>
+          <executions>
+            <execution>
+              <id>attach-source</id>
+              <phase>process-classes</phase>
+              <goals>
+                <goal>plugin-source</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.4.1</version>
+          <configuration>
+<!--             <encoding>ISO-8859-1</encoding> -->
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.3</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build> 
+ 
+</project>

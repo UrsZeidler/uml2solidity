@@ -254,4 +254,18 @@ any resulting litigation.
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="de.urszeidler.eclipse.solidity.laucher.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.urszeidler.eclipse.solidity.laucher.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
