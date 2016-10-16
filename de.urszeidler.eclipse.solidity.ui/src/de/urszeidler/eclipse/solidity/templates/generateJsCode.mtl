@@ -1,8 +1,9 @@
 [comment encoding = UTF-8 /]
 [module generateJsCode('http://www.eclipse.org/uml2/5.0.0/UML')/]
-[import de::urszeidler::eclipse::solidity::templates::generateHtml/]
+
 [import de::urszeidler::eclipse::solidity::util::um2service /]
 [import de::urszeidler::eclipse::solidity::templates::generateWeb3Contract /]
+[import de::urszeidler::eclipse::solidity::templates::generateHtml/]
 
 
 [template public generateJsCodePackage(aModel : Model)]
