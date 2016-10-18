@@ -38,6 +38,7 @@ public class Uml2Service {
 	 * @return
 	 */
 	public static boolean hasStereotype(Element clazz, String stereotypeName) {
+		if(clazz==null) return false;
 		List<Stereotype> stereotypes = clazz.getAppliedStereotypes();
 		for (Stereotype stereotype : stereotypes) {
 			if (stereotype.getName().equals(stereotypeName)) {
@@ -55,6 +56,7 @@ public class Uml2Service {
 	 * @return
 	 */
 	public static Stereotype getStereotype(Element clazz, String stereotypeName) {
+		if(clazz==null) return null;
 		List<Stereotype> stereotypes = clazz.getAppliedStereotypes();
 		for (Stereotype stereotype : stereotypes) {
 			if (stereotype.getName().equals(stereotypeName)) {
