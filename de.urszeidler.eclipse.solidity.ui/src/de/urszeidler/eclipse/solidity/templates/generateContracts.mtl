@@ -55,7 +55,7 @@ import [if (not pi.getStereotypeValue('Import', 'importFilter').oclIsUndefined()
 */]
 [template public printContractInterface (aInterface : Interface)?(not hasStereotype('StandardizedContractAPI')) ]
 [printCommentDoc(aInterface.ownedComment)/]
-contract [aInterface.name/][contractIs(aInterface)/] {
+contract [aInterface.name/][icontractIs(aInterface)/] {
 [for (ne : NamedElement | aInterface.ownedMember->filter(Enumeration))]
 [if (oclIsTypeOf(Enumeration))]
     [printEnum(ne.oclAsType(Enumeration))/]
@@ -107,7 +107,7 @@ struct [aClass.name/] {
 */]
 [template public printContract (aClass : Class) ]
 [printCommentDoc(aClass.ownedComment)/]
-contract [aClass.name/][contractIs(aClass)/] {
+contract [aClass.name/][aClass.contractIs()/] {
 [for (ne : NamedElement | aClass.ownedMember->filter(Enumeration))]
 [if (oclIsTypeOf(Enumeration))]
     [printEnum(ne.oclAsType(Enumeration))/]
@@ -190,10 +190,16 @@ t.type.name
 endif
  /]
 
-[template public contractIs (aClass : Class) ?(not aClass.allSuperTypesWithoutContractApi()->isEmpty())]
- is [for (c : Classifier | aClass.allSuperTypesWithoutContractApi())separator (',')][c.name/][/for][/template]
+[query public hasSuperTypes(aClass : Class) : Boolean = 
+not self.allSuperTypesWithoutContractApi()->isEmpty() /]
 
-[template public contractIs (aClass : Interface)?(not aClass.general->isEmpty())]
+
+
+[template public contractIs (aClass : Class)  ]
+[if (hasSuperTypes(aClass))]
+ is [for (c : Classifier | aClass.allSuperTypesWithoutContractApi())separator (',')][c.name/][/for][/if][/template]
+
+[template public icontractIs (aClass : Interface)?(not aClass.general->isEmpty())]
  is [for (c : Classifier | aClass.general)separator (',')][c.name/][/for][/template]
 
 [template public printEnum (en : Enumeration) ]
