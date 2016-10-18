@@ -381,14 +381,16 @@ function [aClass.name/]GuiMananger(guiId){
 	this.prefix = guiId;
 	this.managers=new Array();	//[ '[' /][ ']' /];		
 	this.guiFunction = null;
+	this.eventCallback = null;
 	
 	/**
 	* Add a contract to this manager.
-	* @namespace contract
+	* @contract the web3 contract instance
 	*/
 	this.addManager = function(contract) {
 		var m = new [aClass.name/]Manager(contract.address,contract,this.prefix);
 		m.eventlogPrefix = this.prefix;
+		m.eventCallback = this.eventCallback;
 		m.watchEvents();
 		if(this.guiFunction!=null)
 			m.guiFunction = this.guiFunction;
@@ -469,6 +471,7 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 	this.containerId = containerId;
 	this.eventlogPrefix = '';
 	this.guiFunction = null;
+	this.eventCallback = null;
 	
 	/**
 	* adds the gui element to the given 'e' element
@@ -549,9 +552,13 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 	[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
 	var event_[op.name/] = contract.[op.name/]({},{fromBlock: 0});
 	var elp = this.eventlogPrefix;
+	var callback = this.eventCallback;
 	event_[op.name/].watch(function(error,result){
 	if(!error){
-		var e = document.getElementById(elp+'eventLog');
+		if(callback!=null)
+			callback(result);
+
+[comment]		var e = document.getElementById(elp+'eventLog');
 		if(e==null){
 			console.log(elp+'eventLog');
 			return;
@@ -562,9 +569,9 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 		//console.log(result.address+ 'eventLog'+result.blockHash+' '+result.blockNumber+' '+result.args.name+' '+result.args.succesful+' ');
 		elemDiv.innerHTML = '<div class="eventRow">'
 [for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
-        +'<dic class="eventValue">'+result.args.[p.name/]+'</div>'
+        +'<div class="eventValue">'+result.args.[p.name/]+'</div>'
 [/for]
-		+ '</div>';
+		+ '</div>';[/comment]
 		}else
 			console.log(error);	
 	});
@@ -761,24 +768,24 @@ function [aClass.name/]GuiFactory() {
 	}
 
 
-//eventguis
+	//eventguis
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
 
 	/**
 	* Create a gui for the [op.name/] event.
-    * @inner - the inner text
+    * @prefix - a prefix
+	* @blockHash - the bolckhash 
+	* @blockNumber - the number of the block
 	*/
 	this.create[op.name/]LogDataGui = function(prefix, blockHash, blockNumber
 	[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
 	,[p.name/][/for]
 	) {
-		return '<ul class="dapp-account-list"><li > '
-        +'<a class="dapp-identicon dapp-small" style="background-image: url(identiconimage.png)"></a>'
-		+'<span>'+prefix+' ('+blockNumber+')</span>'
+		return '<div class="eventRow">'
 	[for (p : Parameter | op.ownedParameter->select(oclAsType(Parameter).direction<>ParameterDirectionKind::return) )]
-        +'<span>'+[p.name/]+'</span>'
+        +'<div class="eventValue">'+[p.name/]+'</div>'
 	[/for]
-        +' </li>';
+        +' </div>';
 	}
 [/for]
 
