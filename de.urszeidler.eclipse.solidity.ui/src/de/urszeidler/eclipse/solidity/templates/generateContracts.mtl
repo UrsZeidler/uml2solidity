@@ -84,7 +84,7 @@ contract [aInterface.name/][icontractIs(aInterface)/] {
 [printCommentDoc(aClass.ownedComment)/]
 library [aClass.name/] {
 [for (op : Operation | aClass.allFunctions())]
-	[printOperation(op)/]
+	[printOperation(op,aClass)/]
 [/for]
 }
 [/for]
@@ -140,10 +140,10 @@ contract [aClass.name/][aClass.contractIs()/] {
 [comment deprecated /]
 	[printConstructor(aClass)/]
 [for (op : Operation | aClass.allAbstractFunctions())]
-	[printFunctionImplementation(op)/]
+	[printFunctionImplementation(op,aClass)/]
 [/for]
 [for (op : Operation | aClass.allFunctions())]
-	[printOperation(op)/]
+	[printOperation(op,aClass)/]
 [/for]
 [for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
 	[printDelegateOperations(prop)/]
@@ -292,13 +292,13 @@ mapping ([getStereotypeValue('KeyMapping', 'key').oclAsType(NamedElement).name/]
 [**
  * Prints a concrete or abstract function.
 */]
-[template public printOperation (aOperation : Operation) ? (hasStereotype(aOperation, 'Function'))]
+[template public printOperation (aOperation : Operation, aClass : Class) ? (hasStereotype(aOperation, 'Function'))]
 [if (aOperation.isAbstract)]
 
 [printFunctionComments(aOperation)/]
 function [printFunctionDeclaration(aOperation)/];
 [else]
-[printFunctionImplementation(aOperation)/]
+[printFunctionImplementation(aOperation,aClass)/]
 [/if]
 [/template]
 
@@ -321,14 +321,14 @@ function [aOperation.name/]([printParameters(aOperation,ParameterDirectionKind::
 [**
  * Print a complete function with doc.
 */]
-[template public printFunctionImplementation(aOperation : Operation)]
+[template public printFunctionImplementation(aOperation : Operation, aClass : Class)]
 
 [printFunctionComments(aOperation)/]
 function [printFunctionDeclaration(aOperation)/] {
 [if(not aOperation.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]
 	[aOperation.printCode()/]
 [/if]
-	//[protected(aOperation.owner.oclAsType(NamedElement).name+'.function.'+aOperation.name+operationParameters(aOperation))]
+	//[protected(aClass.name+'.function.'+aOperation.name+operationParameters(aOperation))]
 	//TODO: implement
 	//[/protected]
 }[/template]
