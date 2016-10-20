@@ -352,12 +352,12 @@ function [aClass.name/]Deployment(guiId){
 	/**
 	* Construct [aClass.name/].
 	**/
-	this.deploy[op.functionName()/] = function(account,code,providedGas,[for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]){
-//		var c = [aClass.name/].new(_name,_url,_description,{
-//			from: account,
-//			data: code,
-//			gas:  providedGas
-//		});
+	this.deploy[op.functionName()/] = function(account, code, providedGas[for (p : Parameter | op.allInParameters())], [p.name/][/for]){
+		var c = [aClass.name/].new(_name,_url,_description,{
+			from: account,
+			data: code,
+			gas:  providedGas
+		});
 		return c;
 	}
 [/for]
