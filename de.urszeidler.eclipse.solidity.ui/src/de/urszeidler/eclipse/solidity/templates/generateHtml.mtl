@@ -347,6 +347,11 @@ c.createDefaultGui();
 * Each constructor is available.
 **/
 function [aClass.name/]Deployment(guiId){
+	this.prefix = guiId;
+//[protected(aClass.name+'_deployment_attributes_js')]
+//TODO: implement
+//[/protected]
+
 [for (op : Operation | aClass.allConstructors())]
 
 	/**
@@ -361,6 +366,15 @@ function [aClass.name/]Deployment(guiId){
 		return c;
 	}
 [/for]
+	
+	/**
+	* The default deployer function.
+	**/
+	this.deployDefault = function(){
+		//[protected(aClass.name+'_deployDefault')]
+		//TODO: implement
+		//[/protected]
+	}
 
 //[protected(aClass.name+'_deployment_js')]
 //TODO: implement
