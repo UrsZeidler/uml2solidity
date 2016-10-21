@@ -71,6 +71,13 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 		new Label(grpGenerateJsCode, SWT.NONE);
 		
 		btnGenerateWeb3 = new Button(grpGenerateJsCode, SWT.CHECK);
+		btnGenerateWeb3.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				setDirty(true);
+				updateLaunchConfigurationDialog();
+			}
+		});
 		btnGenerateWeb3.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		btnGenerateWeb3.setText("generate web3 js");
 		new Label(grpGenerateJsCode, SWT.NONE);

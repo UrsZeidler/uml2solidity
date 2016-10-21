@@ -107,10 +107,10 @@ function Test[aClass.name/](contract) {
 	//Test for [op.functionName()/]
 	this.test[op.functionName()/]=function() {
 		//	var res = this.test_instance.[op.name/]([for (p : Parameter | op.allInParameters())separator (',')] p_[p.name/][/for]);
-		//[protected('test_'+op.functionName())]
+		//[protected('test_'+op.functionName(aClass))]
 		//TODO : implement this
 		//var test = false;		
-		//this.testAE("test[op.name/]", "executed: test[op.functionName()/]",true, test);		
+		//this.testAE("test[op.name/]", "executed: test[op.functionName(aClass)/]",true, test);		
 		//[/protected]
 	}
 [/for]
