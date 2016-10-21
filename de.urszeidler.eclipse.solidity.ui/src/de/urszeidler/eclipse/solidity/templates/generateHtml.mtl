@@ -162,6 +162,10 @@ this.createDefaultGui=function() {
 	//[/protected]
 
 }// end of [aPackage.name.toUpperFirst()/]Page
+
+//[protected(aPackage.name.toUpperFirst()+'_custom_functions')]
+		//TODO: implement
+//[/protected]
 [/template]
 
 [template public printAllContractAdresses (p : Package) ]
@@ -304,6 +308,9 @@ c.createDefaultGui();
 [template public functionName(op : Operation)]
 [op.owner.oclAsType(NamedElement).name/]_[op.name/][for (p : Parameter | op.allInParameters())]_[p.type.name/][/for][/template]
 
+[template public functionName(op : Operation,aClass : Class)]
+[aClass.name/]_[op.name/][for (p : Parameter | op.allInParameters())]_[p.type.name/][/for][/template]
+
 [comment][template private printJavaScript1 (p : Package) ]
 [for (	aClass : Class | p.allContracts())]
 <!-- javascript for [aClass.name/] -->
@@ -335,9 +342,6 @@ c.createDefaultGui();
 [printJsManager(aClass)/]
 [printJsGuiManager(aClass)/]
 [printDeployer(aClass)/]
-//[protected('custom_'+aClass.name+'_js')]
-//TODO: implement
-//[/protected]
 [/template]
 
 [template public printDeployer (aClass : Class, aClass1 : Class) ]
@@ -358,11 +362,11 @@ function [aClass.name/]Deployment(guiId){
 	* Construct [aClass.name/].
 	**/
 	this.deploy[op.functionName()/] = function(account, code, providedGas[for (p : Parameter | op.allInParameters())], [p.name/][/for]){
-		var c = [aClass.name/].new(_name,_url,_description,{
-			from: account,
-			data: code,
-			gas:  providedGas
-		});
+//		var c = [aClass.name/].new([for (p : Parameter | op.allInParameters())separator (',')] [p.name/][/for][if(not op.allInParameters()->isEmpty())],[/if]{
+//			from: account,
+//			data: code,
+//			gas:  providedGas
+//		});
 		return c;
 	}
 [/for]
@@ -564,7 +568,7 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 	**/
 	this.watchEvents=function(){
 	[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
-	var event_[op.name/] = contract.[op.name/]({},{fromBlock: 0});
+	var event_[op.name/] = this.getContract().[op.name/]({},{fromBlock: 0});
 	var elp = this.eventlogPrefix;
 	var callback = this.eventCallback;
 	event_[op.name/].watch(function(error,result){
