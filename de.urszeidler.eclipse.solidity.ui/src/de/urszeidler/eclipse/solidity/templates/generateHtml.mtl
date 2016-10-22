@@ -617,6 +617,24 @@ this.contract = contract;
 		return contract.[p.name/](); 
 	}
 [/for]
+[for (p : Property | aClass.allMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
+	/**
+	* Get the mapped value for a key.
+	*/
+	this.get[p.name.toUpperFirst()/]=function(key) {
+		return contract.[p.name/](key);
+	}
+[/let][/for]
+[for (p : Property | aClass.allKeyMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
+	/**
+	* Get the mapped value for a key.
+	*/
+	this.get[p.name.toUpperFirst()/]=function(key) {
+		return contract.[p.name/](key);
+	}
+[/let][/for]
 [for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
 	/**
 	* Call [op.name/].
