@@ -70,7 +70,35 @@ var [aClass.name/]Contract = web3.eth.contract([printAbi(aClass)/]);
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))separator (',')]
 [printEventSignature(op)/]
 [/for]
+[for (aProperty : Property | aClass.allAttributes()
+	->select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping'))
+	->select(hasStereotype('GetterSetter'))
+	->select(not isPrivate())
+	->sortedBy(indexInContainer(oclAsType(Property)) + name ))]
+[printGetterSetter(aProperty)/]
+[/for]
 [ ']' /]
+[/template]
+
+[template public printGetterSetter(aProperty : Property)]
+[if (aProperty.getStereotypeValue('GetterSetter', 'getter').oclAsType(Boolean))]
+  ,{
+    "constant": true,
+    "inputs": ['['/][']'/],    
+    "name": "get[aProperty.name.toUpperFirst()/]",
+    "outputs": ['['/]{"name": "[aProperty.name/]","type": "[toAbiType(aProperty.type)/]"}[']'/],
+    "type": "function"
+  }
+[/if]
+[if (aProperty.getStereotypeValue('GetterSetter', 'setter').oclAsType(Boolean))]
+  ,{
+    "constant": false,
+    "inputs": ['['/]{"name": "a[aProperty.name.toUpperFirst()/]","type": "[toAbiType(aProperty.type)/]"}[']'/],    
+    "name": "set[aProperty.name.toUpperFirst()/]",
+    "outputs": ['['/][']'/],
+    "type": "function"
+  }
+[/if]
 [/template]
 
 [template public printMapping(key : Type,value:Type, p:Property)]
