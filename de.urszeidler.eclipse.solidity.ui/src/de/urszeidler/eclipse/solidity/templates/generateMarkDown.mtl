@@ -69,10 +69,10 @@
 	function [printFunctionDeclaration(op)/]
 [/for]
 
-[if (not aClass.superClass->isEmpty())]inherites: [for (c : Class | aClass.superClass)separator (',')][contractLink(c,aClass)/][/for][/if]
+[if (not aClass.superClass->isEmpty())]inherites: [for (c : Class | aClass.superClass->sortedBy(indexInContainer()))separator (',')][contractLink(c,aClass)/][/for][/if]
 
 [aClass.printDoc()/]
-[for (ne : NamedElement | aClass.ownedMember->filter(Enumeration))]
+[for (ne : NamedElement | aClass.ownedMember->filter(Enumeration)->sortedBy(indexInContainer()))]
 ### [aClass.name/] enums: [ne.name/]
 
 [ne.printDoc()/]
