@@ -157,6 +157,8 @@ or not pa.allInterfaces()->isEmpty()
 
 [query public isContract(c : Type) : Boolean = c.hasStereotype('Contract') /]
 [query public isStruct(s : Type) : Boolean = s.hasStereotype('Struct') /]
+[query public isFunction(s : Operation) : Boolean = s.hasStereotype('Function') /]
+[query public isEvent(s : Operation) : Boolean = s.hasStereotype('Event') /]
 
 
 [query public allCProperties(c : Class) : OrderedSet(Property) = c.attribute 

@@ -55,17 +55,28 @@ var [aClass.name/]Contract = web3.eth.contract([printAbi(aClass)/]);
 [for (p : Property | aClass.allAttributes()-> select(isKeyMapping()))]
 [printMapping( getStereotypeValue('KeyMapping', 'key').oclAsType(Type),p.type, p)/],
 [/for]
-[printMethodSignature(aClass)/] [if (not aClass.ownedOperation->select(hasStereotype('Event'))->isEmpty())],[/if]
+[for (op : Operation | aClass.allSubFunctions()->asSequence()
+	-> union(aClass.allAbstractFunctions()->asSequence())
+	-> select(isPublic()))separator (',')]
+[printFunctionSignatur(op)/]
+[/for]
+[comment][for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))separator (',')]
+[printFunctionSignatur(op)/]
+[/for][/comment]
+[comment][printMethodSignature(aClass)/] [if (not aClass.ownedOperation->select(hasStereotype('Event'))->isEmpty())],[/if][/comment]
+[if (not aClass.ownedOperation->select(hasStereotype('Event'))->isEmpty())],[/if]
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))separator (',')]
 [printEventSignature(op)/]
 [/for]
-[for (aProperty : Property | aClass.allAttributes()
+[let se : OrderedSet(Property) = aClass.allAttributes()
 	->select(not hasStereotype('Mapping') and not hasStereotype('KeyMapping'))
 	->select(hasStereotype('GetterSetter'))
 	->select(not isPrivate())
-	->sortedBy(indexInContainer(oclAsType(Property)) + name ))]
+	->sortedBy(indexInContainer(oclAsType(Property)) + name )]
+[for (aProperty : Property | se)]
 [printGetterSetter(aProperty)/]
 [/for]
+[/let]
 [ ']' /]
 [/template]
 
@@ -108,15 +119,29 @@ var [aClass.name/]Contract = web3.eth.contract([printAbi(aClass)/]);
 */]
 [template public printMethodSignature (aClass : Class) ]
 [for (op : Operation | aClass.allSubFunctions()->select(isPublic()))separator (',')]
-  {
-    "constant": [if(op.isReturnConstant())]true[else]false[/if],
+[printFunctionSignatur(op)/]
+[/for]
+[/template]
+
+[**
+ * Print the abstract functions.
+*/]
+[template public printAbstractFunctions (aClass : Class) ]
+[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))separator (',')]
+[printFunctionSignatur(op)/]
+[/for]
+[/template]
+
+
+[template public printFunctionSignatur(op : Operation)?( op.isFunction() )]
+{ "constant": [if(op.isReturnConstant())]true[else]false[/if],
     "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[toAbiType(p.type)/]"}[/for][']'/],    
     "name": "[op.name/]",
     "outputs": ['['/][for (p : Parameter | op.allReturnParameters())separator (',')]{"name": "[p.name/]","type": "[toAbiType(p.type)/]"}[/for][']'/],
-    "type": "function"
-  }
-[/for]
+    "type": "function" }
 [/template]
+
+
 
 [**
  * Print the event signature as json.
