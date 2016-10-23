@@ -34,13 +34,6 @@
 [printAllWeb3Contracts(p)/]
 [/file]
 [/if]
-[comment][if (p.generateAbi())]
-[for (	aClass : Class | p.allContracts())]
-[file (p.getAbiDirectory()+ '/' + aClass.name+'.json', false, 'UTF-8')]
-[printAbi(aClass)/]
-[/file]
-[/for]
-[/if][/comment]
 [/template]
 
 [template public printAllWeb3Contracts (p : Package) ]
@@ -58,13 +51,9 @@ var [aClass.name/]Contract = web3.eth.contract([printAbi(aClass)/]);
 [/for]
 [for (p : Property | aClass.allAttributes()-> select(isMapping()))]
 [printMapping(p.type, getStereotypeValue('Mapping', 'value').oclAsType(Type), p)/],
-//
-
-[comment]{"constant":true,"inputs":[ '[' /]{"name":"","type":"[toAbiType(p.type)/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'value').oclAsType(NamedElement).name/]"}[ ']' /],"type":"function"},[/comment]
 [/for]
 [for (p : Property | aClass.allAttributes()-> select(isKeyMapping()))]
 [printMapping( getStereotypeValue('KeyMapping', 'key').oclAsType(Type),p.type, p)/],
-[comment]{"constant":true,"inputs":[ '[' /]{"name":"","type":"[getStereotypeValue('Mapping', 'key').oclAsType(NamedElement).name/]"}[ ']' /],"name":"[p.name/]","outputs":[ '[' /]{"name":"","type":"[p.type.name/]"}[ ']' /],"type":"function"},[/comment]
 [/for]
 [printMethodSignature(aClass)/] [if (not aClass.ownedOperation->select(hasStereotype('Event'))->isEmpty())],[/if]
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))separator (',')]
@@ -80,7 +69,7 @@ var [aClass.name/]Contract = web3.eth.contract([printAbi(aClass)/]);
 [ ']' /]
 [/template]
 
-[template public printGetterSetter(aProperty : Property)]
+[template public printGetterSetter(aProperty : Property) ? (hasStereotype('GetterSetter'))]
 [if (aProperty.getStereotypeValue('GetterSetter', 'getter').oclAsType(Boolean))]
   ,{
     "constant": true,
