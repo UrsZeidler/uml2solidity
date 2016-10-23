@@ -108,7 +108,7 @@ struct [aClass.name/] {
 [template public printContract (aClass : Class) ]
 [printCommentDoc(aClass.ownedComment)/]
 contract [aClass.name/][aClass.contractIs()/] {
-[for (ne : NamedElement | aClass.ownedMember->filter(Enumeration))]
+[for (ne : NamedElement | aClass.ownedMember->filter(Enumeration)->sortedBy(indexInContainer()) )]
 [if (oclIsTypeOf(Enumeration))]
     [printEnum(ne.oclAsType(Enumeration))/]
 [/if][/for]
