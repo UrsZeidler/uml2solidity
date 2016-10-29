@@ -403,6 +403,7 @@ function [aClass.name/]GuiMananger(guiId){
 	this.managers=new Array();	//[ '[' /][ ']' /];		
 	this.guiFunction = null;
 	this.eventCallback = null;
+	this.managerMap = {};
 	
 	/**
 	* Add a contract to this manager.
@@ -416,7 +417,7 @@ function [aClass.name/]GuiMananger(guiId){
 		if(this.guiFunction!=null)
 			m.guiFunction = this.guiFunction;
 		this.managers.push(m);
-		//manager.addGui();
+		this.managerMap[ '[' /]contract.address[ ']' /] = m;
 	}
 
 	/**
