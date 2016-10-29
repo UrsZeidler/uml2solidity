@@ -277,6 +277,9 @@ c.createDefaultGui();
 [for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
 [printOperationsUi(prop.type.oclAsType(Class),'delegate_')/]
 [/for]
+[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
+[printOperationUi(aClass,'',op)/]
+[/for]
 </div>
 [/template]
 
@@ -643,6 +646,14 @@ this.contract = contract;
 		return contract.[op.name/]([for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]); 
 	}
 [/for]
+[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))separator (',')]
+	/**
+	* Call [op.name/].
+	**/
+	this.[op.name/] = function([for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]){
+		return contract.[op.name/]([for (p : Parameter | op.allInParameters())separator (',')][p.name/][/for]); 
+	}
+[/for]
 }// end of function [aClass.name/]Model
 [/template]
 
@@ -691,6 +702,14 @@ function [aClass.name/]Controller() {
 			btn.onclick = this.[op.functionName()/];
 		else console.log('[op.functionName()/] widget not bound');
 [/for]
+[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
+		var btn = document.getElementById(self.prefix+'[aClass.name/]Controller.[op.functionName()/]');
+		if(btn!=undefined)
+			btn.onclick = this.[op.functionName()/];
+		else console.log('[op.functionName()/] widget not bound');
+
+[/for]
+
 	}
 
 	/**
@@ -711,7 +730,6 @@ function [aClass.name/]Controller() {
 [for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
 	[printCallFunction(prop.type.oclAsType(Class),aClass,'delegate_')/]
 [/for]
-
 }// end controller	
 [/template]
 
@@ -761,6 +779,17 @@ function [aClass.name/]GuiFactory() {
 	* Create the gui for the function [op.name/].
 	*/
 	this.create[op.functionName()/]Gui=function() {
+		return [for (it : String | printOperationUi(aClass,'',op).toString().tokenizeLine())separator ('+')]
+		'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
+	[/for];
+	}
+[/for]
+[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))separator (',')]
+
+	/**
+	* Create the gui for the function [op.name/].
+	*/
+	this.create[op.functionName(aClass)/]Gui=function() {
 		return [for (it : String | printOperationUi(aClass,'',op).toString().tokenizeLine())separator ('+')]
 		'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
 	[/for];
@@ -853,7 +882,7 @@ this._updateAttributes=function () {
 	var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
 	if(e!=null){
 		var _key = e.value;
-		if(_key=='') return;
+		if(_key!='') {
 		var [p.name/]_res = self.instance.[p.name/](_key);
 		if([p.name/]_res!=null){
 [for (p1 : Property | value.attribute)]
@@ -861,18 +890,18 @@ this._updateAttributes=function () {
 		if(e1!=null)	
 			e1.innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
 [/for]
-		}}
+		}}}
 [else]
 	var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
 	if(e!=null){
 		var _key = e.value;
-		if(_key=='') return;
+		if(_key!='') {
 		var [p.name/]_res = self.instance.[p.name/](_key);
 		if([p.name/]_res!=null){
 			var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value');
 			if(e1!=null)	
 				e1.innerText = [p.name/]_res;
-		}}
+		}}}
 [/if]
 [/let]
 [/for]
@@ -882,7 +911,7 @@ this._updateAttributes=function () {
 	var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
 	if(e!=null){
 		var _key = e.value;
-		if(_key=='') return;
+		if(_key!=''){
 		var [p.name/]_res = self.instance.[p.name/](_key);
 		if([p.name/]_res!=null){
 [for (p1 : Property | p.type.oclAsType(Class).attribute)]
@@ -890,18 +919,18 @@ this._updateAttributes=function () {
 		if(e1!=null)	
 			e1.innerText = [p.name/]_res[ '[' /][ i-1/][ ']' /];
 [/for]
-		}}
+		}}}
 [else]
 	var e = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input');
 	if(e!=null){
 		var _key = document.getElementById(self.prefix+'[aClass.name/]_contract_attribute_[p.name/]_input').value;
-		if(_key=='') return;
+		if(_key!=''){
 		var [p.name/]_res = self.instance.[p.name/](_key);
 		if([p.name/]_res!=null){
 			var e1 = document.getElementById(self.prefix+'[aClass.name/]_[p.name/]_value');
 			if(e1!=null)	
 				e1.innerText = [p.name/]_res;
-		}}
+		}}}
 [/if]
 [/let]
 [/for]
@@ -910,7 +939,7 @@ this._updateAttributes=function () {
 
 [template private printCallFunction(aClass : Class,aContractClass : Class, prefix:String)]
 //call functions
-[for (op : Operation | aClass.allSubFunctions())]
+[for (op : Operation | aClass.allSubFunctions()->asSequence()->union(aClass.allAbstractFunctions()->asSequence()))]
 
 /**
 * Calls the contract function [prefix/][aClass.name/]_[op.name/].
