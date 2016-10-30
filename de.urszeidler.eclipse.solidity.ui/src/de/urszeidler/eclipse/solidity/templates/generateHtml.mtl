@@ -214,7 +214,6 @@ c.createDefaultGui();
 [/template]
 
 [template public printHtmlScructInterface (c:Class , p : Property, k : Type,v : Classifier) ]
-<!--struct -->
 <div class="Struct_Mapping" id="Struc_[c.name/]_contract_attribute_[p.name/]">struc mapping  [p.name/]:
 		<input type="[k.toHtmlType()/]" id="[c.name/]_contract_attribute_[p.name/]_input">([k.name/])
 [for (p1 : Property | v.attribute)]
@@ -224,6 +223,23 @@ c.createDefaultGui();
 [/for]
   </div>
 [/template]
+
+[template public printJsScructInterface (c:Class , p : Property, k : Type,v : Classifier) ]
+	/**
+	* Create the gui for the function Struc [c.name/]-[p.name/].
+	*/
+	this.createStruc_[c.name/]_contract_attribute_[p.name/]Gui=function(struct) {
+		return '<div class="Struct_Mapping" id='+this.prefix+'"Struc_[c.name/]_contract_attribute_[p.name/]">'
+[for (p1 : Property | v.attribute)]
+    		+'<div class="Struct_attribute" id='+this.prefix+'"[c.name/]_contract_attribute_[p.name/]_[p1.name/]"> [p1.name/]:'
+      		+'	<div class="Struct_attribute_value" id='+this.prefix+'"[c.name/]_[p.name/]_[p1.name/]_value">'+struct.[p1.name/]()+'</div>'
+    		+'</div>'
+[/for]
+  		+'</div>';
+	}
+[/template]
+
+
 
 [template public printHtmlInterface (p : Package)? (not p.oclIsUndefined())]
 [comment][for (	aClass : Class | p.allContracts())]
@@ -853,6 +869,20 @@ function [aClass.name/]GuiFactory() {
 	[/for]
         +' </div>';
 	}
+[/for]
+[for (p : Property | aClass.allMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
+[if (value.oclIsTypeOf(Class) and value.hasStereotype('Struct'))]
+[printJsScructInterface(aClass, p, p.type, value )/]
+[/if]
+[/let]
+[/for]
+[for (p : Property | aClass.allKeyMappingSubAttributes())]
+[let key : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
+[if (p.type.oclIsTypeOf(Class)and p.type.hasStereotype('Struct'))]
+[printJsScructInterface(aClass,p, key, p.type.oclAsType(Class))/]
+[/if]
+[/let]
 [/for]
 
 }//end guifactory
