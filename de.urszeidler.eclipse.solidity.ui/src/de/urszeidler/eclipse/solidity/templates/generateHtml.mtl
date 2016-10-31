@@ -418,7 +418,9 @@ function [aClass.name/]GuiMananger(guiId){
 	this.prefix = guiId;
 	this.managers=new Array();	//[ '[' /][ ']' /];		
 	this.guiFunction = null;
-	this.eventCallback = null;
+[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+	this.event[op.name/] = null;
+[/for]	
 	this.managerMap = {};
 	
 	/**
@@ -428,7 +430,9 @@ function [aClass.name/]GuiMananger(guiId){
 	this.addManager = function(contract) {
 		var m = new [aClass.name/]Manager(contract.address,contract,this.prefix);
 		m.eventlogPrefix = this.prefix;
-		m.eventCallback = this.eventCallback;
+[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+		m.event[op.name/] = this.event[op.name/];
+[/for]	
 		m.watchEvents();
 		if(this.guiFunction!=null)
 			m.guiFunction = this.guiFunction;
@@ -509,7 +513,9 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 	this.containerId = containerId;
 	this.eventlogPrefix = '';
 	this.guiFunction = null;
-	this.eventCallback = null;
+[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
+	this.event[op.name/] = null;
+[/for]	
 	
 	/**
 	* adds the gui element to the given 'e' element
@@ -590,7 +596,7 @@ function [aClass.name/]Manager(prefix,contract,containerId) {
 	[for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
 	var event_[op.name/] = this.getContract().[op.name/]({},{fromBlock: 0});
 	var elp = this.eventlogPrefix;
-	var callback = this.eventCallback;
+	var callback = this.event[op.name/];
 	event_[op.name/].watch(function(error,result){
 	if(!error){
 		if(callback!=null)

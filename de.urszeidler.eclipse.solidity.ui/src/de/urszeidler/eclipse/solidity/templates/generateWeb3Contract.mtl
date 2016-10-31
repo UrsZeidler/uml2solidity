@@ -154,6 +154,7 @@ var [aClass.name/]Contract = web3.eth.contract([printAbi(aClass)/]);
 [/template]
 
 [template public toAbiType(type : Type)]
-[if (type.hasStereotype('Contract'))]address[else]
+[if (type.hasStereotype('Contract'))]address[elseif (type.name='uint')]
+uint256[else]
 [type.name/][/if]
 [/template]
