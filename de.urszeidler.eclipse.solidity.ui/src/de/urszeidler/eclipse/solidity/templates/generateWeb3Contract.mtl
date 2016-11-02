@@ -147,8 +147,15 @@ var [aClass.name/]Contract = web3.eth.contract([printAbi(aClass)/]);
  * Print the event signature as json.
 */]
 [template public printEventSignature (op : Operation) ]
-  { "constant": true,
-    "inputs": ['['/][for (p : Parameter | op.allInParameters())separator (',')]{"name": "[p.name/]","type": "[toAbiType(p.type)/]"}[/for][']'/],    
+  { "anonymous": false,
+    "inputs": 
+	['['/]
+[for (p : Parameter | op.allInParameters())separator (',')]
+		{"indexed": [if(p.isIndexed())]true[else]false[/if],
+		 "name": "[p.name/]",
+         "type": "[toAbiType(p.type)/]"}
+[/for]
+	[']'/],    
     "name": "[op.name/]",
     "type": "event"  }
 [/template]
