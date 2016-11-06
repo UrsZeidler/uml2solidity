@@ -83,6 +83,22 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 
 		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
 		
+		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_JAVA_INTERFACE, "generate java interfaces",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.GENERATION_JAVA_INTERFACE_TARGET, "generate interfaces to directory", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.GENERATION_JAVA_INTERFACE_PACKAGE_PREFIX, "interface package prefix", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+
+		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
+		
+		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_JAVA_TESTS, "generate java tests",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.GENERATION_JAVA_TEST_TARGET, "generate test to directory", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+
+		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
+		
 		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_ABI, "generate abi for each contract",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.GENERATE_ABI_TARGET, "generate abi to directory", -1,
