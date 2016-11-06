@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -17,6 +18,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Stereotype;
+import org.eclipse.uml2.uml.Type;
 
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
 
@@ -275,6 +277,78 @@ public class Uml2Service {
 	public static Boolean generateWeb3(NamedElement clazz) {
 		IPreferenceStore store = getStore(clazz);
 		return store.getBoolean(PreferenceConstants.GENERATE_WEB3);
+	}
+
+	/**
+	 * Should web3 file being generated.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static String solidity2javaType(Type type) {
+		IPreferenceStore store = getStore(type);
+		String string = store.getString(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+type.getName());
+		if(string==null)
+			return "String";
+		return string;
+	}
+
+	/**
+	 * Returns the directory for the abi generation.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static String getInterfacePackagePrefix(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.GENERATION_JAVA_INTERFACE_PACKAGE_PREFIX);
+	}
+
+	/**
+	 * Should abi files for each class being generated.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static Boolean generateJavaTests(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(PreferenceConstants.GENERATE_JAVA_TESTS);
+	}
+
+	/**
+	 * Returns the directory for the abi generation.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static String getJavaTestDirectory(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.GENERATION_JAVA_TEST_TARGET);
+	}
+
+	/**
+	 * Returns the directory where the junit tests can pickup the contract code.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static String getContractPathForJava(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		String co = store.getString(PreferenceConstants.GENERATION_TARGET);
+		Path path = new Path(co);
+		String javaTestDirectory = getJavaTestDirectory(clazz);
+		Path path2 = new Path(javaTestDirectory);
+		IPath makeRelativeTo = path.makeRelativeTo(path2);
+		//TODO: this is a hack only working in the default test setup
+		if(makeRelativeTo.segmentCount()>2)
+			makeRelativeTo = makeRelativeTo.removeFirstSegments(2);
+		
+		return makeRelativeTo.toString();
 	}
 
 	/**

@@ -49,6 +49,24 @@
 [query public generateWeb3(class : NamedElement) : Boolean
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateWeb3(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
 /]
+[query public solidity2javaType(type : Type) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'solidity2javaType(org.eclipse.uml2.uml.Type)', Sequence{type})
+/]
+[query public getInterfacePackagePrefix(class : NamedElement) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getInterfacePackagePrefix(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public getJavaTestDirectory(class : NamedElement) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getJavaTestDirectory(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public generateJavaTests(class : NamedElement) : Boolean
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateJavaTests(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+[query public getContractPathForJava(class : NamedElement) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getContractPathForJava(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
+
+[query public hasSuperTypes(aClass : Class) : Boolean = 
+not self.allSuperTypesWithoutContractApi()->isEmpty() /]
 
 [query public isGeneratePackage(pa : Package) : Boolean = 
 not pa.allContracts()->isEmpty() 
@@ -213,6 +231,28 @@ op.getStereotypeListValue('Function','modifier')
 ->sortedBy(indexInContainer(oclAsType(PackageImport))) 
 /]
 
+[template public operationParameters(op : Operation)]
+[for (p : Parameter | op.allInParameters())]_[p.type.name/][/for]
+[/template]
+
+[template public operationReturnParameters(op : Operation)]
+[for (p : Parameter | op.allReturnParameters())]_[p.type.name/][/for]
+[/template]
+
+
+[template public printLines(aString : String, prefix : String)]
+[for (line : String | aString.tokenizeLine())]
+[prefix/] [line/]
+[/for]
+[/template]
+
+[**
+ * Prints the string in one line seperated with ' '.
+*/]
+[template public printInLines(aString : String)]
+[for (line : String | aString.tokenizeLine())separator (' ')]
+[line/][/for]
+[/template]
 
 
 [comment][query public firstReturnParameter(aOperation : Operation) : Parameter = aOperation.ownedParameter->select(oclAsType(Parameter).direction=ParameterDirectionKind::return)->first() /][/comment]

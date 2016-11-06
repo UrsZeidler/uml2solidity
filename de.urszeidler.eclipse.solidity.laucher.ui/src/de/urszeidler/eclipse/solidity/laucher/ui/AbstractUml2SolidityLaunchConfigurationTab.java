@@ -9,9 +9,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.swt.widgets.Decorations;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 import de.urszeidler.eclipse.solidity.laucher.core.GenerateUml2Solidity;
 
@@ -21,6 +25,21 @@ import de.urszeidler.eclipse.solidity.laucher.core.GenerateUml2Solidity;
  */
 public abstract class AbstractUml2SolidityLaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 
+	public void handleChooseContainer(Text base_target_text,String dialogTitel) {
+		IContainer initialRoot = toContainer(base_target_text.getText());
+		ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
+				initialRoot, false, dialogTitel);
+		containerSelectionDialog.open();
+		Object[] result = containerSelectionDialog.getResult();
+		if (result != null && result.length == 1) {
+			IPath container = (IPath) result[0];
+			base_target_text.setText(container.toString());
+			setDirty(true);
+			updateLaunchConfigurationDialog();
+		}
+
+	}
+	
 	/**
 	 * Return the container or the workspace root.
 	 * @param p

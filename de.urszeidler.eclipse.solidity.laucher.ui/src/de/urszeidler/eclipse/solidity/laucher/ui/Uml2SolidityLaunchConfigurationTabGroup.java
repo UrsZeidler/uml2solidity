@@ -26,7 +26,7 @@ public class Uml2SolidityLaunchConfigurationTabGroup extends AbstractLaunchConfi
 	@Override
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] { new GenerateUml2SolidityCodeConfigurationTab(),
-				new GenerateJSCodeConfigurationTab(), new GenerateOthersConfigurationTab(),new CommonTab() };
+				new GenerateJSCodeConfigurationTab(), new GenerateJavaCodeConfigurationTab(), new GenerateOthersConfigurationTab(),new CommonTab() };
 		setTabs(tabs);
 	}
 

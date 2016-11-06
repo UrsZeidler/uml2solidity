@@ -190,9 +190,6 @@ t.type.name
 endif
  /]
 
-[query public hasSuperTypes(aClass : Class) : Boolean = 
-not self.allSuperTypesWithoutContractApi()->isEmpty() /]
-
 
 
 [template public contractIs (aClass : Class)  ]
@@ -333,10 +330,6 @@ function [printFunctionDeclaration(aOperation)/] {
 	//[/protected]
 }[/template]
 
-[template private operationParameters(op : Operation)]
-[for (p : Parameter | op.allInParameters())]_[p.type.name/][/for]
-[/template]
-
 [template public printCode(op : Operation) ? (op.hasStereotype('Function') and not op.getStereotypeValue('Function', 'functionCode').oclIsUndefined())]
 [op.getStereotypeValue('Function', 'functionCode').oclAsType(String).printLines('')/][/template]
 
@@ -431,20 +424,6 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/])[aP
 * [p.name/] -[if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
 [/for][/if]
 */[/template]
-
-[template public printLines(aString : String, prefix : String)]
-[for (line : String | aString.tokenizeLine())]
-[prefix/] [line/]
-[/for]
-[/template]
-
-[**
- * Prints the string in one line seperated with ' '.
-*/]
-[template public printInLines(aString : String)]
-[for (line : String | aString.tokenizeLine())]
- [line/][/for]
-[/template]
 
 
 [template private printType(t : TypedElement)]

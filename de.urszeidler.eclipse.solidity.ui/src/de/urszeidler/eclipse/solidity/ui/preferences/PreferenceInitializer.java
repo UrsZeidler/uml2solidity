@@ -38,7 +38,19 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.GENERATOR_PROJECT_SETTINGS, false);
 		
 		store.setDefault(PreferenceConstants.JS_FILE_HEADER, "// file header");
-		store.setDefault(PreferenceConstants.CONTRACT_FILE_HEADER, "/**\n*\n*\n**/");
+		store.setDefault(PreferenceConstants.CONTRACT_FILE_HEADER, "/*\n*\n*\n*/");
+		
+		store.setDefault(PreferenceConstants.GENERATE_JAVA_INTERFACE, true);
+		store.setDefault(PreferenceConstants.GENERATION_JAVA_INTERFACE_TARGET, "src/");
+		store.setDefault(PreferenceConstants.GENERATE_JAVA_TESTS, true);
+		store.setDefault(PreferenceConstants.GENERATION_JAVA_TEST_TARGET, "test/");
+		
+		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPES, "string,uint,address,boolean");
+		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+"string", "String");
+		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+"uint", "Integer");
+		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+"address", "Address");
+		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+"boolean", "Boolean");
+		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+"int", "Integer");
 	}
 
 }

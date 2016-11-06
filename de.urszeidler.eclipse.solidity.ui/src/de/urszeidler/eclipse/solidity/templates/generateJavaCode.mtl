@@ -1,0 +1,152 @@
+[comment encoding = UTF-8 /]
+[module generateJavaCode('http://www.eclipse.org/uml2/5.0.0/UML')/]
+
+
+[import de::urszeidler::eclipse::solidity::util::um2service /]
+
+[**
+ * The documentation of the template generateElement.
+ * @param aClass
+ */]
+[template public generateElement(aModel : Model)]
+[comment @main/]
+[generatePackage(aModel)/]
+[iteratePackages(aModel)/]
+[/template]
+
+[**
+ * Iterates over the packages.
+*/]
+[template private iteratePackages(p : Package)]
+[for (p1 : Package | p.nestedPackage)]
+[if (isGeneratePackage(p1))]
+[generatePackage(p1)/]
+[/if]
+[iteratePackages(p1)/]
+[/for]
+[/template]
+
+[**
+ * Generates a packages as a file.
+ * @param aModel a package
+ */]
+[template private generatePackage(p : Package)?(isGeneratePackage(p))]
+[for (	aClass : Class | p.allContracts())]
+[file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+ aClass.name+'.java', false, 'UTF-8')]
+package [p.getInterfacePackagePrefix()/].[p.name/];
+
+[printCommentDoc(aClass.ownedComment)/]
+public interface [aClass.name/][aClass.contractExtends()/]{
+[for (prop : Property | aClass.allCProperties()->select(isPublic()))]
+	[printCommentDoc(prop.ownedComment)/]
+	[prop.type.toJavaType()/] [prop.name/]();
+[/for]
+[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
+
+	[op.functionSignature()/]
+[/for][for (op : Operation | aClass.allFunctions()->select(isPublic()))]
+
+	[op.functionSignature()/][/for]
+	
+}
+[/file]
+[for (op : Operation | aClass.allAbstractFunctions()->union(aClass.allFunctions()->asSequence())->select(isPublic()))]
+[if (op.allReturnParameters()->size()>1)]
+[file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+ op.returnObjectName()+'.java', false, 'UTF-8')]
+package [p.getInterfacePackagePrefix()/].[p.name/];
+
+/**
+ * The return value for the function [op.name/][op.operationReturnParameters()/].
+ *
+ */
+public class [op.returnObjectName()/]{
+[for (p : Parameter | op.allReturnParameters())]
+	private [p.type.toJavaType()/] [p.toFieldName()/];
+[/for]
+
+	public [op.returnObjectName()/]([for (p : Parameter | op.allReturnParameters())separator (',')][p.type.toJavaType()/] [p.toFieldName()/][/for]) {
+		super();
+[for (p : Parameter | op.allReturnParameters())]
+		this.[p.toFieldName()/] = [p.toFieldName()/];
+[/for]
+	}
+[for (p : Parameter | op.allReturnParameters())]
+
+	/**
+	 * Getter for [p.toFieldName()/].
+	 * @return
+	 */
+	public [p.type.toJavaType()/] get[p.toFieldName().toUpperFirst()/](){
+		return [p.toFieldName()/];
+	}
+[/for]
+
+}
+[/file]
+[/if]
+[/for]
+[/for]
+[/template]
+
+[template public returnObjectName(op : Operation)]
+Return[op.name.toUpperFirst()/][op.operationReturnParameters()/][/template]
+
+[template public toFieldName(p : Parameter)]
+[if (p.name.oclIsUndefined())]
+arg[p.indexInContainer()/][else]
+[p.name/][/if]
+[/template]
+
+[query public toPackage(p : Package) : String = p.getInterfacePackagePrefix()+'.'+p.name /]
+[query public package2Path(p : Package) : String = p.toPackage().replaceAll('\\.', '/')/]
+
+
+[comment print the comments on the element /]
+[template private printCommentDoc (comments : Set(Comment)) ? (not comments->isEmpty()) ]
+/**
+[for (c : Comment | comments)]
+[c._body.printLines('*')/][/for]
+**/[/template]
+
+[**
+ * Prints a complete comment with parameter doc.
+*/]
+[template public printFunctionComments(aOperation : Operation) ? (not aOperation.ownedComment->isEmpty())
+{comments : Set(Comment) = aOperation.ownedComment;} ]
+/**
+[for (c : Comment | comments)]
+[c._body.printLines('*')/][/for]
+[if (not aOperation.allInParameters()->isEmpty())]
+* 
+[for (p : Parameter | aOperation.allInParameters() )]
+* @param [p.name/] -[if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
+[/for][/if]
+[if (not aOperation.allReturnParameters()->isEmpty())]
+* @return
+[for (p : Parameter | aOperation.allReturnParameters() )]
+* [p.name/] -[if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
+[/for][/if]
+**/[/template]
+
+[template public contractExtends (aClass : Class)  ]
+[if (hasSuperTypes(aClass))]
+ extends [for (c : Classifier | aClass.allSuperTypesWithoutContractApi())separator (',')][c.name/][/for][/if][/template]
+
+[template public functionSignature(op : Operation)]
+[printFunctionComments(op)/]
+[if (op.hasReturnValue())][op.returnType()/] [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[else]
+void [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[/if][/template]
+
+[template public returnType(op : Operation)]
+[if (op.allReturnParameters()->size()=1)]
+[op.allReturnParameters()->first().type.toJavaType()/][else]
+[op.returnObjectName()/][/if][/template]
+
+[template public printParameters (aOperation : Operation,pdk : ParameterDirectionKind) ]
+[for (p : Parameter | aOperation.ownedParameter->select(oclAsType(Parameter).direction=pdk) )separator (',')]
+[p.type.toJavaType()/] [p.name/][/for][/template]
+
+
+[template public toJavaType (aType : Type) ]
+[aType.solidity2javaType()/]
+[/template]

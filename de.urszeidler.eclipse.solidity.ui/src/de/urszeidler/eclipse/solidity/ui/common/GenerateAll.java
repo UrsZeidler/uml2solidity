@@ -32,6 +32,8 @@ import com.google.common.base.Function;
 import de.urszeidler.eclipse.solidity.compiler.support.util.StartCompiler;
 import de.urszeidler.eclipse.solidity.templates.GenerateContracts;
 import de.urszeidler.eclipse.solidity.templates.GenerateHtml;
+import de.urszeidler.eclipse.solidity.templates.GenerateJavaCode;
+import de.urszeidler.eclipse.solidity.templates.GenerateJavaTestCode;
 import de.urszeidler.eclipse.solidity.templates.GenerateJsCode;
 import de.urszeidler.eclipse.solidity.templates.GenerateJsTestCode;
 import de.urszeidler.eclipse.solidity.templates.GenerateMarkDown;
@@ -101,7 +103,7 @@ public class GenerateAll {
 			monitor.subTask("Loading...");
 
 		try {
-			AbstractAcceleoGenerator solGenerator = doGenerate1(store, PreferenceConstants.GENERATION_TARGET, PreferenceConstants.GENERATE_CONTRACT_FILES,
+			AbstractAcceleoGenerator solGenerator = doGenerate(store, PreferenceConstants.GENERATION_TARGET, PreferenceConstants.GENERATE_CONTRACT_FILES,
 					"de.urszeidler.eclipse.solidity.templates.GenerateContracts", monitor,
 					new Function<File, AbstractAcceleoGenerator>() {
 
@@ -113,7 +115,7 @@ public class GenerateAll {
 							return null;
 						}
 					});
-			doGenerate1(store, PreferenceConstants.GENERATION_TARGET, PreferenceConstants.GENERATE_MIX,
+			doGenerate(store, PreferenceConstants.GENERATION_TARGET, PreferenceConstants.GENERATE_MIX,
 					"de.urszeidler.eclipse.solidity.templates.GenerateMixConfig", monitor,
 					new Function<File, AbstractAcceleoGenerator>() {
 
@@ -125,7 +127,7 @@ public class GenerateAll {
 							return null;
 						}
 					});
-			doGenerate1(store, PreferenceConstants.GENERATION_TARGET, PreferenceConstants.GENERATE_HTML,
+			doGenerate(store, PreferenceConstants.GENERATION_TARGET, PreferenceConstants.GENERATE_HTML,
 					"de.urszeidler.eclipse.solidity.templates.GenerateHtml", monitor,
 					new Function<File, AbstractAcceleoGenerator>() {
 
@@ -137,7 +139,7 @@ public class GenerateAll {
 							return null;
 						}
 					});
-			doGenerate1(store, PreferenceConstants.GENERATION_TARGET_DOC, PreferenceConstants.GENERATE_MARKDOWN,
+			doGenerate(store, PreferenceConstants.GENERATION_TARGET_DOC, PreferenceConstants.GENERATE_MARKDOWN,
 					"de.urszeidler.eclipse.solidity.templates.GenerateMarkDown", monitor,
 					new Function<File, AbstractAcceleoGenerator>() {
 
@@ -150,7 +152,7 @@ public class GenerateAll {
 						}
 					});
 
-			doGenerate1(store, PreferenceConstants.GENERATE_JS_TEST_TARGET, PreferenceConstants.GENERATE_JS_TEST,
+			doGenerate(store, PreferenceConstants.GENERATE_JS_TEST_TARGET, PreferenceConstants.GENERATE_JS_TEST,
 					"de.urszeidler.eclipse.solidity.templates.GenerateJsTestCode", monitor,
 					new Function<File, AbstractAcceleoGenerator>() {
 
@@ -162,7 +164,7 @@ public class GenerateAll {
 							return null;
 						}
 					});
-			doGenerate1(store, PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET,
+			doGenerate(store, PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET,
 					PreferenceConstants.GENERATE_JS_CONTROLLER,
 					"de.urszeidler.eclipse.solidity.templates.GenerateJsCode", monitor,
 					new Function<File, AbstractAcceleoGenerator>() {
@@ -175,7 +177,7 @@ public class GenerateAll {
 							return null;
 						}
 					});
-			doGenerate1(store, PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET, PreferenceConstants.GENERATE_WEB3,
+			doGenerate(store, PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET, PreferenceConstants.GENERATE_WEB3,
 					"de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract", monitor,
 					new Function<File, AbstractAcceleoGenerator>() {
 
@@ -188,7 +190,7 @@ public class GenerateAll {
 						}
 					});
 
-			doGenerate1(store, PreferenceConstants.GENERATE_ABI_TARGET,
+			doGenerate(store, PreferenceConstants.GENERATE_ABI_TARGET,
 					PreferenceConstants.GENERATE_ABI,
 					"de.urszeidler.eclipse.solidity.templates.GenerateSingleAbiFiles", monitor,
 					new Function<File, AbstractAcceleoGenerator>() {
@@ -202,13 +204,55 @@ public class GenerateAll {
 						}
 					});
 			
+			doGenerate(store, PreferenceConstants.GENERATION_JAVA_INTERFACE_TARGET,
+					PreferenceConstants.GENERATE_JAVA_INTERFACE,
+					"de.urszeidler.eclipse.solidity.templates.GenerateJavaCode", monitor,
+					new Function<File, AbstractAcceleoGenerator>() {
+
+						public AbstractAcceleoGenerator apply(File input) {
+							try {
+								return new GenerateJavaCode(modelURI, input, arguments);
+							} catch (IOException e) {
+							}
+							return null;
+						}
+					});
+			
+			doGenerate(store, PreferenceConstants.GENERATION_JAVA_TEST_TARGET,
+					PreferenceConstants.GENERATE_JAVA_TESTS,
+					"de.urszeidler.eclipse.solidity.templates.GenerateJavaCode", monitor,
+					new Function<File, AbstractAcceleoGenerator>() {
+
+						public AbstractAcceleoGenerator apply(File input) {
+							try {
+								return new GenerateJavaTestCode(modelURI, input, arguments);
+							} catch (IOException e) {
+							}
+							return null;
+						}
+					});
+			
+			
+			
 			compileContracts(monitor,(GenerateContracts) solGenerator );
 		} catch (CoreException e1) {
 			Activator.logError("", e1);
 		}
 	}
 
-	private AbstractAcceleoGenerator doGenerate1(IPreferenceStore store, String targetDirectory, String runGenerator, String gen_id,
+	/**
+	 * Calls the generator generated by the function
+	 * @param store the store to use
+	 * @param targetDirectory the basic directory
+	 * @param runGenerator 
+	 * @param gen_id the id of the generator
+	 * @param monitor the monitor
+	 * @param factory a function to produce the configured generator
+	 * @return the created generator
+	 * @throws IOException
+	 * @throws CoreException
+	 */
+	private AbstractAcceleoGenerator doGenerate(IPreferenceStore store, String targetDirectory, String runGenerator, String gen_id,
 			IProgressMonitor monitor, Function<File, AbstractAcceleoGenerator> factory)
 			throws IOException, CoreException {
 		if (monitor != null)

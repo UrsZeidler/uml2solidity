@@ -1,0 +1,192 @@
+[comment encoding = UTF-8 /]
+[module generateJavaTestCode('http://www.eclipse.org/uml2/5.0.0/UML')/]
+
+[import de::urszeidler::eclipse::solidity::templates::generateJavaCode/]
+[import de::urszeidler::eclipse::solidity::util::um2service /]
+
+[**
+ * The documentation of the template generateElement.
+ * @param aClass
+ */]
+[template public generateElement(aModel : Model)]
+[comment @main/]
+[generatePackage(aModel)/]
+[iteratePackages(aModel)/]
+[/template]
+
+[**
+ * Iterates over the packages.
+*/]
+[template private iteratePackages(p : Package)]
+[for (p1 : Package | p.nestedPackage)]
+[if (isGeneratePackage(p1))]
+[generatePackage(p1)/]
+[/if]
+[iteratePackages(p1)/]
+[/for]
+[/template]
+
+
+[template private generatePackage(p : Package)?(isGeneratePackage(p))]
+[for (	aClass : Class | p.allContracts())]
+[file (p.package2Path()+'/'+ aClass.name+'Test.java'  , false, 'UTF-8')]
+package [p.toPackage()/];
+
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.util.concurrent.CompletableFuture;
+
+import org.adridadou.ethereum.BlockchainProxy;
+import org.adridadou.ethereum.BlockchainProxyTest;
+import org.adridadou.ethereum.EthAddress;
+import org.adridadou.ethereum.EthereumFacade;
+import org.adridadou.ethereum.SoliditySource;
+import org.ethereum.crypto.ECKey;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+/**
+ * Test for the [aClass.name/] contract.
+ *
+ */
+public class [aClass.name/]Test[testExtends(aClass)/]{
+	private static EthereumFacade ethereum;
+	private static ECKey sender;
+
+	private [aClass.name/] fixture;
+	private EthAddress fixtureAddress;
+	private SoliditySource contractSource;
+	// [protected (aClass.name+'Test.attributes')]
+	//TODO: implement
+	// [/protected]
+
+	/**
+	 * Setup up the blockchain.
+	 */
+	@BeforeClass
+	public static void setup() {
+	    BlockchainProxy bcProxy = new BlockchainProxyTest();
+	    sender = null;
+	    ethereum = new EthereumFacade(bcProxy);
+	}
+
+	/**
+	 * Read the contract from the file and deploys the contract code.
+	 * @throws Exception
+	 */
+	@Before
+	public void prepareTest() throws Exception {
+		//[protected ('prepareTest')]
+
+        File contractSrc = new File(this.getClass().getResource("/[p.getContractPathForJava()/]/[p.name/].sol").toURI());
+        contractSource = SoliditySource.from(contractSrc);
+		//[/protected]
+	}
+
+	/**
+	 * Create a new fixture by deploying the contract source.
+	 * @throws Exception
+	 */
+	protected void createFixture() throws Exception {
+		//[protected ('createFixture')]
+[if (aClass.allConstructors()->isEmpty())]
+        CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, "[aClass.name/]", sender);
+[else]
+[let op : Operation = aClass.allConstructors()->first()]
+		//TODO: set the constructor args
+[for (p : Parameter | op.allInParameters())]
+		[p.type.toJavaType()/] [p.name/] = [p.toJavaExample()/];
+[/for]
+
+        CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, "[aClass.name/]", sender
+				[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
+[/let]
+[/if]
+        fixtureAddress = address.get();
+        fixture = ethereum
+                .createContractProxy(contractSource, "[aClass.name/]", address.get(), sender, [aClass.name/].class);
+		//[/protected]
+	}
+
+[for (op : Operation | aClass.allConstructors())]
+	/**
+	 * Test the constructor for the [aClass.name/] contract.
+	 * @throws Exception
+	 */
+	@Test
+	public void testConstructor[op.operationParameters()/]() throws Exception {
+		//[protected ('testConstructor'+op.operationParameters())]
+		//TODO: Set the constructor args
+[for (p : Parameter | op.allInParameters())]
+		[p.type.toJavaType()/] [p.name/] = [p.toJavaExample()/];
+[/for]
+
+        CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, "[aClass.name/]", sender
+				[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
+        fixture = ethereum
+                .createContractProxy(contractSource, "[aClass.name/]", address.get(), sender, [aClass.name/].class);
+
+		//TODO: test the constructor
+		//[/protected]
+	}
+[/for]
+
+[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
+
+	[op.printTestFunction()/][/for]
+[for (op : Operation | aClass.allFunctions()->select(isPublic()))]
+
+	[op.printTestFunction()/][/for]
+
+	//[protected ('customTests')]    
+	//[/protected]
+}
+[/file]
+[/for]
+[file (p.package2Path()+'/All'+ p.name.toUpperFirst()+'TestSuite.java'  , false, 'UTF-8')]
+package [p.toPackage()/];
+
+import org.junit.runners.Suite;
+import org.junit.runner.RunWith;
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+[for (	aClass : Class | p.allContracts()) separator (',')]
+[aClass.name/]Test.class
+[/for]
+//[protected ('customTests')]    
+//[/protected]
+})
+public class All[p.name.toUpperFirst()/]TestSuite {
+}
+[/file]
+[/template]
+
+[template public printTestFunction(op : Operation)]
+/**
+ * Test method for  [op.name/].
+ * @throws Exception
+ */
+@Test
+public void test[op.name.toUpperFirst()/][op.operationParameters()/]() throws Exception {
+	//[protected ('test'+op.name.toUpperFirst()+op.operationParameters())]
+	//TODO: implement this
+	fail("not implemented");
+	//[/protected]
+}
+[/template]
+
+[template public testExtends (aClass : Class)  ]
+[if (hasSuperTypes(aClass))]
+ extends [for (c : Classifier | aClass.allSuperTypesWithoutContractApi()->first()->asSequence())][c.name/][/for][/if][/template]
+
+
+
+[template public toJavaExample(p : Parameter)]
+[if (p.type.name='string')]
+"[p.name/]"[elseif (p.type.name.startsWith('uint'))]
+0[elseif (p.type.name='boolean')]
+true[elseif (p.type.name='address')]
+org.adridadou.ethereum.EthAddress.of("0x0")[/if][/template]

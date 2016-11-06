@@ -47,6 +47,9 @@ public class Activator extends AbstractUIPlugin {
 		reg.put("JsCode", image);
 		image = imageDescriptorFromPlugin(PLUGIN_ID, "images/help_topic.gif");
 		reg.put("OtherFiles", image);
+		image = imageDescriptorFromPlugin(PLUGIN_ID, "images/javabean_obj.gif");
+		reg.put("JavaCode", image);
+		
 		super.initializeImageRegistry(reg);
 	}
 	
