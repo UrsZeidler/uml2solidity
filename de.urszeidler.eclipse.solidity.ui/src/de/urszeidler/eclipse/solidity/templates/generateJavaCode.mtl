@@ -35,11 +35,15 @@
 [file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+ aClass.name+'.java', false, 'UTF-8')]
 package [p.getInterfacePackagePrefix()/].[p.name/];
 
+[for (pi : PackageImport | p.allImports() )]
+import [pi.target.oclAsType(Package).toPackage()/].*;
+[/for]
+
 [printCommentDoc(aClass.ownedComment)/]
-public interface [aClass.name/][aClass.contractExtends()/]{
-[for (prop : Property | aClass.allCProperties()->select(isPublic()))]
+public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for now no struct types[/comment]
+[for (prop : Property | aClass.allCProperties()->select(isPublic())->select( not type.isStruct() )  )]
 	[printCommentDoc(prop.ownedComment)/]
-	[prop.type.toJavaType()/] [prop.name/]();
+	[prop.toJavaType()/] [prop.name/]();
 [/for]
 [for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
 
@@ -61,10 +65,10 @@ package [p.getInterfacePackagePrefix()/].[p.name/];
  */
 public class [op.returnObjectName()/]{
 [for (p : Parameter | op.allReturnParameters())]
-	private [p.type.toJavaType()/] [p.toFieldName()/];
+	private [p.toJavaType()/] [p.toFieldName()/];
 [/for]
 
-	public [op.returnObjectName()/]([for (p : Parameter | op.allReturnParameters())separator (',')][p.type.toJavaType()/] [p.toFieldName()/][/for]) {
+	public [op.returnObjectName()/]([for (p : Parameter | op.allReturnParameters())separator (',')][p.toJavaType()/] [p.toFieldName()/][/for]) {
 		super();
 [for (p : Parameter | op.allReturnParameters())]
 		this.[p.toFieldName()/] = [p.toFieldName()/];
@@ -76,7 +80,7 @@ public class [op.returnObjectName()/]{
 	 * Getter for [p.toFieldName()/].
 	 * @return
 	 */
-	public [p.type.toJavaType()/] get[p.toFieldName().toUpperFirst()/](){
+	public [p.toJavaType()/] get[p.toFieldName().toUpperFirst()/](){
 		return [p.toFieldName()/];
 	}
 [/for]
@@ -130,7 +134,7 @@ arg[p.indexInContainer()/][else]
 
 [template public contractExtends (aClass : Class)  ]
 [if (hasSuperTypes(aClass))]
- extends [for (c : Classifier | aClass.allSuperTypesWithoutContractApi())separator (',')][c.name/][/for][/if][/template]
+ extends [for (c : Classifier | aClass.allSuperTypesWithoutContractApi()->select(not oclIsTypeOf(Interface)))separator (',')][c.name/][/for][/if][/template]
 
 [template public functionSignature(op : Operation)]
 [printFunctionComments(op)/]
@@ -144,7 +148,19 @@ void [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[/if][/templ
 
 [template public printParameters (aOperation : Operation,pdk : ParameterDirectionKind) ]
 [for (p : Parameter | aOperation.ownedParameter->select(oclAsType(Parameter).direction=pdk) )separator (',')]
-[p.type.toJavaType()/] [p.name/][/for][/template]
+[p.toJavaType()/] [p.name/][/for][/template]
+
+[template public toJavaType (t : TypedElement) ]
+[t.type.solidity2javaType()/][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if]
+[/template]
+
+[**
+ * Print the multiplicity as array.
+*/]
+[template private printTypeM(t : MultiplicityElement) ? (t.oclIsKindOf(MultiplicityElement))]
+[if (t.getUpper()<>1)][ '[' /][ ']' /][/if][/template]
+
+
 
 
 [template public toJavaType (aType : Type) ]

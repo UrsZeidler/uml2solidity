@@ -287,11 +287,16 @@ public class Uml2Service {
 	 * @return
 	 */
 	public static String solidity2javaType(Type type) {
-		IPreferenceStore store = getStore(type);
-		String string = store.getString(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+type.getName());
-		if(string==null)
+		IPreferenceStore store = getStore(type);		
+		String typeName="";
+		if(hasStereotype(type, "Contract")||hasStereotype(type, "Library"))
+			typeName = store.getString(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+"address");
+		else
+			typeName = store.getString(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+type.getName());
+		if(typeName==null)
 			return "String";
-		return string;
+		
+		return typeName;
 	}
 
 	/**
