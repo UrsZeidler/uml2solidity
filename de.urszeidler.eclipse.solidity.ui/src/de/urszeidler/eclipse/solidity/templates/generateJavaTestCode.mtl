@@ -57,7 +57,7 @@ import org.junit.Test;
  */
 public class [aClass.name/]Test[testExtends(aClass)/]{
 	private static EthereumFacade ethereum;
-	private static EthAccount sender;
+	private static ECKey sender;
 
 	private [aClass.name/] fixture;
 	private EthAddress fixtureAddress;
