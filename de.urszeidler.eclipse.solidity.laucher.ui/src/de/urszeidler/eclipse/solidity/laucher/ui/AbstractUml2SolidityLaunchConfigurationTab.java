@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
-import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
@@ -34,10 +33,13 @@ public abstract class AbstractUml2SolidityLaunchConfigurationTab extends Abstrac
 		if (result != null && result.length == 1) {
 			IPath container = (IPath) result[0];
 			base_target_text.setText(container.toString());
-			setDirty(true);
-			updateLaunchConfigurationDialog();
 		}
-
+		validatePage();
+	}
+	
+	protected void validatePage() {
+		setDirty(true);
+		updateLaunchConfigurationDialog();
 	}
 	
 	/**

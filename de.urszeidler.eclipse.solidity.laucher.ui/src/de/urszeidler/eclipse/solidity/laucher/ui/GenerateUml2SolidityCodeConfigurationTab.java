@@ -12,13 +12,11 @@ import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_TARGET;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.VERSION_PRAGMA;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -35,7 +33,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 
 import de.urszeidler.eclipse.solidity.laucher.Activator;
@@ -117,8 +114,7 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 					if (member != null)
 						generationDirectoryText.setText(member.getFullPath().toString());
 
-					setDirty(true);
-					updateLaunchConfigurationDialog();
+					validatePage();
 				}
 			}
 		});
@@ -135,8 +131,7 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 		btnGenerateSolidityCode.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		btnGenerateSolidityCode.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
@@ -148,13 +143,17 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				versionText.setEnabled(btnVersionAbove.getSelection());
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		btnVersionAbove.setText("version above 0.4.0");
 
 		versionText = new Text(grpSolidity, SWT.BORDER);
+		versionText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				validatePage();
+			}
+		});
 		versionText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 		Label lblNewLabel = new Label(grpSolidity, SWT.NONE);
@@ -168,18 +167,7 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String p = generationDirectoryText.getText();
-				IContainer initialRoot = toContainer(p);
-				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
-						initialRoot, false, "select contract folder");
-				containerSelectionDialog.open();
-				Object[] result = containerSelectionDialog.getResult();
-				if (result != null && result.length == 1) {
-					IPath container = (IPath) result[0];
-					generationDirectoryText.setText(container.toString());
-					setDirty(true);
-					updateLaunchConfigurationDialog();
-				}
+				handleChooseContainer(generationDirectoryText, "select contract folder");
 			}
 		});
 		btnNewButton.setText("select");
@@ -191,8 +179,7 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 		fileHeaderText = new Text(grpSolidity, SWT.BORDER | SWT.MULTI);
 		fileHeaderText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		GridData gd_text_2 = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
@@ -203,8 +190,7 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 		btnGenerateMixConfig.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		btnGenerateMixConfig.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
@@ -214,8 +200,7 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 		btnGenerateMixHtml.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		btnGenerateMixHtml.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
@@ -296,6 +281,23 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 
 		configuration.setAttribute(ENABLE_VERSION, btnVersionAbove.getSelection());
 		configuration.setAttribute(VERSION_PRAGMA, versionText.getText());
+	}
+
+	@Override
+	protected void validatePage() {
+		StringBuffer b = new StringBuffer();
+		if (modelText.getText() == null || modelText.getText().isEmpty()) {
+			b.append("select an uml file.\n");
+		}
+		if (btnGenerateSolidityCode.getSelection())
+			if (generationDirectoryText.getText() == null || generationDirectoryText.getText().isEmpty()) {
+				b.append("select a container where to store the contract files in.\n");
+			}
+		if (b.length() != 0)
+			setErrorMessage(b.toString());
+		else
+			setErrorMessage(null);
+		super.validatePage();
 	}
 
 	/*

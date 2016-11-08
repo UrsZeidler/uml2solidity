@@ -7,10 +7,8 @@ import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_WEB3;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.JS_FILE_HEADER;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -27,7 +25,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 import de.urszeidler.eclipse.solidity.laucher.Activator;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
@@ -62,8 +59,7 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 		btnGenerateJsCode.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		btnGenerateJsCode.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
@@ -74,8 +70,7 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 		btnGenerateWeb3.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		btnGenerateWeb3.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
@@ -92,17 +87,19 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 		btnSelect.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IContainer initialRoot = toContainer(jsDirectoryText.getText());
-				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
-						initialRoot, false, "select js folder");
-				containerSelectionDialog.open();
-				Object[] result = containerSelectionDialog.getResult();
-				if (result != null && result.length == 1) {
-					IPath container = (IPath) result[0];
-					jsDirectoryText.setText(container.toString());
-					setDirty(true);
-					updateLaunchConfigurationDialog();
-				}
+				handleChooseContainer(jsDirectoryText, "select js folder");
+				
+//				IContainer initialRoot = toContainer(jsDirectoryText.getText());
+//				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
+//						initialRoot, false, "select js folder");
+//				containerSelectionDialog.open();
+//				Object[] result = containerSelectionDialog.getResult();
+//				if (result != null && result.length == 1) {
+//					IPath container = (IPath) result[0];
+//					jsDirectoryText.setText(container.toString());
+//					setDirty(true);
+//					updateLaunchConfigurationDialog();
+//				}
 
 			}
 		});
@@ -112,8 +109,7 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 		btnGenerateJsTestcode.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		btnGenerateJsTestcode.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
@@ -131,17 +127,19 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IContainer initialRoot = toContainer(testDirectoryText.getText());
-				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
-						initialRoot, false, "select test folder");
-				containerSelectionDialog.open();
-				Object[] result = containerSelectionDialog.getResult();
-				if (result != null && result.length == 1) {
-					IPath container = (IPath) result[0];
-					testDirectoryText.setText(container.toString());
-					setDirty(true);
-					updateLaunchConfigurationDialog();
-				}
+				handleChooseContainer(testDirectoryText, "select js test folder");
+				
+//				IContainer initialRoot = toContainer(testDirectoryText.getText());
+//				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
+//						initialRoot, false, "select test folder");
+//				containerSelectionDialog.open();
+//				Object[] result = containerSelectionDialog.getResult();
+//				if (result != null && result.length == 1) {
+//					IPath container = (IPath) result[0];
+//					testDirectoryText.setText(container.toString());
+//					setDirty(true);
+//					updateLaunchConfigurationDialog();
+//				}
 			}
 		});
 		btnNewButton.setText("select");
@@ -153,8 +151,7 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 		jsHeaderText = new Text(grpGenerateJsCode, SWT.BORDER | SWT.MULTI);
 		jsHeaderText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		GridData gd_text_2 = new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1);
@@ -218,6 +215,28 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 		configuration.setAttribute(GENERATE_WEB3, btnGenerateWeb3.getSelection());
 	}
 
+	@Override
+	protected void validatePage() {
+		StringBuffer b = new StringBuffer();
+		if(btnGenerateJsCode.getSelection()){
+			if (jsDirectoryText.getText() == null || jsDirectoryText.getText().isEmpty()) {
+				b.append("select a container where to store the js files.\n");
+			}
+		}
+		if(btnGenerateJsTestcode.getSelection()){
+			if (testDirectoryText.getText() == null || testDirectoryText.getText().isEmpty()) {
+				b.append("select a container where to store the js tests.\n");
+			}
+		}
+		
+		if (b.length() != 0)
+			setErrorMessage(b.toString());
+		else
+			setErrorMessage(null);
+
+		super.validatePage();
+	}
+	
 	@Override
 	public String getName() {
 		return "generate js code";

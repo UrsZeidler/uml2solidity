@@ -4,24 +4,37 @@
 package de.urszeidler.eclipse.solidity.laucher.ui;
 
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_JAVA_INTERFACE;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_JAVA_TESTS;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPES;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_JAVA_INTERFACE_PACKAGE_PREFIX;
-import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.*;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_JAVA_INTERFACE_TARGET;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_JAVA_TEST_TARGET;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -29,28 +42,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 import de.urszeidler.eclipse.solidity.laucher.Activator;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.ModifyEvent;
 
 /**
  * @author urs
@@ -67,6 +64,7 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 			this.key = key;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		protected void setValue(Object element, Object value) {
 			Entry<String, String> entry = (Entry<String, String>) element;
@@ -114,6 +112,7 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 			return null;
 		}
 
+		@SuppressWarnings("rawtypes")
 		public String getColumnText(Object element, int columnIndex) {
 			if (element instanceof Object[]) {
 				Object[] ar = (Object[]) element;
@@ -124,7 +123,6 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 					return (String) me.getKey();
 				else
 					return (String) me.getValue();
-
 			}
 			return element.toString();
 		}
@@ -160,7 +158,6 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 	private Map<String, String> java2solTypes = new HashMap<>();
 	private TableViewer tableViewer;
 	private Text base_Test_text;
-	private Button btnGenerateTestCode1;
 	private Button btnGenerateTestCode;
 
 	/*
@@ -190,8 +187,7 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 		btnGenerateJava.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		btnGenerateJava.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -204,8 +200,7 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 		base_target_text = new Text(grpJavaInterface, SWT.BORDER);
 		base_target_text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		base_target_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -224,6 +219,11 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 		lblNewLabel_1.setText("package prefix");
 
 		package_prefix_tex = new Text(grpJavaInterface, SWT.BORDER);
+		package_prefix_tex.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				validatePage();
+			}
+		});
 		package_prefix_tex.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		
 		Group group = new Group(mainComposite, SWT.NONE);
@@ -234,8 +234,7 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 		btnGenerateTestCode.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		btnGenerateTestCode.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
@@ -249,8 +248,7 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 		base_Test_text = new Text(group, SWT.BORDER);
 		base_Test_text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
 		base_Test_text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -300,15 +298,16 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 		composite.setLayout(new GridLayout(2, false));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 
-		btnGenerateTestCode1 = new Button(composite, SWT.NONE);
-		btnGenerateTestCode1.addSelectionListener(new SelectionAdapter() {
+		Button btnAdd = new Button(composite, SWT.NONE);
+		btnAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				java2solTypes.put("new sol type", "java type");
 				tableViewer.refresh();
+				validatePage();
 			}
 		});
-		btnGenerateTestCode1.setText("add");
+		btnAdd.setText("add");
 
 		Button btnNewButton_2 = new Button(composite, SWT.NONE);
 		btnNewButton_2.addSelectionListener(new SelectionAdapter() {
@@ -320,13 +319,13 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 					Map.Entry<String,String > me = (Map.Entry<String, String>) firstElement;
 					java2solTypes.remove(me.getKey());
 					tableViewer.refresh();
+					validatePage();
 				}
 			}
 		});
 		btnNewButton_2.setText("del");
 		tableViewer.setLabelProvider(new TableLabelProvider());
 		tableViewer.setContentProvider(new ContentProvider());
-
 	}
 
 	/*
@@ -418,6 +417,29 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 		}
 	}
 
+	@Override
+	protected void validatePage() {
+		StringBuffer b = new StringBuffer();
+		if (btnGenerateJava.getSelection()) {
+			if (package_prefix_tex.getText() == null || package_prefix_tex.getText().isEmpty()) {
+				b.append("Set apackage prefix.\n");
+			}
+			if (base_Test_text.getText() == null || base_target_text.getText().isEmpty()) {
+				b.append("select a container where to store the contract interfaces.\n");
+			}
+		}
+		if(btnGenerateTestCode.getSelection()){
+			if (base_Test_text.getText() == null || base_Test_text.getText().isEmpty()) {
+				b.append("select a container where to store the contract tests.\n");
+			}
+		}
+		if (b.length() != 0)
+			setErrorMessage(b.toString());
+		else
+			setErrorMessage(null);
+		super.validatePage();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -8,10 +8,8 @@ import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_MARKDOWN;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_TARGET_DOC;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -26,7 +24,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 import de.urszeidler.eclipse.solidity.laucher.Activator;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
@@ -39,7 +36,7 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 
 	private Button btnGenerateMarkdownReport;
 	private Text docDirectoryText;
-	private Button btnGfenerateSingleAbi;
+	private Button btnGenerateSingleAbi;
 	private Text abiDirectoryText;
 
 	/*
@@ -85,18 +82,19 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 		btnNewButton_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IContainer initialRoot = toContainer(docDirectoryText.getText());
-				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
-						initialRoot, false, "select doc folder");
-				containerSelectionDialog.open();
-				Object[] result = containerSelectionDialog.getResult();
-				if (result != null && result.length == 1) {
-					IPath container = (IPath) result[0];
-					docDirectoryText.setText(container.toString());
-					setDirty(true);
-					updateLaunchConfigurationDialog();
-				}
-
+				handleChooseContainer(docDirectoryText, "select doc folder");
+				
+//				IContainer initialRoot = toContainer(docDirectoryText.getText());
+//				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
+//						initialRoot, false, "select doc folder");
+//				containerSelectionDialog.open();
+//				Object[] result = containerSelectionDialog.getResult();
+//				if (result != null && result.length == 1) {
+//					IPath container = (IPath) result[0];
+//					docDirectoryText.setText(container.toString());
+//					setDirty(true);
+//					updateLaunchConfigurationDialog();
+//				}
 			}
 		});
 		btnNewButton_1.setText("select");
@@ -106,16 +104,15 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 		grpAbi.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		grpAbi.setText("abi");
 
-		btnGfenerateSingleAbi = new Button(grpAbi, SWT.CHECK);
-		btnGfenerateSingleAbi.addSelectionListener(new SelectionAdapter() {
+		btnGenerateSingleAbi = new Button(grpAbi, SWT.CHECK);
+		btnGenerateSingleAbi.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setDirty(true);
-				updateLaunchConfigurationDialog();
+				validatePage();
 			}
 		});
-		btnGfenerateSingleAbi.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-		btnGfenerateSingleAbi.setText("generate single abi file");
+		btnGenerateSingleAbi.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+		btnGenerateSingleAbi.setText("generate single abi file");
 
 		Label lblDirectory = new Label(grpAbi, SWT.NONE);
 		lblDirectory.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -128,17 +125,19 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 		btnSelect_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IContainer initialRoot = toContainer(abiDirectoryText.getText());
-				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
-						initialRoot, false, "select abi folder");
-				containerSelectionDialog.open();
-				Object[] result = containerSelectionDialog.getResult();
-				if (result != null && result.length == 1) {
-					IPath container = (IPath) result[0];
-					abiDirectoryText.setText(container.toString());
-					setDirty(true);
-					updateLaunchConfigurationDialog();
-				}
+				handleChooseContainer(abiDirectoryText, "select abi folder");
+				
+//				IContainer initialRoot = toContainer(abiDirectoryText.getText());
+//				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
+//						initialRoot, false, "select abi folder");
+//				containerSelectionDialog.open();
+//				Object[] result = containerSelectionDialog.getResult();
+//				if (result != null && result.length == 1) {
+//					IPath container = (IPath) result[0];
+//					abiDirectoryText.setText(container.toString());
+//					setDirty(true);
+//					updateLaunchConfigurationDialog();
+//				}
 			}
 		});
 		btnSelect_1.setText("select");
@@ -174,7 +173,7 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 		IPreferenceStore store = PreferenceConstants.getPreferenceStore(null);
 		try {
 			btnGenerateMarkdownReport.setSelection(configuration.getAttribute(GENERATE_MARKDOWN, store.getBoolean(GENERATE_MARKDOWN)));
-			btnGfenerateSingleAbi.setSelection(configuration.getAttribute(GENERATE_ABI, store.getBoolean(GENERATE_ABI)));
+			btnGenerateSingleAbi.setSelection(configuration.getAttribute(GENERATE_ABI, store.getBoolean(GENERATE_ABI)));
 			docDirectoryText.setText(configuration.getAttribute(GENERATION_TARGET_DOC, store.getString(GENERATION_TARGET_DOC)));
 			abiDirectoryText.setText(configuration.getAttribute(GENERATE_ABI_TARGET, store.getString(GENERATE_ABI_TARGET)));
 			
@@ -200,13 +199,35 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 	 */
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(GENERATE_ABI, btnGfenerateSingleAbi.getSelection());
+		configuration.setAttribute(GENERATE_ABI, btnGenerateSingleAbi.getSelection());
 		configuration.setAttribute(GENERATE_MARKDOWN, btnGenerateMarkdownReport.getSelection());
 		configuration.setAttribute(GENERATION_TARGET_DOC, docDirectoryText.getText());
 		configuration.setAttribute(GENERATE_ABI_TARGET, abiDirectoryText.getText());
 
 	}
 
+	@Override
+	protected void validatePage() {
+		StringBuffer b = new StringBuffer();
+		if(btnGenerateMarkdownReport.getSelection()){
+			if (docDirectoryText.getText() == null || docDirectoryText.getText().isEmpty()) {
+				b.append("select a container where to store the markdown report.\n");
+			}
+		}
+		if(btnGenerateSingleAbi.getSelection()){
+			if (abiDirectoryText.getText() == null || abiDirectoryText.getText().isEmpty()) {
+				b.append("select a container where to store the abi files.\n");
+			}
+		}
+		
+		if (b.length() != 0)
+			setErrorMessage(b.toString());
+		else
+			setErrorMessage(null);
+
+		super.validatePage();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
