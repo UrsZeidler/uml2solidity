@@ -42,7 +42,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.adridadou.ethereum.BlockchainProxy;
 import org.adridadou.ethereum.BlockchainProxyTest;
-import org.adridadou.ethereum.EthAccount;
 import org.adridadou.ethereum.EthAddress;
 import org.adridadou.ethereum.EthereumFacade;
 import org.adridadou.ethereum.SoliditySource;
