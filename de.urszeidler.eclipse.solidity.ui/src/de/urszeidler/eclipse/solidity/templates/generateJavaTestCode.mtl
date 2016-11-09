@@ -139,10 +139,10 @@ public class [aClass.name/]Test[testExtends(aClass)/]{
 
 [for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
 
-	[op.printTestFunction()/][/for]
+	[op.printTestFunction(aClass)/][/for]
 [for (op : Operation | aClass.allFunctions()->select(isPublic()))]
 
-	[op.printTestFunction()/][/for]
+	[op.printTestFunction(aClass)/][/for]
 
 	//[protected ('customTests')]    
 	//[/protected]
@@ -168,9 +168,10 @@ public class All[p.name.toUpperFirst()/]TestSuite {
 [/file]
 [/template]
 
-[template public printTestFunction(op : Operation)]
+[template public printTestFunction(op : Operation, aClass : Class)]
 /**
- * Test method for  [op.name/].
+ * Test method for  [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]).
+ * see {@link [aClass.name/]#[op.name/]([printParametersForJavaDoc(op,ParameterDirectionKind::_in)/])}
  * @throws Exception
  */
 @Test
