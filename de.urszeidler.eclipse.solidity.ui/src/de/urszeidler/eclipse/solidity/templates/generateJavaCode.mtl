@@ -57,11 +57,20 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [for (op : Operation | aClass.allAbstractFunctions()->union(aClass.allFunctions()->asSequence())->select(isPublic()))]
 [if (op.allReturnParameters()->size()>1)]
 [file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+ op.returnObjectName()+'.java', false, 'UTF-8')]
+[printReturnParameterValueObject(p, aClass, op)/]
+[/file]
+[/if]
+[/for]
+[/for]
+[/template]
+
+[template public printReturnParameterValueObject(p : Package, aClass : Class,  op : Operation)]
 package [p.getInterfacePackagePrefix()/].[p.name/];
 
 /**
- * The return value for the function [op.name/][op.operationReturnParameters()/].
+ * The return value for the function [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]).
  *
+ * see {@link [aClass.name/]#[op.name/]([printParametersForJavaDoc(op,ParameterDirectionKind::_in)/])}
  */
 public class [op.returnObjectName()/]{
 [for (p : Parameter | op.allReturnParameters())]
@@ -85,11 +94,40 @@ public class [op.returnObjectName()/]{
 	}
 [/for]
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+[for (p : Parameter | op.allReturnParameters())]
+		result = prime * result + (([p.toFieldName()/] == null) ? 0 : [p.toFieldName()/].hashCode());
+[/for]
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		[op.returnObjectName()/] other = ([op.returnObjectName()/]) obj;
+[for (p : Parameter | op.allReturnParameters())]
+		if ([p.toFieldName()/] == null) {
+			if (other.[p.toFieldName()/] != null)
+				return false;
+		} else if (![p.toFieldName()/].equals(other.[p.toFieldName()/]))
+			return false;
+[/for]
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "[op.returnObjectName()/] [ '[' /][for (p : Parameter | op.allReturnParameters()) separator (',')][p.toFieldName()/]=" + [p.toFieldName()/] + "[/for][ ']' /]";
+	}
 }
-[/file]
-[/if]
-[/for]
-[/for]
 [/template]
 
 [template public returnObjectName(op : Operation)]
@@ -149,6 +187,10 @@ void [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[/if][/templ
 [template public printParameters (aOperation : Operation,pdk : ParameterDirectionKind) ]
 [for (p : Parameter | aOperation.ownedParameter->select(oclAsType(Parameter).direction=pdk) )separator (',')]
 [p.toJavaType()/] [p.name/][/for][/template]
+
+[template public printParametersForJavaDoc (aOperation : Operation,pdk : ParameterDirectionKind) ]
+[for (p : Parameter | aOperation.ownedParameter->select(oclAsType(Parameter).direction=pdk) )separator (',')]
+ [p.toJavaType()/][/for][/template]
 
 [template public toJavaType (t : TypedElement) ]
 [t.type.solidity2javaType()/][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if]
