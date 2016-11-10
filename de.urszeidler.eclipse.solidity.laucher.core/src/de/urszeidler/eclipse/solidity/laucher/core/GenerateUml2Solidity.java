@@ -105,8 +105,6 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 		String modelUri = configuration.getAttribute(MODEL_URI, "");
 		final URI modelURI =  URI.createPlatformResourceURI(modelUri,
 														 true);
-		
-//		final String generationTarget = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();// configuration.getAttribute(PreferenceConstants.GENERATION_TARGET, "");
 		Path path = new Path(modelUri);
 		final IResource findMember = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
 		if (findMember instanceof IFile) {
@@ -135,7 +133,6 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 				return false;
 			}
 		});
-		configuration.getAttributes();
 		IProcessImplementation process = new IProcessImplementation(launch);
 		try {
 			launch.addProcess(process);
