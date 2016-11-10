@@ -271,8 +271,6 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 
 		tableViewer = new TableViewer(grpTypeMapping, SWT.BORDER | SWT.FULL_SELECTION);
 		tableViewer.setColumnProperties(new String[] {});
-		// CellEditor[] editors = new CellEditor[]{new TextCellEditor(),new
-		// TextCellEditor()};
 
 		table = tableViewer.getTable();
 		table.setLinesVisible(true);

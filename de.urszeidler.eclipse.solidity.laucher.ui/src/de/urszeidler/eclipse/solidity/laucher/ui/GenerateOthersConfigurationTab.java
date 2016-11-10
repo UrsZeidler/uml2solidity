@@ -83,18 +83,6 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				handleChooseContainer(docDirectoryText, "select doc folder");
-				
-//				IContainer initialRoot = toContainer(docDirectoryText.getText());
-//				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
-//						initialRoot, false, "select doc folder");
-//				containerSelectionDialog.open();
-//				Object[] result = containerSelectionDialog.getResult();
-//				if (result != null && result.length == 1) {
-//					IPath container = (IPath) result[0];
-//					docDirectoryText.setText(container.toString());
-//					setDirty(true);
-//					updateLaunchConfigurationDialog();
-//				}
 			}
 		});
 		btnNewButton_1.setText("select");
@@ -126,18 +114,6 @@ public class GenerateOthersConfigurationTab extends AbstractUml2SolidityLaunchCo
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				handleChooseContainer(abiDirectoryText, "select abi folder");
-				
-//				IContainer initialRoot = toContainer(abiDirectoryText.getText());
-//				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
-//						initialRoot, false, "select abi folder");
-//				containerSelectionDialog.open();
-//				Object[] result = containerSelectionDialog.getResult();
-//				if (result != null && result.length == 1) {
-//					IPath container = (IPath) result[0];
-//					abiDirectoryText.setText(container.toString());
-//					setDirty(true);
-//					updateLaunchConfigurationDialog();
-//				}
 			}
 		});
 		btnSelect_1.setText("select");

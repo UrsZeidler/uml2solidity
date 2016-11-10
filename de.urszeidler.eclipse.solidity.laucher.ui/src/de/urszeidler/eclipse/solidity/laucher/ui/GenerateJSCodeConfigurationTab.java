@@ -88,19 +88,6 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				handleChooseContainer(jsDirectoryText, "select js folder");
-				
-//				IContainer initialRoot = toContainer(jsDirectoryText.getText());
-//				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
-//						initialRoot, false, "select js folder");
-//				containerSelectionDialog.open();
-//				Object[] result = containerSelectionDialog.getResult();
-//				if (result != null && result.length == 1) {
-//					IPath container = (IPath) result[0];
-//					jsDirectoryText.setText(container.toString());
-//					setDirty(true);
-//					updateLaunchConfigurationDialog();
-//				}
-
 			}
 		});
 		btnSelect.setText("select");
@@ -128,18 +115,6 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				handleChooseContainer(testDirectoryText, "select js test folder");
-				
-//				IContainer initialRoot = toContainer(testDirectoryText.getText());
-//				ContainerSelectionDialog containerSelectionDialog = new ContainerSelectionDialog(getShell(),
-//						initialRoot, false, "select test folder");
-//				containerSelectionDialog.open();
-//				Object[] result = containerSelectionDialog.getResult();
-//				if (result != null && result.length == 1) {
-//					IPath container = (IPath) result[0];
-//					testDirectoryText.setText(container.toString());
-//					setDirty(true);
-//					updateLaunchConfigurationDialog();
-//				}
 			}
 		});
 		btnNewButton.setText("select");
