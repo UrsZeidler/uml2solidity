@@ -7,6 +7,7 @@ Bundle-Vendor: Urs Zeidler
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.debug.ui,
  de.urszeidler.eclipse.solidity.laucher.core;bundle-version="1.0.7",
+ de.urszeidler.eclipse.solidity.compiler.support;bundle-version="1.0.7",
  org.eclipse.ui,
  de.urszeidler.eclipse.solidity.ui;bundle-version="1.0.7",
  org.eclipse.equinox.common,

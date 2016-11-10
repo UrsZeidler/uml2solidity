@@ -33,6 +33,10 @@ public class PreferenceConstants {
 
 	public static final String COMPILER_PROJECT_SETTINGS = "COMPILE_CONTRACTS_PROJECT_SETTINGS";
 
+	public static final String[] COMPILE_SWITCHES = {COMPILER_ABI,COMPILER_INTERFACT,
+			COMPILER_ASM,COMPILER_ASM_JSON,COMPILER_BIN,COMPILER_BIN_RUNTIME,
+			COMPILER_AST,COMPILER_AST_JSON, COMPILER_USERDOC,COMPILER_DEVDOC,
+			COMPILER_OPTIMIZE,COMPILER_OPCODE,COMPILER_FORMAL,COMPILER_HASHES};
 	public static IPreferenceStore getPreferenceStore(IProject project) {
 		if (project != null) {
 			IPreferenceStore store = new ScopedPreferenceStore(new ProjectScope(project), Activator.PLUGIN_ID);

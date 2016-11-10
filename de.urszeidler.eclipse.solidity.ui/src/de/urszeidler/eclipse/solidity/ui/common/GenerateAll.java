@@ -300,8 +300,7 @@ public class GenerateAll {
 	 * @param gen0
 	 */
 	private void compileContracts(IProgressMonitor monitor, GenerateContracts gen0) {
-		IPreferenceStore store1 = de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants
-				.getPreferenceStore(targetFolder.getProject());
+		IPreferenceStore store1 = Uml2Service.getStore(null);
 		if (store1.getBoolean(
 				de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS)) {
 
@@ -310,7 +309,13 @@ public class GenerateAll {
 				return;
 			String compile_folder = store1.getString(
 					de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
-			IContainer target = targetFolder.getProject().getFolder(compile_folder);
+			
+			//
+			IContainer target = null;
+			if(compile_folder.startsWith("/")){
+				target = (IContainer) ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(compile_folder));
+			}else			
+				target = targetFolder.getProject().getFolder(compile_folder);
 			if (!target.getLocation().toFile().exists()) {
 				target.getLocation().toFile().mkdirs();
 			}
