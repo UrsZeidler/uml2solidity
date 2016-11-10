@@ -3,6 +3,9 @@
  */
 package de.urszeidler.eclipse.solidity.laucher.ui;
 
+import static de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_PROGRAMM;
+import static de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET;
+import static de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.CONTRACT_FILE_HEADER;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.ENABLE_VERSION;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATE_CONTRACT_FILES;
@@ -13,13 +16,9 @@ import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.VERSION_PRAGMA;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import static de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.*;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -39,6 +38,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.ExpandBar;
+import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -47,8 +48,6 @@ import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 import de.urszeidler.eclipse.solidity.laucher.Activator;
 import de.urszeidler.eclipse.solidity.laucher.core.GenerateUml2Solidity;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
-import org.eclipse.swt.widgets.ExpandBar;
-import org.eclipse.swt.widgets.ExpandItem;
 
 /**
  * @author uzeidler
