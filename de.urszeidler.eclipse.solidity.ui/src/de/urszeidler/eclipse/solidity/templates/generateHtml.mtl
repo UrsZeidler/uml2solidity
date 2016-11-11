@@ -441,6 +441,16 @@ function [aClass.name/]GuiMananger(guiId){
 	}
 
 	/**
+	 * Changes the gui function for all managers.
+	 */
+	this.changeGuiFunction =  function(guiFunction){
+		for (i in this.managers) {
+			var manager = this.managers[ '[' /]i[ ']' /] ;
+			manager.guiFunction = guiFunction;
+		}
+	}
+	
+	/**
 	* Clears the element or the element with id 'prefix'.
 	* @e an element
 	*/
