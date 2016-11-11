@@ -163,8 +163,8 @@ public class GenerateJSCodeConfigurationTab extends AbstractUml2SolidityLaunchCo
 					store.getString(GENERATE_JS_CONTROLLER_TARGET)));
 			testDirectoryText.setText(
 					configuration.getAttribute(GENERATE_JS_TEST_TARGET, store.getString(GENERATE_JS_TEST_TARGET)));
-			btnGenerateJsCode.setSelection(configuration.getAttribute(GENERATE_JS_CONTROLLER, true));
-			btnGenerateJsTestcode.setSelection(configuration.getAttribute(GENERATE_JS_TEST, true));
+			btnGenerateJsCode.setSelection(configuration.getAttribute(GENERATE_JS_CONTROLLER, store.getBoolean(GENERATE_JS_CONTROLLER)));
+			btnGenerateJsTestcode.setSelection(configuration.getAttribute(GENERATE_JS_TEST, store.getBoolean(GENERATE_JS_TEST)));
 			btnGenerateWeb3.setSelection(configuration.getAttribute(GENERATE_WEB3,store.getBoolean(GENERATE_WEB3)));
 
 			IResource member = findResource(configuration, jsDirectoryText.getText());
