@@ -351,8 +351,8 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 			versionText.setEnabled(configuration.getAttribute(ENABLE_VERSION, store.getBoolean(ENABLE_VERSION)));
 
 			btnCompile.setSelection(configuration.getAttribute(COMPILE_CONTRACTS, store1.getBoolean(COMPILE_CONTRACTS)));
-			compiler_text.setText(configuration.getAttribute(COMPILER_PROGRAMM, store1.getString(COMPILER_PROGRAMM)));
 			compiler_out_text.setText(configuration.getAttribute(COMPILER_TARGET, store1.getString(COMPILER_TARGET)));
+			compiler_text.setText(configuration.getAttribute(COMPILER_PROGRAMM, store1.getString(COMPILER_PROGRAMM)));
 			
 			for (Entry<String, Button> e : compileOptions.entrySet()) {
 				e.getValue().setSelection(configuration.getAttribute(e.getKey(), store1.getBoolean(e.getKey())));
