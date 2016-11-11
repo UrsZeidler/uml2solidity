@@ -45,7 +45,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.GENERATE_JAVA_TESTS, true);
 		store.setDefault(PreferenceConstants.GENERATION_JAVA_TEST_TARGET, "test/");
 		
-		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPES, "string,uint,uint256,int,real,address,bool,byte,bytes32");
+		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPES, "string,uint,uint256,int,address,bool,byte,bytes32");
 		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+"string", "String");
 		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+"uint", "Integer");
 		store.setDefault(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+"uint256", "Integer");
