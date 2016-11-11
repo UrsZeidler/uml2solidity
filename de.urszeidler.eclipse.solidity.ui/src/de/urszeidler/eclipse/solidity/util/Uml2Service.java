@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -352,7 +351,8 @@ public class Uml2Service {
 		//TODO: this is a hack only working in the default test setup
 		if(makeRelativeTo.segmentCount()>2)
 			makeRelativeTo = makeRelativeTo.removeFirstSegments(2);
-		
+		else if(makeRelativeTo.segmentCount()==2)
+			return "";
 		return makeRelativeTo.toString();
 	}
 

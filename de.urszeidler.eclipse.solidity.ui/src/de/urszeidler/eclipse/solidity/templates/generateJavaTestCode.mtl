@@ -42,6 +42,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.adridadou.ethereum.BlockchainProxy;
 import org.adridadou.ethereum.BlockchainProxyTest;
+import org.adridadou.ethereum.EthAccount;
 import org.adridadou.ethereum.EthAddress;
 import org.adridadou.ethereum.EthereumFacade;
 import org.adridadou.ethereum.SoliditySource;
@@ -56,13 +57,16 @@ import org.junit.Test;
  */
 public class [aClass.name/]Test[testExtends(aClass)/]{
 	private static EthereumFacade ethereum;
-	private static ECKey sender;
+[comment]	private static ECKey sender;[/comment]
+	private static EthAccount sender;
 
 	private [aClass.name/] fixture;
 	private EthAddress fixtureAddress;
 	private SoliditySource contractSource;
 	// [protected (aClass.name+'Test.attributes')]
-	//TODO: implement
+	//TODO: add custom attributes
+	//for the blockchain proxy the sender is hard coded
+	private String senderAddress = "5db10750e8caff27f906b41c71b3471057dd2004";
 	// [/protected]
 
 	/**
@@ -71,7 +75,8 @@ public class [aClass.name/]Test[testExtends(aClass)/]{
 	@BeforeClass
 	public static void setup() {
 	    BlockchainProxy bcProxy = new BlockchainProxyTest();
-	    sender = null;
+		ECKey key = new ECKey();
+		sender = new EthAccount(key);
 	    ethereum = new EthereumFacade(bcProxy);
 	}
 
@@ -83,11 +88,12 @@ public class [aClass.name/]Test[testExtends(aClass)/]{
 	public void prepareTest() throws Exception {
 		//[protected ('prepareTest')]
 
-        File contractSrc = new File(this.getClass().getResource("/[p.getContractPathForJava()/]/[p.name/].sol").toURI());
+        File contractSrc = new File(this.getClass().getResource("[if (p.getContractPathForJava()<>'')]/[p.getContractPathForJava()/][/if]/[p.name/].sol").toURI());
         contractSource = SoliditySource.from(contractSrc);
 		createFixture();
 		//[/protected]
 	}
+
 
 	/**
 	 * Create a new fixture by deploying the contract source.
@@ -177,8 +183,7 @@ public class All[p.name.toUpperFirst()/]TestSuite {
 @Test
 public void test[op.name.toUpperFirst()/][op.operationParameters()/]() throws Exception {
 	//[protected ('test'+op.name.toUpperFirst()+op.operationParameters())]
-	//TODO: implement this
-	fail("not implemented");
+	fail("not implemented");//TODO: implement this
 	//[/protected]
 }
 [/template]
