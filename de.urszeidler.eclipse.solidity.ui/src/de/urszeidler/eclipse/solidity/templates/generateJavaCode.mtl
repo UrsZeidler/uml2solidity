@@ -45,6 +45,20 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 	[printCommentDoc(prop.ownedComment)/]
 	[prop.toJavaType()/] [prop.name/]();
 [/for]
+[for (p : Property | aClass.allMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
+[if (not value.isStruct())]
+	[printCommentDoc(p.ownedComment)/]
+	[value.toJavaType()/] [p.name/]([p.toJavaType()/] key);
+[/if]
+[/let][/for]
+[for (p : Property | aClass.allKeyMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
+[if (not value.isStruct())]
+	[printCommentDoc(p.ownedComment)/]
+	[value.toJavaType()/] [p.name/]([p.toJavaType()/] key);	
+[/if]
+[/let][/for]
 [for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
 
 	[op.functionSignature()/]
@@ -203,7 +217,9 @@ void [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[/if][/templ
 [if (t.getUpper()<>1)][ '[' /][ ']' /][/if][/template]
 
 
-
+[template public toJavaType (c : Classifier) ]
+[c.solidity2javaType()/]
+[/template]
 
 [template public toJavaType (aType : Type) ]
 [aType.solidity2javaType()/]
