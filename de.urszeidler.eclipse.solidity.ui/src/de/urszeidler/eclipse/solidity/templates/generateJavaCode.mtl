@@ -65,7 +65,10 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [/for][for (op : Operation | aClass.allFunctions()->select(isPublic()))]
 
 	[op.functionSignature()/][/for]
-	
+
+	//[protected ('additional_methods')]
+
+	//[/protected]
 }
 [/file]
 [for (op : Operation | aClass.allAbstractFunctions()->union(aClass.allFunctions()->asSequence())->select(isPublic()))]
