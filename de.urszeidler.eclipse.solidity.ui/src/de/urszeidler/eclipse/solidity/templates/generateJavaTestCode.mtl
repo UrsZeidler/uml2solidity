@@ -70,14 +70,32 @@ public class [aClass.name/]Test[testExtends(aClass)/]{
 	// [/protected]
 
 	/**
-	 * Setup up the blockchain.
+	 * Setup up the blockchain. Add the 'EthereumFacadeProvider' property to use 
+	 * another block chain implemenation or network.
 	 */
 	@BeforeClass
 	public static void setup() {
 	    BlockchainProxy bcProxy = new BlockchainProxyTest();
 		ECKey key = new ECKey();
 		sender = new EthAccount(key);
-	    ethereum = new EthereumFacade(bcProxy);
+		String property = System.getProperty("EthereumFacadeProvider");
+		EthereumFacadeProvider efp = new StandaloneEthereumFacadeProvider();
+		if(property!=null){
+			if (property.equalsIgnoreCase("main")) {
+				efp = new MainEthereumFacadeProvider();
+			}else if (property.equalsIgnoreCase("test")) {
+				efp = new TestnetEthereumFacadeProvider();
+			}else if (property.equalsIgnoreCase("morden")) {
+				efp = new MordenEthereumFacadeProvider();
+			}else if (property.equalsIgnoreCase("rcp")) {
+				RpcEthereumFacadeProvider rcp = new RpcEthereumFacadeProvider();
+				String url = System.getProperty("rcp-url");
+				ethereum = rcp.create(url);
+				return;//as this currently breaks the hierarchy
+			}
+		}
+		
+		ethereum = efp.create();//new EthereumFacade(bcProxy);
 	}
 
 	/**
