@@ -193,12 +193,18 @@ arg[p.indexInContainer()/][else]
 
 [template public functionSignature(op : Operation)]
 [printFunctionComments(op)/]
-[if (op.hasReturnValue())][op.returnType()/] [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[else]
+[if (op.hasReturnValue())][op.javaReturn()/] [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[else]
 void [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[/if][/template]
+
+[template public javaReturn(op : Operation)]
+[if (op.isReturnConstant())]
+[op.returnType()/][else]
+java.util.concurrent.CompletableFuture<[op.returnType()/]>[/if]
+[/template]
 
 [template public returnType(op : Operation)]
 [if (op.allReturnParameters()->size()=1)]
-[op.allReturnParameters()->first().type.toJavaType()/][else]
+[op.allReturnParameters()->first().toJavaType()/][else]
 [op.returnObjectName()/][/if][/template]
 
 [template public printParameters (aOperation : Operation,pdk : ParameterDirectionKind) ]
@@ -221,9 +227,9 @@ void [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[/if][/templ
 
 
 [template public toJavaType (c : Classifier) ]
-[c.solidity2javaType()/]
+[c.solidity2javaType()/][if (c.oclIsKindOf(MultiplicityElement))][printTypeM(c.oclAsType(MultiplicityElement))/][/if]
 [/template]
 
 [template public toJavaType (aType : Type) ]
-[aType.solidity2javaType()/]
+[aType.solidity2javaType()/][if (aType.oclIsKindOf(MultiplicityElement))][printTypeM(aType.oclAsType(MultiplicityElement))/][/if]
 [/template]
