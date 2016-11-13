@@ -54,9 +54,9 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [/let][/for]
 [for (p : Property | aClass.allKeyMappingSubAttributes())]
 [let value : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
-[if (not value.isStruct())]
+[if (not p.type.isStruct())]
 	[printCommentDoc(p.ownedComment)/]
-	[value.toJavaType()/] [p.name/]([p.toJavaType()/] key);	
+	[p.toJavaType()/] [p.name/]([value.toJavaType()/] key);	
 [/if]
 [/let][/for]
 [for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
