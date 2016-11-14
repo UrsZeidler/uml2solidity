@@ -136,10 +136,18 @@ public class [aClass.name/]Test[testExtends(aClass)/]{
 [/let]
 [/if]
         fixtureAddress = address.get();
-        fixture = ethereum
-                .createContractProxy(contractSource, "[aClass.name/]", address.get(), sender, [aClass.name/].class);
+        setFixture(ethereum
+                .createContractProxy(contractSource, "[aClass.name/]", address.get(), sender, [aClass.name/].class));
 		//[/protected]
 	}
+
+	protected void setFixture([aClass.name/] f) {
+		this.fixture = f;
+[if (not aClass.allSuperTypesWithoutContractApi()->isEmpty())]
+		super.setFixture(f);
+[/if]
+	}
+
 
 [for (op : Operation | aClass.allConstructors())]
 	/**
