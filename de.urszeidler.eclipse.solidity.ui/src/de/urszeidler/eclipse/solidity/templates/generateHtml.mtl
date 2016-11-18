@@ -55,6 +55,33 @@
 [file (p.name+'.html', false, 'UTF-8')]
 [printHtmlPage(p)/]
 [/file]
+[file (p.name+'-example-gui.html', false, 'UTF-8')]
+[printExampleGuiHtmlPage(p)/]
+[/file]
+
+[/template]
+
+[template public printExampleGuiHtmlPage (p : Package) ]
+<!doctype>
+<html>
+<head>
+
+<!-- start of style -->
+<style>
+[basicStyle(p)/]
+
+</style>
+</head>
+<body bgcolor='#E6E6FA'>
+	<h1>Sample Interface for [p.name/]</h1>
+[for (	aClass : Class | p.allContracts())]
+[printHtmlInterface(aClass)/]
+[/for]
+
+<div id="eventLog" ></div>
+</body>
+</html>
+
 [/template]
 
 [template public printHtmlPage (p : Package) ]
@@ -113,6 +140,8 @@
 .contract_attribute_value{}
 .function_execution{}
 .function_parameter{}
+.function_input{}
+.function_btn{}
 .function_result{}
 .eventRow{
 	display: table-row;
@@ -206,19 +235,19 @@ c.createDefaultGui();
 
 [template public printHtmlMappingInterface (c:Class , p : Property, k : Type,v : Type) ]
 <div class="Value_Mapping" id="[c.name/]_contract_attribute_[p.name/]">mapping  [p.name/]:
-		<input type="[k.toHtmlType()/]" id="[c.name/]_contract_attribute_[p.name/]_input">([k.name/])
+		<input class="function_input" type="[k.toHtmlType()/]" id="[c.name/]_contract_attribute_[p.name/]_input">([k.name/])
     	<div class="Mapping_value" id="[c.name/]_contract_attribute_[k.name/]"> [v.name/]:
-      		<div class="contract_attribute_value" id="[c.name/]_[p.name/]_value"> </div>
+      		<span class="contract_attribute_value" id="[c.name/]_[p.name/]_value"> </span>
     	</div>
   </div>
 [/template]
 
 [template public printHtmlScructInterface (c:Class , p : Property, k : Type,v : Classifier) ]
 <div class="Struct_Mapping" id="Struc_[c.name/]_contract_attribute_[p.name/]">struc mapping  [p.name/]:
-		<input type="[k.toHtmlType()/]" id="[c.name/]_contract_attribute_[p.name/]_input">([k.name/])
+		<input class="function_input" type="[k.toHtmlType()/]" id="[c.name/]_contract_attribute_[p.name/]_input">([k.name/])
 [for (p1 : Property | v.attribute)]
     	<div class="Struct_attribute" id="[c.name/]_contract_attribute_[p.name/]_[p1.name/]"> [p1.name/]:
-      		<div class="Struct_attribute_value" id="[c.name/]_[p.name/]_[p1.name/]_value"> </div>
+      		<span class="Struct_attribute_value" id="[c.name/]_[p.name/]_[p1.name/]_value"> </span>
     	</div>
 [/for]
   </div>
@@ -232,7 +261,7 @@ c.createDefaultGui();
 		return '<div class="Struct_Mapping" id='+this.prefix+'"Struc_[c.name/]_contract_attribute_[p.name/]">'
 [for (p1 : Property | v.attribute)]
     		+'<div class="Struct_attribute" id='+this.prefix+'"[c.name/]_contract_attribute_[p.name/]_[p1.name/]"> [p1.name/]:'
-      		+'	<div class="Struct_attribute_value" id='+this.prefix+'"[c.name/]_[p.name/]_[p1.name/]_value">'+struct.[p1.name/]()+'</div>'
+      		+'	<span class="Struct_attribute_value" id='+this.prefix+'"[c.name/]_[p.name/]_[p1.name/]_value">'+struct.[p1.name/]()+'</span>'
     		+'</div>'
 [/for]
   		+'</div>';
@@ -287,7 +316,7 @@ c.createDefaultGui();
 [/if]
 [/let]
 [/for]
-    <button id="[aClass.name/]_updateAttributes" onclick="[aClass.name/]Controller._updateAttributes()">update [aClass.name/] attributes</button>
+    <button class="function_btn" id="[aClass.name/]_updateAttributes" onclick="[aClass.name/]Controller._updateAttributes()">update [aClass.name/] attributes</button>
   </div>
 [printOperationsUi(aClass,'')/]
 [for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
@@ -302,7 +331,7 @@ c.createDefaultGui();
 [template public printContractAttributes (aClass : Class) ]
 [for (p : Property | aClass.allSubAttributes())]
     <div class="contract_attribute" id="[aClass.name/]_contract_attribute_[p.name/]"> [p.name/]:
-      <div class="contract_attribute_value" id="[aClass.name/]_[p.name/]_value"> </div>
+      <span class="contract_attribute_value" id="[aClass.name/]_[p.name/]_value"> </span>
     </div>
 [/for]
 [/template]
@@ -314,14 +343,18 @@ c.createDefaultGui();
 [/template]
 
 [template public printOperationUi (aClass : Class,prefix:String,op : Operation) ]
-  <div class="function_execution" id="[aClass.name/]_contract_function_[op.functionName()/]">
-[aClass.name/]_[op.name/]:
+  <fieldset class="function_execution" id="[aClass.name/]_contract_function_[op.functionName()/]">
+<legend>[op.name/]</legend>
 [for (p : Parameter | op.allInParameters())]
-	  <div class="function_parameter">[p.name/]<input type="[p.type.toHtmlType()/]" id="[prefix/][op.functionName()/]_[p.name/]"></div>
+	  <label class="function_parameter" for="[prefix/][op.functionName()/]_[p.name/]">[p.name/]
+		<input class="function_input" type="[p.type.toHtmlType()/]" 
+          id="[prefix/][op.functionName()/]_[p.name/]"
+		  placeholder="[p.name/]">
+	</label>
 [/for]
-	<button id="[aClass.name/]Controller.[prefix/][op.functionName()/]" onclick="[aClass.name/]Controller.[prefix/][op.functionName()/]()">execute [aClass.name/]_[op.name/]</button>
+	<button class="function_btn" id="[aClass.name/]Controller.[prefix/][op.functionName()/]" onclick="[aClass.name/]Controller.[prefix/][op.functionName()/]()">[op.name/]</button>
 	<div class="function_result" id="[prefix/][op.functionName()/]_res"></div>
-  </div>
+  </fieldset>
 [/template]
 
 [template public functionName(op : Operation)]
@@ -805,6 +838,20 @@ function [aClass.name/]GuiFactory() {
 		return [for (it : String | printContractAttributes(aClass).toString().tokenizeLine())separator ('+')]
 		'[it.replaceAll('id="', 'id="\'+this.prefix+\'').replaceAll('onclick="', 'onclick="\'+this.prefix+\'')/]'
 	[/for];
+	}
+
+	/**
+	* Create the gui.
+	*/
+	this.createPlainGui=function(){
+		return this.createAttributesGui()
+[for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
+				+ this.create[op.functionName()/]Gui
+[/for]				
+[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
+				+ this.create[op.functionName(aClass)/]Gui
+[/for]				
+				;
 	}
 [for (op : Operation | aClass.allSubFunctions()->select(isPublic()))]
 
