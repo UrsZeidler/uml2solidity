@@ -139,8 +139,15 @@
 .contract_attribute{}
 .contract_attribute_value{}
 .function_execution{}
-.function_parameter{}
-.function_input{}
+.function_parameter{
+	float: left;
+    width: 220px;
+	padding-top: 0.3em;
+}
+.function_input{
+	display : block;
+	margin-bottom: 0.8em;
+}
 .function_btn{}
 .function_result{}
 .eventRow{
@@ -346,11 +353,10 @@ c.createDefaultGui();
   <fieldset class="function_execution" id="[aClass.name/]_contract_function_[op.functionName()/]">
 <legend>[op.name/]</legend>
 [for (p : Parameter | op.allInParameters())]
-	  <label class="function_parameter" for="[prefix/][op.functionName()/]_[p.name/]">[p.name/]
+	  <label class="function_parameter" for="[prefix/][op.functionName()/]_[p.name/]">[p.name/]</label>
 		<input class="function_input" type="[p.type.toHtmlType()/]" 
           id="[prefix/][op.functionName()/]_[p.name/]"
-		  placeholder="[p.name/]">
-	</label>
+		  placeholder="[p.name/]"/>
 [/for]
 	<button class="function_btn" id="[aClass.name/]Controller.[prefix/][op.functionName()/]" onclick="[aClass.name/]Controller.[prefix/][op.functionName()/]()">[op.name/]</button>
 	<div class="function_result" id="[prefix/][op.functionName()/]_res"></div>
