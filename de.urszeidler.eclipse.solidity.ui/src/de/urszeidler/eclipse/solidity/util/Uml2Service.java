@@ -6,6 +6,7 @@ package de.urszeidler.eclipse.solidity.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.internal.expressions.InstanceofExpression;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -15,6 +16,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.Type;
@@ -288,7 +290,7 @@ public class Uml2Service {
 	public static String solidity2javaType(Type type) {
 		IPreferenceStore store = getStore(type);		
 		String typeName="";
-		if(hasStereotype(type, "Contract")||hasStereotype(type, "Library"))
+		if(hasStereotype(type, "Contract")||hasStereotype(type, "Library")|| type instanceof Interface)
 			typeName = store.getString(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+"address");
 		else
 			typeName = store.getString(PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX+type.getName());

@@ -41,6 +41,10 @@ import [pi.target.oclAsType(Package).toPackage()/].*;
 
 [printCommentDoc(aClass.ownedComment)/]
 public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for now no struct types[/comment]
+[for (ne : NamedElement | aClass.ownedMember->filter(Enumeration)->sortedBy(indexInContainer()) )]
+[if (oclIsTypeOf(Enumeration))]
+    [printEnum(ne.oclAsType(Enumeration))/]
+[/if][/for]
 [for (prop : Property | aClass.allCProperties()->select(isPublic())->select( not type.isStruct() )  )]
 	[printCommentDoc(prop.ownedComment)/]
 	[prop.toJavaType()/] [prop.name/]();
@@ -80,6 +84,11 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [/for]
 [/for]
 [/template]
+
+[template public printEnum (en : Enumeration) ]
+enum [en.name/] { [for (l : EnumerationLiteral | en.ownedLiteral)separator (',')][l.name/][/for] }
+[/template]
+
 
 [template public printReturnParameterValueObject(p : Package, aClass : Class,  op : Operation)]
 package [p.getInterfacePackagePrefix()/].[p.name/];
@@ -216,7 +225,7 @@ java.util.concurrent.CompletableFuture<[op.returnType()/]>[/if]
  [p.toJavaType()/][/for][/template]
 
 [template public toJavaType (t : TypedElement) ]
-[t.type.solidity2javaType()/][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if]
+[if (t.type.oclIsTypeOf(Enumeration))]  [t.type.name/][else]  [t.type.solidity2javaType()/][/if][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if]
 [/template]
 
 [**
