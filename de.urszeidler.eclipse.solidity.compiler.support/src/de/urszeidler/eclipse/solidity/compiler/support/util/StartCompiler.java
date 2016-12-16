@@ -102,7 +102,11 @@ public class StartCompiler {
 			list.add("--formal");
 		if (store.getBoolean(PreferenceConstants.COMPILER_HASHES))
 			list.add("--hashes");
+		if (store.getBoolean(PreferenceConstants.COMBINED_JSON))
+			list.add("--combined-json");
 
+		
+		
 		list.add("-o");
 		list.add(outFile.getAbsolutePath());
 		list.addAll(src);
