@@ -43,10 +43,14 @@ import org.adridadou.ethereum.provider.TestnetEthereumFacadeProvider;
 import org.adridadou.ethereum.values.config.ChainId;
 import org.adridadou.ethereum.values.config.InfuraKey;
 
-
+/**
+ * A simple singleton to control the access for the ethereum instance.<br/>
+ * The created instance is controllable by system a system property 'EthereumFacadeProvider'.
+ */
 public class EthereumInstance{
 
 	private static EthereumInstance instance;
+	private static Lock instanceLock;
 	
 	private EthereumFacade ethereum;
 
@@ -58,9 +62,18 @@ public class EthereumInstance{
 		}
 	}
 
+	/**
+	 * Get the etherreum instance, will wait until the instance is available.
+	 * @return the instance
+	 */
 	public static EthereumInstance getInstance() {
-		if (instance == null) {
-			instance = new EthereumInstance();
+		instanceLock.lock();
+		try {
+			if (instance == null) {
+				instance = new EthereumInstance();
+			}
+		} finally {
+			instanceLock.unlock();
 		}
 		return instance;
 	}
