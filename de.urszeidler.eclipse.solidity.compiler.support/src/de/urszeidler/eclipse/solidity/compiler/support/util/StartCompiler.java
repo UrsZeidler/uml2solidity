@@ -5,6 +5,7 @@ package de.urszeidler.eclipse.solidity.compiler.support.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,9 +103,10 @@ public class StartCompiler {
 			list.add("--formal");
 		if (store.getBoolean(PreferenceConstants.COMPILER_HASHES))
 			list.add("--hashes");
-		if (store.getBoolean(PreferenceConstants.COMBINED_JSON))
+		if (store.getBoolean(PreferenceConstants.COMBINED_JSON)){
 			list.add("--combined-json");
-
+			list.add(store.getString(PreferenceConstants.COMBINED_JSON_OPTIONS));
+		}
 		
 		
 		list.add("-o");
@@ -132,10 +134,18 @@ public class StartCompiler {
 			}
 			String message = futureTaskOutReader.get();
 			if (!message.isEmpty()) {
+				if(store.getBoolean(PreferenceConstants.COMBINED_JSON)&& exitValue==0){
+					String filename = "contracts.json";
+					FileWriter fileWriter = new FileWriter(new File(outFile.getAbsolutePath()+"/"+ filename));
+					fileWriter.append(message);
+					fileWriter.close();
+				}
+				
 				if (callback != null)
 					callback.compiled(message, null, null);
 				else
-					Activator.logInfo(message);
+					if(!store.getBoolean(PreferenceConstants.COMBINED_JSON))
+						Activator.logInfo(message);
 			}
 		} catch (Exception e) {
 			if (callback != null)

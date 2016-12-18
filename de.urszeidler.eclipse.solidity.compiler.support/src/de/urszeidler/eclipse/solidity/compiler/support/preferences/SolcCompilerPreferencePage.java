@@ -29,6 +29,12 @@ public class SolcCompilerPreferencePage extends AbstractProjectPreferencesPage i
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.COMPILER_TARGET, "target directory", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.COMBINED_JSON, "combine json", BooleanFieldEditor.DEFAULT,
+				getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.COMBINED_JSON_OPTIONS, "combine json options", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+
 		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_OPTIMIZE, "optimize", BooleanFieldEditor.DEFAULT,
 				getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.COMPILER_BIN, "generate bin", BooleanFieldEditor.DEFAULT,

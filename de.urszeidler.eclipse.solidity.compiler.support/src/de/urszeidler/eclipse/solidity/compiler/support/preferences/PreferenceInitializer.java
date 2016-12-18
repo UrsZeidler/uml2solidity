@@ -38,6 +38,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.COMPILER_OPCODE, false);
 		store.setDefault(PreferenceConstants.COMPILER_FORMAL, false);
 		store.setDefault(PreferenceConstants.COMPILER_HASHES, false);
+		
+		store.setDefault(PreferenceConstants.COMBINED_JSON_OPTIONS, "abi,bin,bin-runtime,interface,devdoc,userdoc,clone-bin");		 
 	}
 
 }
