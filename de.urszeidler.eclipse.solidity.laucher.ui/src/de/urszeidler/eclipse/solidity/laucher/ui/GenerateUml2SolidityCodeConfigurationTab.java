@@ -3,6 +3,7 @@
  */
 package de.urszeidler.eclipse.solidity.laucher.ui;
 
+import static de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.*;
 import static de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_PROGRAMM;
 import static de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET;
 import static de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS;
@@ -323,6 +324,7 @@ public class GenerateUml2SolidityCodeConfigurationTab extends AbstractUml2Solidi
 		for (String sw : compileSwitches) {
 			configuration.setAttribute(sw, store1.getString(sw));
 		}
+		configuration.setAttribute(COMBINED_JSON_OPTIONS, store1.getString(COMBINED_JSON_OPTIONS));
 	}
 
 	/*
