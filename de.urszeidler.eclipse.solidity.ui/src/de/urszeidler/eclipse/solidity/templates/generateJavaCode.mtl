@@ -31,6 +31,9 @@
 [file (m.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/EthereumInstance.java', false, 'UTF-8')]
 package [m.getInterfacePackagePrefix()/];
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.adridadou.ethereum.EthereumFacade;
 import org.adridadou.ethereum.provider.MainEthereumFacadeProvider;
 import org.adridadou.ethereum.provider.PrivateEthereumFacadeProvider;
@@ -50,7 +53,7 @@ import org.adridadou.ethereum.values.config.InfuraKey;
 public class EthereumInstance{
 
 	private static EthereumInstance instance;
-	private static Lock instanceLock;
+	private static Lock instanceLock = new ReentrantLock();
 	
 	private EthereumFacade ethereum;
 
@@ -94,7 +97,7 @@ public class EthereumInstance{
 				ethereum = new RopstenEthereumFacadeProvider().create();
 			}else if (property.equalsIgnoreCase("InfuraRopsten")) {
 				InfuraRopstenEthereumFacadeProvider ethereumFacadeProvider = new InfuraRopstenEthereumFacadeProvider();
-				String url = System.getProperty("apiKey");
+				String apiKey = System.getProperty("apiKey");
 				ethereum = ethereumFacadeProvider.create(new InfuraKey(apiKey));
 			}else if (property.equalsIgnoreCase("rpc")) {
 				GenericRpcEthereumFacadeProvider rcp = new GenericRpcEthereumFacadeProvider();
