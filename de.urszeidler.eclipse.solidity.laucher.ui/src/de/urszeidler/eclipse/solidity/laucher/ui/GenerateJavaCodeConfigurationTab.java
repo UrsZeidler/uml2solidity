@@ -9,7 +9,7 @@ import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_JAVA_2_SOLIDITY_TYPE_PREFIX;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_JAVA_INTERFACE_PACKAGE_PREFIX;
 import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_JAVA_INTERFACE_TARGET;
-import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.GENERATION_JAVA_TEST_TARGET;
+import static de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -159,6 +159,7 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 	private TableViewer tableViewer;
 	private Text base_Test_text;
 	private Button btnGenerateTestCode;
+	private Button btnGenerateJavaNoneBlocking;
 
 	/*
 	 * (non-Javadoc)
@@ -225,6 +226,16 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 			}
 		});
 		package_prefix_tex.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		
+		btnGenerateJavaNoneBlocking = new Button(grpJavaInterface, SWT.CHECK);
+		btnGenerateJavaNoneBlocking.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				validatePage();
+			}
+		});
+		btnGenerateJavaNoneBlocking.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+		btnGenerateJavaNoneBlocking.setText("generate java void as Completable<void>");
 		
 		Group group = new Group(mainComposite, SWT.NONE);
 		group.setLayout(new GridLayout(3, false));
@@ -338,6 +349,7 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 		IPreferenceStore store = PreferenceConstants.getPreferenceStore(null);
 
 		configuration.setAttribute(GENERATE_JAVA_INTERFACE, store.getBoolean(GENERATE_JAVA_INTERFACE));
+		configuration.setAttribute(GENERATE_JAVA_NONBLOCKING, store.getBoolean(GENERATE_JAVA_NONBLOCKING));
 		configuration.setAttribute(GENERATION_JAVA_INTERFACE_TARGET, store.getString(GENERATION_JAVA_INTERFACE_TARGET));
 		configuration.setAttribute(GENERATION_JAVA_INTERFACE_PACKAGE_PREFIX,
 				store.getString(GENERATION_JAVA_INTERFACE_PACKAGE_PREFIX));
@@ -369,6 +381,8 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 		try {
 			btnGenerateJava.setSelection(
 					configuration.getAttribute(GENERATE_JAVA_INTERFACE, store.getBoolean(GENERATE_JAVA_INTERFACE)));
+			btnGenerateJavaNoneBlocking.setSelection(
+					configuration.getAttribute(GENERATE_JAVA_NONBLOCKING, store.getBoolean(GENERATE_JAVA_NONBLOCKING)));
 			base_target_text.setText(configuration.getAttribute(GENERATION_JAVA_INTERFACE_TARGET,
 					store.getString(GENERATION_JAVA_INTERFACE_TARGET)));
 			package_prefix_tex.setText(configuration.getAttribute(GENERATION_JAVA_INTERFACE_PACKAGE_PREFIX,
@@ -404,6 +418,7 @@ public class GenerateJavaCodeConfigurationTab extends AbstractUml2SolidityLaunch
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(GENERATE_JAVA_INTERFACE, btnGenerateJava.getSelection());
+		configuration.setAttribute(GENERATE_JAVA_NONBLOCKING, btnGenerateJavaNoneBlocking.getSelection());
 		configuration.setAttribute(GENERATION_JAVA_INTERFACE_TARGET, base_target_text.getText());
 		configuration.setAttribute(GENERATION_JAVA_INTERFACE_PACKAGE_PREFIX, package_prefix_tex.getText());
 		

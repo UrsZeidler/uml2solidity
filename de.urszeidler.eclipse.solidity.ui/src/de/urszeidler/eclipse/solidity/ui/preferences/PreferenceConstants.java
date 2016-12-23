@@ -44,6 +44,7 @@ public class PreferenceConstants {
 
 	public static final String VERSION_PRAGMA = "version_pragma";
 	public static final String ENABLE_VERSION = "enable_version";
+	public static final String GENERATE_JAVA_NONBLOCKING = "GENERATE_JAVA_NONBLOCKING";
 
 	
 	

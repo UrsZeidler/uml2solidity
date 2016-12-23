@@ -41,6 +41,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.CONTRACT_FILE_HEADER, "/*\n*\n*\n*/");
 		
 		store.setDefault(PreferenceConstants.GENERATE_JAVA_INTERFACE, true);
+		store.setDefault(PreferenceConstants.GENERATE_JAVA_NONBLOCKING, false);
 		store.setDefault(PreferenceConstants.GENERATION_JAVA_INTERFACE_TARGET, "src/");
 		store.setDefault(PreferenceConstants.GENERATE_JAVA_TESTS, true);
 		store.setDefault(PreferenceConstants.GENERATION_JAVA_TEST_TARGET, "test/");

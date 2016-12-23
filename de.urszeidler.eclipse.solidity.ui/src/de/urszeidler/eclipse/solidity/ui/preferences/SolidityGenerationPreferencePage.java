@@ -89,6 +89,8 @@ public class SolidityGenerationPreferencePage extends AbstractProjectPreferences
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.GENERATION_JAVA_INTERFACE_PACKAGE_PREFIX, "interface package prefix", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.GENERATE_JAVA_NONBLOCKING, "generate java void as Completable<void>",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 
 		addField(new SeperatorFieldEditor("","", getFieldEditorParent()));
 		

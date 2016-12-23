@@ -427,7 +427,7 @@ arg[p.indexInContainer()/][else]
 [template public functionSignature(op : Operation)]
 [printFunctionComments(op)/]
 [if (op.hasReturnValue())][op.javaReturn()/] [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[else]
-[if (op.isReturnConstant())] void [else] CompletableFuture<Void> [/if][op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[/if][/template]
+[if (op.isReturnConstant() or not op.generateJavaNoneBlocking())]void [else]java.util.concurrent.CompletableFuture<Void> [/if][op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[/if][/template]
 
 [template public javaReturn(op : Operation)]
 [if (op.isReturnConstant())]
@@ -449,7 +449,7 @@ java.util.concurrent.CompletableFuture<[op.returnType()/]>[/if]
  [p.toJavaType()/][/for][/template]
 
 [template public toJavaType (t : TypedElement) ]
-[if (t.type.oclIsTypeOf(Enumeration))]  [t.type.name/][else]  [t.type.solidity2javaType()/][/if][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if]
+[if (t.type.oclIsTypeOf(Enumeration))][t.type.name/][else][t.type.solidity2javaType()/][/if][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if]
 [/template]
 
 [**

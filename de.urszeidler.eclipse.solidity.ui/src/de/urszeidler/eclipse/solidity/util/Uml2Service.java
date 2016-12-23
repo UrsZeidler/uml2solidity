@@ -359,6 +359,19 @@ public class Uml2Service {
 	}
 
 	/**
+	 * Should abi files for each class being generated.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static Boolean generateJavaNoneBlocking(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(PreferenceConstants.GENERATE_JAVA_NONBLOCKING);
+	}
+
+	
+	/**
 	 * Get the preference store:
 	 * 
 	 * @param clazz

@@ -61,6 +61,9 @@
 [query public generateJavaTests(class : NamedElement) : Boolean
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateJavaTests(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
 /]
+[query public generateJavaNoneBlocking(class : NamedElement) : Boolean
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'generateJavaNoneBlocking(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
+/]
 [query public getContractPathForJava(class : NamedElement) : String
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getContractPathForJava(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
 /]
