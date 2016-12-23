@@ -37,8 +37,14 @@ import static org.junit.Assert.*;
 import [pi.target.oclAsType(Package).toPackage()/].*;
 [/for]
 
+import [p.getInterfacePackagePrefix()/].[p.name/].[aClass.name/].*;
+
+
 import java.io.File;
-import java.util.concurrent.CompletableFuture;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.*;
+import java.math.*;
 
 import org.adridadou.ethereum.EthereumFacade;
 import org.adridadou.ethereum.keystore.*;

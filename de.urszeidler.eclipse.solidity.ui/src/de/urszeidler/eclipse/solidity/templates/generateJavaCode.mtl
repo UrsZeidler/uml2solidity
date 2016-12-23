@@ -66,7 +66,7 @@ public class EthereumInstance{
 	}
 
 	/**
-	 * Get the etherreum instance, will wait until the instance is available.
+	 * Get the ethereum instance, will wait until the instance is available.
 	 * @return the instance
 	 */
 	public static EthereumInstance getInstance() {
@@ -83,7 +83,15 @@ public class EthereumInstance{
 
 	/**
 	 * Setup up the blockchain. Add the 'EthereumFacadeProvider' property to use 
-	 * another block chain implementation or network.
+	 * another block chain implementation or network.<br/>
+	 * main - for the main net<br/>
+	 * test - for the main net<br/>
+	 * ropsten - for the new testnet<br/>
+	 * InfuraRopsten - for the new testnet over infura rcp<br/>
+	 * rpc - to use a rpc instance<br/>
+	 * -- rpc-url - the url<br/>
+	 * -- chain-id - the chain id<br/>
+	 * private - for a private chain<br/>
 	 * @throws Exception 
 	 */
 	private void setup() throws Exception {
@@ -107,6 +115,9 @@ public class EthereumInstance{
 			}else if (property.equalsIgnoreCase("private")){
 				PrivateEthereumFacadeProvider provider = new PrivateEthereumFacadeProvider();
 				PrivateNetworkConfig config = PrivateNetworkConfig.config();
+				//[protected ('setup the chain')]
+
+				//[/protected]
 				ethereum = provider.create(config);
 			}
 		}else{
@@ -149,20 +160,20 @@ import [p.getInterfacePackagePrefix()/].[p.name/].*;
  */
 public class [p.name.toUpperFirst()/]Deployer {
 
-
+	private EthereumFacade ethereum;
 	private SoliditySource contractSource;
 	private static String filename = "[if (p.getContractPathForJava()<>'')]/[p.getContractPathForJava()/][/if]/[p.name/].sol";
 
-	public [p.name.toUpperFirst()/]Deployer() {
-		this(filename);
+	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum) {
+		this(ethereum,filename);
 	}
-	
-	public [p.name.toUpperFirst()/]Deployer(String contractSourceFile) {
+
+	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, String contractSourceFile) {
+		this.ethereum = ethereum;
 		try {
-			contractSource = SoliditySource
-					.from(new File(this.getClass().getResource(contractSourceFile).toURI()));
+			contractSource = SoliditySource.from(new File(this.getClass().getResource(contractSourceFile).toURI()));
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException(e);
 		}
 	}
 
@@ -172,11 +183,10 @@ public class [p.name.toUpperFirst()/]Deployer {
 	/**
 	 * Deploys a '[aClass.name/]' on the blockchain.
 	 *  
-	 * @param ethereum the blockchain
 	 * @param sender the sender address
 	 * @return the address of the deployed contract
 	 */
-	public CompletableFuture<EthAddress> deploy[aClass.name/](EthereumFacade ethereum, EthAccount sender) {
+	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender) {
 		CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, "[aClass.name/]", sender);
 		return address;
 	}
@@ -184,13 +194,12 @@ public class [p.name.toUpperFirst()/]Deployer {
 	/**
 	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contcat proxy.
 	 *  
-	 * @param ethereum the blockchain
 	 * @param sender the sender address
 	 * @return the contract interface
 	 */
-	public [aClass.name/] create[aClass.name/](EthereumFacade ethereum, EthAccount sender) throws IOException, InterruptedException, ExecutionException {
-		CompletableFuture<EthAddress> address = deploy[aClass.name/](ethereum, sender);
-		return create[aClass.name/](ethereum, sender, address);
+	public [aClass.name/] create[aClass.name/](EthAccount sender) throws IOException, InterruptedException, ExecutionException {
+		CompletableFuture<EthAddress> address = deploy[aClass.name/](sender);
+		return create[aClass.name/](sender, address.get());
 	}
 [else]
 [for (op : Operation | aClass.allConstructors())]
@@ -198,14 +207,13 @@ public class [p.name.toUpperFirst()/]Deployer {
 	/**
 	 * Deploys a '[aClass.name/]' on the blockchain.
 	 *  
-	 * @param ethereum the blockchain
 	 * @param sender the sender address
 [for (p : Parameter | op.allInParameters())]
 	 * @param [p.name/] [if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
 [/for]
 	 * @return the address of the deployed contract
 	 */
-	public CompletableFuture<EthAddress> deploy[aClass.name/](EthereumFacade ethereum, EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) {
+	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) {
 		CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, "[aClass.name/]", sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
 		return address;
 	}
@@ -213,31 +221,29 @@ public class [p.name.toUpperFirst()/]Deployer {
 	/**
 	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contcat proxy.
 	 *  
-	 * @param ethereum the blockchain
 	 * @param sender the sender address
 [for (p : Parameter | op.allInParameters())]
 	 * @param [p.name/] [if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
 [/for]
 	 * @return the contract interface
 	 */
-	public [aClass.name/] create[aClass.name/](EthereumFacade ethereum, EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) throws IOException, InterruptedException, ExecutionException {
-		CompletableFuture<EthAddress> address = deploy[aClass.name/](ethereum, sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
-		return create[aClass.name/](ethereum, sender, address);
+	public [aClass.name/] create[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) throws IOException, InterruptedException, ExecutionException {
+		CompletableFuture<EthAddress> address = deploy[aClass.name/](sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
+		return create[aClass.name/](sender, address.get());
 	}
 [/for]
 [/if]
 
 	/**
-	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contcat proxy.
+	 * Create a proxy for a deployed '[aClass.name/]' contract.
 	 *  
-	 * @param ethereum the blockchain
 	 * @param sender the sender address
 	 * @param address the address of the contract
 	 * @return the contract interface
 	 */
-	public [aClass.name/] create[aClass.name/](EthereumFacade ethereum, EthAccount sender, CompletableFuture<EthAddress> address) throws IOException, InterruptedException, ExecutionException {
+	public [aClass.name/] create[aClass.name/](EthAccount sender, EthAddress address) throws IOException, InterruptedException, ExecutionException {
 		[aClass.name/] [aClass.name.toLowerCase()/] = ethereum
-        .createContractProxy(contractSource, "[aClass.name/]", address.get(), sender, [aClass.name/].class);
+        .createContractProxy(contractSource, "[aClass.name/]", address, sender, [aClass.name/].class);
 		return [aClass.name.toLowerCase()/];
 	}
 [/for]
@@ -308,6 +314,8 @@ enum [en.name/] { [for (l : EnumerationLiteral | en.ownedLiteral)separator (',')
 
 [template public printReturnParameterValueObject(p : Package, aClass : Class,  op : Operation)]
 package [p.getInterfacePackagePrefix()/].[p.name/];
+
+import [p.getInterfacePackagePrefix()/].[p.name/].[aClass.name/].*;
 
 /**
  * The return value for the function [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]).
