@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -34,7 +35,7 @@ public class StartCompiler {
 		public String call() throws Exception {
 			StringBuffer buffer = new StringBuffer();
 			String s = reader.readLine();
-			while (s != null) {
+			while (s != null && reader.ready()) {
 				buffer.append(s);
 				buffer.append("\n");
 				s = reader.readLine();
@@ -120,9 +121,9 @@ public class StartCompiler {
 			final BufferedReader outReader = new BufferedReader(new InputStreamReader(start.getInputStream()));
 
 			FutureTask<String> futureTaskErrorReader = new FutureTask<String>(new CallableImplementation(errorReader));
-			futureTaskErrorReader.run();
+			Executors.newSingleThreadExecutor().execute(futureTaskErrorReader);
 			FutureTask<String> futureTaskOutReader = new FutureTask<String>(new CallableImplementation(outReader));
-			futureTaskOutReader.run();
+			Executors.newSingleThreadExecutor().execute(futureTaskOutReader);
 
 			int exitValue = start.waitFor();
 			if (exitValue != 0) {
