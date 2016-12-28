@@ -24,6 +24,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 				"/usr/bin/solc");
 		store.setDefault(PreferenceConstants.COMPILER_TARGET,
 				"bin");
+		store.setDefault(PreferenceConstants.SOL_SRC_DIRECTORY,
+				"sol-src");
 		store.setDefault(PreferenceConstants.COMPILER_BIN, true);
 		store.setDefault(PreferenceConstants.COMPILER_BIN_RUNTIME, false);
 		store.setDefault(PreferenceConstants.COMPILER_ABI, true);
@@ -39,7 +41,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.COMPILER_FORMAL, false);
 		store.setDefault(PreferenceConstants.COMPILER_HASHES, false);
 		
-		store.setDefault(PreferenceConstants.COMBINED_JSON_OPTIONS, "abi,bin,bin-runtime,interface,devdoc,userdoc,clone-bin");		 
+		store.setDefault(PreferenceConstants.COMBINED_JSON_OPTIONS, "abi,bin");		 
+		store.setDefault(PreferenceConstants.COMPILER_TARGET_COMBINE_ABI, "bin/combine.json");		 
 	}
 
 }

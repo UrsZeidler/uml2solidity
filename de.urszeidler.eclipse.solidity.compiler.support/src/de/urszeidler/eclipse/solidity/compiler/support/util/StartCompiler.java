@@ -110,11 +110,32 @@ public class StartCompiler {
 		}
 		
 		
-		list.add("-o");
-		list.add(outFile.getAbsolutePath());
-		list.addAll(src);
+		startCompiler(outFile, src, callback, list);
+	}
 
-		ProcessBuilder processBuilder = new ProcessBuilder(list);
+	/**
+	 * @param outFile
+	 * @param src
+	 * @param store
+	 * @param callback
+	 * @param options
+	 */
+	public static void startCompiler(File outFile, List<String> src, CompilerCallback callback,
+			List<String> options) {
+		options.add("-o");
+		options.add(outFile.getAbsolutePath());
+		startCompiler(src, callback, options);
+	}
+
+	/**
+	 * @param src
+	 * @param callback
+	 * @param options
+	 */
+	public static void startCompiler(List<String> src, CompilerCallback callback, List<String> options) {
+		options.addAll(src);
+
+		ProcessBuilder processBuilder = new ProcessBuilder(options);
 		try {
 			Process start = processBuilder.start();
 			final BufferedReader errorReader = new BufferedReader(new InputStreamReader(start.getErrorStream()));
@@ -126,27 +147,20 @@ public class StartCompiler {
 			Executors.newSingleThreadExecutor().execute(futureTaskOutReader);
 
 			int exitValue = start.waitFor();
+			String errorMessage = futureTaskErrorReader.get();
+			String message = futureTaskOutReader.get();
 			if (exitValue != 0) {
-				String errorMessage = futureTaskErrorReader.get();
 				if (callback != null)
 					callback.compiled(null, errorMessage, null);
 				else
 					Activator.logInfo(errorMessage);
 			}
-			String message = futureTaskOutReader.get();
 			if (!message.isEmpty()) {
-				if(store.getBoolean(PreferenceConstants.COMBINED_JSON)&& exitValue==0){
-					String filename = "contracts.json";
-					FileWriter fileWriter = new FileWriter(new File(outFile.getAbsolutePath()+"/"+ filename));
-					fileWriter.append(message);
-					fileWriter.close();
-				}
 				
 				if (callback != null)
-					callback.compiled(message, null, null);
+					callback.compiled(message, errorMessage, null);
 				else
-					if(!store.getBoolean(PreferenceConstants.COMBINED_JSON))
-						Activator.logInfo(message);
+					Activator.logInfo(message);
 			}
 		} catch (Exception e) {
 			if (callback != null)

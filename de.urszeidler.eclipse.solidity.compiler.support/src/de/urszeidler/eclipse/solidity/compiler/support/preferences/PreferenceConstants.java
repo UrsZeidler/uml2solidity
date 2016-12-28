@@ -32,19 +32,25 @@ public class PreferenceConstants {
 	public static final String COMPILER_HASHES = "COMPILER_HASHES";
 	public static final String COMBINED_JSON = "COMBINED_JSON";
 	public static final String COMBINED_JSON_OPTIONS = "COMBINED_JSON_OPTIONS";
+	public static final String SOL_SRC_DIRECTORY = "SOL_SRC_DIRECTORY";
+	public static final String COMPILER_TARGET_COMBINE_ABI = "COMPILER_TARGET_COMBINE_ABI";
+	public static final String COMPILER_TARGET_COMBINE_ABI_PATH = "COMPILER_TARGET_COMBINE_ABI_PATH";
 	
 	
 
 	public static final String COMPILER_PROJECT_SETTINGS = "COMPILE_CONTRACTS_PROJECT_SETTINGS";
+	public static final String BUILDER_PROJECT_SETTINGS = "BUILDER_PROJECT_SETTINGS";
 
 	public static final String[] COMPILE_SWITCHES = {COMBINED_JSON,COMPILER_ABI,COMPILER_INTERFACT,
 			COMPILER_ASM,COMPILER_ASM_JSON,COMPILER_BIN,COMPILER_BIN_RUNTIME,
 			COMPILER_AST,COMPILER_AST_JSON, COMPILER_USERDOC,COMPILER_DEVDOC,
 			COMPILER_OPTIMIZE,COMPILER_OPCODE,COMPILER_FORMAL,COMPILER_HASHES};
+	
+	
 	public static IPreferenceStore getPreferenceStore(IProject project) {
 		if (project != null) {
 			IPreferenceStore store = new ScopedPreferenceStore(new ProjectScope(project), Activator.PLUGIN_ID);
-			if(store.getBoolean(PreferenceConstants.COMPILER_PROJECT_SETTINGS))
+			if(store.getBoolean(PreferenceConstants.COMPILER_PROJECT_SETTINGS)|| store.getBoolean(PreferenceConstants.BUILDER_PROJECT_SETTINGS))
 			return store;
 		}
 		return new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator.PLUGIN_ID);//Activator.PLUGIN_ID);

@@ -9,6 +9,12 @@
             id="de.urszeidler.eclipse.solidity.ui.preferences.SolcCompilerPreferencePage"
             name="Solc Compiler Preference Page">
       </page>
+      <page
+            
+            class="de.urszeidler.eclipse.solidity.compiler.support.preferences.SolcBuilderPreferencePage"
+            id="de.urszeidler.eclipse.solidity.ui.preferences.BuilderPreferencePage"
+            name="Solc Builder Preference Page">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
@@ -20,7 +26,6 @@
       <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            category="de.urszeidler.eclipse.solidity.ui.preferences.SolidityGenerationPreferencePage"
             class="de.urszeidler.eclipse.solidity.compiler.support.preferences.SolcCompilerPreferencePage"
             id="de.urszeidler.eclipse.solidity.ui.preferences.SolcCompilerPreferencePage"
             name="Solc Compiler Preference Page">
@@ -30,6 +35,119 @@
             </instanceof>
          </enabledWhen>
       </page>
+      <page
+            class="de.urszeidler.eclipse.solidity.compiler.support.preferences.SolcBuilderPreferencePage"
+            id="de.urszeidler.eclipse.solidity.ui.preferences.BuilderPreferencePage"
+            name="Solc Builder Preference Page">
+         <enabledWhen>
+         <or>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+            <instanceof
+                  value="org.eclipse.jdt.core.IJavaProject">
+            </instanceof>
+            </or>
+         </enabledWhen>
+      </page>
    </extension>
 
+   <extension 
+         id="SolidityCompilerBuilder" 
+         name="Solidity compiler Builder" 
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run class="de.urszeidler.eclipse.solidity.compiler.builder.SolidityBuilder">
+            <parameter name="optimize" value="true"/>
+            <parameter name="comment" value="solidity Builder"/>
+         </run>
+      </builder>
+   </extension>
+   
+ <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="de.urszeidler.eclipse.solidity.compiler.handler.AddBuilder"
+            id="de.urszeidler.eclipse.solidity.compiler.handler.AddBuilder"
+            name="Add Solidity Builder">
+      </command>
+      <command
+            defaultHandler="de.urszeidler.eclipse.solidity.compiler.handler.RemoveBuilder"
+            id="de.urszeidler.eclipse.solidity.compiler.handler.RemoveBuilder"
+            name="Remove Solidity Builder">
+      </command>
+</extension>
+
+<extension
+      point="org.eclipse.core.expressions.propertyTesters">
+   <propertyTester
+         class="de.urszeidler.eclipse.solidity.compiler.propertytester.HasBuilderTester"
+         id="de.urszeidler.eclipse.solidity.compiler.propertytester.HasBuilderTester"
+         namespace="de.urszeidler.eclipse.solidity.compiler.propertytester"
+         properties="isEnabled"
+         type="java.lang.Object">
+   </propertyTester>
+</extension>
+
+<extension
+      point="org.eclipse.ui.menus">
+   <menuContribution
+         allPopups="false"
+         locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
+      <command
+            commandId="de.urszeidler.eclipse.solidity.compiler.handler.AddBuilder"
+            label="Add Solidity Builder"
+            style="push">
+             <visibleWhen
+                  checkEnabled="false">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate
+                        ifEmpty="false"
+                        operator="and">
+                     <adapt
+                           type="org.eclipse.core.resources.IProject">
+                     </adapt>
+                  </iterate>
+                  <iterate>
+                  <not>
+                     <test
+                           forcePluginActivation="true"
+                           property="de.urszeidler.eclipse.solidity.compiler.propertytester.isEnabled">
+                     </test>
+                     </not>
+                  </iterate>
+               </and>
+			</visibleWhen>      
+		</command>
+      <command
+            commandId="de.urszeidler.eclipse.solidity.compiler.handler.RemoveBuilder"
+            label="Remove Solidity Builder"
+            style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate
+                        ifEmpty="false"
+                        operator="and">
+                     <adapt
+                           type="org.eclipse.core.resources.IProject">
+                     </adapt>
+                  </iterate>
+                  <iterate>
+                     <test
+                           forcePluginActivation="true"
+                           property="de.urszeidler.eclipse.solidity.compiler.propertytester.isEnabled">
+                     </test>
+                  </iterate>
+               </and>
+			</visibleWhen>      
+      </command>
+   </menuContribution>
+</extension>
 </plugin>

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.QualifiedName;
@@ -27,7 +28,8 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferencePage implements IWorkbenchPropertyPage{
+public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferencePage
+		implements IWorkbenchPropertyPage {
 
 	private IProject project;
 	private Button useProjectSettingsButton;
@@ -57,7 +59,9 @@ public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferen
 	public void setElement(IAdaptable element) {
 		if (element instanceof IProject) {
 			project = (IProject) element;
-
+		} else if (element instanceof IProjectNature) {
+			IProjectNature pn = (IProjectNature) element;
+			project = pn.getProject();
 		}
 	}
 
@@ -74,11 +78,11 @@ public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferen
 		if (isPropertyPage())
 			handleUseProjectSettings();
 	}
-	
+
 	@Override
 	public IPreferenceStore getPreferenceStore() {
 		if (project == null) {
-			IPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, preferencesId());//Activator.PLUGIN_ID);
+			IPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, preferencesId());// Activator.PLUGIN_ID);
 			return store;
 		} else {
 			IPreferenceStore store = new ScopedPreferenceStore(new ProjectScope(project), preferencesId());
@@ -93,7 +97,7 @@ public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferen
 		layout.marginWidth = 0;
 		projectSettingsParent.setLayout(layout);
 		projectSettingsParent.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	
+
 		// use project settings button
 		useProjectSettingsButton = new Button(projectSettingsParent, SWT.CHECK);
 		useProjectSettingsButton.setText("Project Settings");
@@ -101,10 +105,10 @@ public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferen
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				handleUseProjectSettings();
-	
+
 			}
 		});
-	
+
 		// configure ws settings link
 		link = new Link(projectSettingsParent, SWT.NONE);
 		link.setFont(projectSettingsParent.getFont());
@@ -118,7 +122,7 @@ public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferen
 			}
 		});
 		link.setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false));
-	
+
 		// separator line
 		Label horizontalLine = new Label(projectSettingsParent, SWT.SEPARATOR | SWT.HORIZONTAL);
 		horizontalLine.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 2, 1));
@@ -150,13 +154,12 @@ public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferen
 	protected abstract String useProjectSettingsPreferenceName();
 
 	protected abstract String preferencesId();
-	
+
 	protected abstract String preferencesPageId();
-	
+
 	private void restoreOldSettings() {
 		if (isPropertyPage()) {
-			QualifiedName oldKey = new QualifiedName(preferencesId(),
-					useProjectSettingsPreferenceName());
+			QualifiedName oldKey = new QualifiedName(preferencesId(), useProjectSettingsPreferenceName());
 			try {
 				String oldValue = project.getPersistentProperty(oldKey);
 				if (oldValue != null) {
@@ -170,7 +173,7 @@ public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferen
 			} catch (Exception e) {
 			}
 		}
-	
+
 	}
 
 	private void saveUseProjectSettings(boolean isProjectSpecific) throws IOException {
