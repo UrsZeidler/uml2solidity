@@ -35,7 +35,7 @@ public class StartCompiler {
 		public String call() throws Exception {
 			StringBuffer buffer = new StringBuffer();
 			String s = reader.readLine();
-			while (s != null && reader.ready()) {
+			while (s != null) {
 				buffer.append(s);
 				buffer.append("\n");
 				s = reader.readLine();

@@ -118,7 +118,7 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 		if (monitor != null)
 			monitor.subTask("compile code");
 
-		List<String> options = new ArrayList<String>();
+		final List<String> options = new ArrayList<String>();
 		String command = store.getString(PreferenceConstants.COMPILER_PROGRAMM);
 		if (command == null || command.isEmpty())
 			return;
@@ -130,7 +130,7 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 
 			@Override
 			public void compiled(String input, String error, Exception exception) {
-				if (exception == null) {
+				if (exception == null && (input!=null && !input.isEmpty())) {
 					try {
 						File file = outFile.getRawLocation().toFile();
 						if (!file.exists())
@@ -139,11 +139,11 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 						fileWriter = new FileWriter(file);
 						fileWriter.write(input);
 						fileWriter.close();
-						System.out.println("file written: " + outFile.getRawLocation());
 					} catch (IOException e) {
 						Activator.logError("Error ", e);
 					}
-				}
+				}else
+					Activator.logError(error+"  "+options ,exception);
 			}
 		}, options);
 		if (monitor != null)
