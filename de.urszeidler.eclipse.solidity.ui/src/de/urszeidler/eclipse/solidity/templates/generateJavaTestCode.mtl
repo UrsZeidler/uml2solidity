@@ -62,7 +62,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.urszeidler.ethereum.EthereumInstance;
+import [p.getInterfacePackagePrefix()/].EthereumInstance;
 
 /**
  * Test for the [aClass.name/] contract.
