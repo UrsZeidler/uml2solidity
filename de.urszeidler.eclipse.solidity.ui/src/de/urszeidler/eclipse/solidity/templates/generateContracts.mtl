@@ -305,7 +305,7 @@ function [printFunctionDeclaration(aOperation)/];
 [template public printConstructor (aOperation : Operation) ? (hasStereotype(aOperation, 'Constructor'))]
 
 [printFunctionComments(aOperation)/]
-function [aOperation.name/]([printParameters(aOperation,ParameterDirectionKind::_in)/]) [aOperation.visibility()/] [printModifier(aOperation)/] [printReturn(aOperation)/] {
+function [aOperation.name/]([printParameters(aOperation,ParameterDirectionKind::_in)/]) [aOperation.visibility()/][aOperation.printSuperConstructor()/] [printModifier(aOperation)/] [printReturn(aOperation)/] {
 [if(not aOperation.getStereotypeValue('Constructor', 'functionCode').oclIsUndefined())]
 	[aOperation.printCode()/]
 [/if]
@@ -314,6 +314,11 @@ function [aOperation.name/]([printParameters(aOperation,ParameterDirectionKind::
 	//[/protected]
 }
 [/template]
+
+[template public printSuperConstructor (aOperation : Operation) ? (not aOperation.getStereotypeValue('Constructor', 'superConstructor').oclIsUndefined()) ]
+[let superConstructor : String = aOperation.getStereotypeValue('Constructor', 'superConstructor').oclAsType(String)]
+[if (superConstructor.trim().size()>0)]
+ [superConstructor/][/if][/let][/template]
 
 [**
  * Print a complete function with doc.
