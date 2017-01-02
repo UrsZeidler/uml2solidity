@@ -518,6 +518,10 @@
   <children xmi:type="notation:Shape" xmi:id="_ABbgkIIsEeafK64Rq2tVkA" type="Stereotype_Shape">
     <children xmi:type="notation:DecorationNode" xmi:id="_ABej4IIsEeafK64Rq2tVkA" type="Stereotype_NameLabel"/>
     <children xmi:type="notation:BasicCompartment" xmi:id="_ABej4YIsEeafK64Rq2tVkA" type="Stereotype_AttributeCompartment">
+      <children xmi:type="notation:Shape" xmi:id="_VB2qINC_Eea9y7gMoC2t4Q" type="Property_ClassAttributeLabel">
+        <element xmi:type="uml:Property" href="contracts.profile.uml#_U24JMNC_Eea9y7gMoC2t4Q"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_VB2qIdC_Eea9y7gMoC2t4Q"/>
+      </children>
       <styles xmi:type="notation:TitleStyle" xmi:id="_ABej4oIsEeafK64Rq2tVkA"/>
       <styles xmi:type="notation:SortingStyle" xmi:id="_ABej44IsEeafK64Rq2tVkA"/>
       <styles xmi:type="notation:FilteringStyle" xmi:id="_ABej5IIsEeafK64Rq2tVkA"/>
@@ -535,7 +539,7 @@
   <children xmi:type="notation:Shape" xmi:id="_EROBIII0EeafK64Rq2tVkA" type="Comment_Shape">
     <children xmi:type="notation:DecorationNode" xmi:id="_EROoMII0EeafK64Rq2tVkA" type="Comment_BodyLabel"/>
     <element xmi:type="uml:Comment" href="contracts.profile.uml#_ERGsYII0EeafK64Rq2tVkA"/>
-    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_EROBIYI0EeafK64Rq2tVkA" x="494" y="469" width="123" height="99"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_EROBIYI0EeafK64Rq2tVkA" x="623" y="460" width="123" height="99"/>
   </children>
   <styles xmi:type="notation:StringValueStyle" xmi:id="_uCKYoaHREeWjOZ0I8ilEXA" name="diagram_compatibility_version" stringValue="1.2.0"/>
   <styles xmi:type="notation:DiagramStyle" xmi:id="_uCKYoqHREeWjOZ0I8ilEXA"/>
