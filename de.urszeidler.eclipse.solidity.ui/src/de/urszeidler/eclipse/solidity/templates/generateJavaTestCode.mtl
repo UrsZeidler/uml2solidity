@@ -64,6 +64,11 @@ import org.junit.Test;
 
 import [p.getInterfacePackagePrefix()/].EthereumInstance;
 
+// [protected (aClass.name+'Test.customImports')]
+
+// [/protected]
+
+
 /**
  * Test for the [aClass.name/] contract.
  *

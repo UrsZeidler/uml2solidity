@@ -46,6 +46,11 @@ import org.adridadou.ethereum.provider.TestnetEthereumFacadeProvider;
 import org.adridadou.ethereum.values.config.ChainId;
 import org.adridadou.ethereum.values.config.InfuraKey;
 
+//[protected ('customizedImports')]
+
+//[/protected]
+
+
 /**
  * A simple singleton to control the access for the ethereum instance.<br/>
  * The created instance is controllable by system a system property 'EthereumFacadeProvider'.
@@ -178,7 +183,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 	private static String filename = "[if (p.getContractPathForJava()<>'')]/[p.getContractPathForJava()/][/if]/[p.name/].sol";
 
 	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum) {
-		this(ethereum,filename);
+		this(ethereum,filename, true);
 	}
 
 	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, String contractSourceFile, boolean plain) {
@@ -260,9 +265,9 @@ public class [p.name.toUpperFirst()/]Deployer {
 [/for]
 	 * @return the contract interface
 	 */
-	public [aClass.name/] create[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) throws IOException, InterruptedException, ExecutionException {
+	public DeployDuo<CompletableFuture<EthAddress>, [aClass.name/]> create[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) throws IOException, InterruptedException, ExecutionException {
 		CompletableFuture<EthAddress> address = deploy[aClass.name/](sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
-		return create[aClass.name/](sender, address.get());
+		return new DeployDuo<CompletableFuture<EthAddress>, [aClass.name/]>(address, create[aClass.name/](sender, address.get()));
 	}
 [/for]
 [/if]
@@ -325,6 +330,13 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 
 	[op.functionSignature()/][/for]
 
+[for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
+
+[printDelegateOperations(prop)/]
+[/for]
+[for (prop : Property | aClass.allGetterProperties())]
+[printGetterSetter(prop)/][/for]
+
 	//[protected ('additional_methods')]
 
 	//[/protected]
@@ -337,6 +349,24 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [/file]
 [/if]
 [/for]
+[/for]
+[/template]
+
+[template public printGetterSetter (aProperty : Property)?(aProperty.hasStereotype('GetterSetter')) ]
+[if (aProperty.getStereotypeValue('GetterSetter', 'getter').oclAsType(Boolean))]
+
+	[aProperty.toJavaType()/] get[aProperty.name.toUpperFirst()/]();
+[/if]
+[if (aProperty.getStereotypeValue('GetterSetter', 'setter').oclAsType(Boolean))]
+
+	void set[aProperty.name.toUpperFirst()/] ([aProperty.toJavaType()/] a[aProperty.name.toUpperFirst()/]);
+[/if]
+[/template]
+
+[template public printDelegateOperations (aProperty : Property) ]
+// delegate methods for [aProperty.type.name/]
+[for (aOperation : Operation | aProperty.type.oclAsType(Class).allFunctions()->select(visibility=VisibilityKind::public))]
+	[aOperation.functionSignature()/]
 [/for]
 [/template]
 
