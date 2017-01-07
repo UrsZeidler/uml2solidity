@@ -7,9 +7,9 @@ Bundle-Activator: de.urszeidler.eclipse.solidity.compiler.support.Activator
 Bundle-Vendor: Urs Zeidler
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.core.resources;bundle-version="3.10.1",
- org.eclipse.core.expressions;bundle-version="3.5.100"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+ org.eclipse.core.resources,
+ org.eclipse.core.expressions
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: de.urszeidler.eclipse.solidity.compiler.support,
  de.urszeidler.eclipse.solidity.compiler.support.preferences,
