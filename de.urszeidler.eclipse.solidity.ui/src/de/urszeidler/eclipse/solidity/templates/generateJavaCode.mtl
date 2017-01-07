@@ -154,11 +154,24 @@ import org.adridadou.ethereum.values.SoliditySource;
 import [p.getInterfacePackagePrefix()/].[p.name/].*;
 
 
+
+
 /**
  * The deployer for the [p.name/] package.
  *
  */
 public class [p.name.toUpperFirst()/]Deployer {
+
+	public class DeployDuo<EA,C>{
+		public EA contractAddress;
+		public C constractInstance;
+		
+		public DeployDuo(EA contractAddress, C constractInstance) {
+			super();
+			this.contractAddress = contractAddress;
+			this.constractInstance = constractInstance;
+		}
+	}
 
 	private EthereumFacade ethereum;
 	private SoliditySource contractSource;
@@ -168,14 +181,34 @@ public class [p.name.toUpperFirst()/]Deployer {
 		this(ethereum,filename);
 	}
 
-	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, String contractSourceFile) {
+	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, String contractSourceFile, boolean plain) {
 		this.ethereum = ethereum;
 		try {
-			contractSource = SoliditySource.from(new File(this.getClass().getResource(contractSourceFile).toURI()));
+			if(plain)
+				contractSource = SoliditySource.from(new File(this.getClass().getResource(contractSourceFile).toURI()));
+			else
+				contractSource = SoliditySource.fromRawJson(new File(this.getClass().getResource(contractSourceFile).toURI()));
+				
 		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException(e);
+		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
+
+	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, File contractSourceFile, boolean plain) {
+		this.ethereum = ethereum;
+		try {
+			if(plain)
+				contractSource = SoliditySource.from(contractSourceFile);
+			else
+				contractSource = SoliditySource.fromRawJson(contractSourceFile);
+				
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
 
 [for (	aClass : Class | p.allContracts())]
 [if (aClass.allConstructors()->isEmpty())]
@@ -195,11 +228,11 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contcat proxy.
 	 *  
 	 * @param sender the sender address
-	 * @return the contract interface
+	 * @return the contract interface and the deployed address
 	 */
-	public [aClass.name/] create[aClass.name/](EthAccount sender) throws IOException, InterruptedException, ExecutionException {
+	public DeployDuo<CompletableFuture<EthAddress>, [aClass.name/]> create[aClass.name/](EthAccount sender) throws IOException, InterruptedException, ExecutionException {
 		CompletableFuture<EthAddress> address = deploy[aClass.name/](sender);
-		return create[aClass.name/](sender, address.get());
+		return new DeployDuo<CompletableFuture<EthAddress>, [aClass.name/]>(address, create[aClass.name/](sender, address.get()));
 	}
 [else]
 [for (op : Operation | aClass.allConstructors())]
