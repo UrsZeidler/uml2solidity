@@ -32,6 +32,12 @@ public class SolcBuilderPreferencePage extends AbstractProjectPreferencesPage im
 		addField(new StringFieldEditor(PreferenceConstants.COMPILER_PROGRAMM, "Compiler path", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
 
+		addField(new BooleanFieldEditor(PreferenceConstants.ENABLE_GAS_OPTIMIZE, "Enable gas optimizion.",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.ESTIMATE_GAS_COSTS, "Write estimate gas costs.",
+				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+
 //		
 //		
 //		addField(new BooleanFieldEditor(PreferenceConstants.COMPILE_CONTRACTS, "Compile generated solidity code.",

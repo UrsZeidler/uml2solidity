@@ -41,6 +41,9 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.COMPILER_FORMAL, false);
 		store.setDefault(PreferenceConstants.COMPILER_HASHES, false);
 		
+		store.setDefault(PreferenceConstants.ENABLE_GAS_OPTIMIZE, false);
+		store.setDefault(PreferenceConstants.ESTIMATE_GAS_COSTS, false);		
+		
 		store.setDefault(PreferenceConstants.COMBINED_JSON_OPTIONS, "abi,bin");		 
 		store.setDefault(PreferenceConstants.COMPILER_TARGET_COMBINE_ABI, "bin/combine.json");		 
 	}

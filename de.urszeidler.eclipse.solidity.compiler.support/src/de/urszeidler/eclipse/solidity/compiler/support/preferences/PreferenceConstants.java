@@ -35,6 +35,8 @@ public class PreferenceConstants {
 	public static final String SOL_SRC_DIRECTORY = "SOL_SRC_DIRECTORY";
 	public static final String COMPILER_TARGET_COMBINE_ABI = "COMPILER_TARGET_COMBINE_ABI";
 	public static final String COMPILER_TARGET_COMBINE_ABI_PATH = "COMPILER_TARGET_COMBINE_ABI_PATH";
+	public static final String ENABLE_GAS_OPTIMIZE = "ENABLE_GAS_OPTIMIZE";
+	public static final String ESTIMATE_GAS_COSTS = "ESTIMATE_GAS_COSTS";
 	
 	
 

@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -36,9 +37,25 @@ import de.urszeidler.eclipse.solidity.compiler.support.util.StartCompiler.Compil
  *
  */
 public class SolidityBuilder extends IncrementalProjectBuilder {
-	
-	public static final String BUILDER_ID="de.urszeidler.eclipse.solidity.compiler.support.SolidityCompilerBuilder";
-	
+
+	private final class IResourceVisitorImplementation implements IResourceVisitor {
+		private final List<String> files;
+
+		private IResourceVisitorImplementation(List<String> files) {
+			this.files = files;
+		}
+
+		@Override
+		public boolean visit(IResource resource) throws CoreException {
+			if (resource.getType() == IResource.FILE && "sol".equals(resource.getFileExtension())) {
+				files.add(resource.getRawLocation().toString());
+			}
+			return true;
+		}
+	}
+
+	public static final String BUILDER_ID = "de.urszeidler.eclipse.solidity.compiler.support.SolidityCompilerBuilder";
+
 	@SuppressWarnings("rawtypes")
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) {
 		try {
@@ -47,13 +64,27 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 			} else {
 				IResourceDelta delta = getDelta(getProject());
 				if (delta == null) {
-					fullBuild(monitor);
+					// fullBuild(monitor);
 				} else {
-					fullBuild(monitor);
+					final AtomicBoolean ab = new AtomicBoolean(false);
+					delta.accept(new IResourceDeltaVisitor() {
+
+						@Override
+						public boolean visit(IResourceDelta delta) throws CoreException {
+							if (delta.getResource().getType() == IResource.FILE
+									&& "sol".equals(delta.getResource().getFileExtension())) {
+								ab.set(true);
+								return false;
+							}
+							return true;
+						}
+					});
+					if (ab.get())
+						fullBuild(monitor);
 				}
 			}
 		} catch (CoreException e) {
-			Activator.logError("Error building "+getProject().getName(), e);
+			Activator.logError("Error building " + getProject().getName(), e);
 		}
 		return null;
 	}
@@ -80,7 +111,12 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 				? ResourcesPlugin.getWorkspace().getRoot().findMember(removeLastSegments)
 				: getProject().findMember(removeLastSegments));
 
+		if (outPath == null)
+			return;
+
 		final IFile outFile = outPath.getFile(fileToWritePath.lastSegment());
+		if (outFile == null)
+			return;
 		final List<String> files = new ArrayList<>();
 		if (outFile.exists()) {
 			final long localTimeStamp = outFile.getLocalTimeStamp();
@@ -90,33 +126,24 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 
 				@Override
 				public boolean visit(IResource resource) throws CoreException {
-					if (resource.getType() == IResource.FILE && "sol".equals(resource.getFileExtension())
-							&& resource.getLocalTimeStamp() > localTimeStamp) {
-						ab.set(false);
+					if (resource.getType() == IResource.FILE && "sol".equals(resource.getFileExtension())) {
+						files.add(resource.getRawLocation().toString());
+						if (resource.getLocalTimeStamp() > localTimeStamp)
+							ab.set(false);
 					}
 					return true;
 				}
 			});
 			if (ab.get())
 				return;
+		} else {
+			folder.accept(new IResourceVisitorImplementation(files));
 		}
-
-		folder.accept(new IResourceVisitor() {
-
-			@Override
-			public boolean visit(IResource resource) throws CoreException {
-
-				if (resource.getType() == IResource.FILE && "sol".equals(resource.getFileExtension())) {
-					files.add(resource.getRawLocation().toString());
-				}
-				return true;
-			}
-		});
 		if (files.isEmpty())
 			return;
 
 		if (monitor != null)
-			monitor.subTask("compile code");
+			monitor.subTask("compile solidity code:" + files);
 
 		final List<String> options = new ArrayList<String>();
 		String command = store.getString(PreferenceConstants.COMPILER_PROGRAMM);
@@ -126,11 +153,15 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 		options.add(command);
 		options.add("--combined-json");
 		options.add("abi,bin");
+
+		if (store.getBoolean(PreferenceConstants.ENABLE_GAS_OPTIMIZE))
+			options.add("--optimize");
+
 		StartCompiler.startCompiler(files, new CompilerCallback() {
 
 			@Override
 			public void compiled(String input, String error, Exception exception) {
-				if (exception == null && (input!=null && !input.isEmpty())) {
+				if (exception == null && (input != null && !input.isEmpty())) {
 					try {
 						File file = outFile.getRawLocation().toFile();
 						if (!file.exists())
@@ -142,14 +173,48 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 					} catch (IOException e) {
 						Activator.logError("Error ", e);
 					}
-				}else
-					Activator.logError(error+"  "+options ,exception);
+				} else
+					Activator.logError(error + "  " + options, exception);
 			}
 		}, options);
+
+		if (store.getBoolean(PreferenceConstants.ESTIMATE_GAS_COSTS)) {
+			options.clear();
+			options.add(store.getString(PreferenceConstants.COMPILER_PROGRAMM));
+			if (store.getBoolean(PreferenceConstants.ENABLE_GAS_OPTIMIZE))
+				options.add("--optimize");
+
+			options.add("--gas");
+			if (monitor != null)
+				monitor.subTask("estimate gas costs:" + files);
+
+			final IFile ofile = outPath.getFile("gas-costs.txt");
+			StartCompiler.startCompiler(files, new CompilerCallback() {
+
+				@Override
+				public void compiled(String input, String error, Exception exception) {
+					if (exception == null && (input != null && !input.isEmpty())) {
+						try {
+							File file = ofile.getRawLocation().toFile();
+							if (!file.exists())
+								file.createNewFile();
+							FileWriter fileWriter;
+							fileWriter = new FileWriter(file);
+							fileWriter.write(input);
+							fileWriter.close();
+						} catch (IOException e) {
+							Activator.logError("Error ", e);
+						}
+					} else
+						Activator.logError(error + "  " + options, exception);
+				}
+			}, options);
+		}
+
 		if (monitor != null)
 			monitor.subTask("code compiled");
 		if (monitor != null)
-				monitor.done();
+			monitor.done();
 	}
 
 }
