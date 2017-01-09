@@ -31,6 +31,8 @@
 [file (m.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/EthereumInstance.java', false, 'UTF-8')]
 package [m.getInterfacePackagePrefix()/];
 
+//[protected ('customizedImports')]
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -46,7 +48,6 @@ import org.adridadou.ethereum.provider.TestnetEthereumFacadeProvider;
 import org.adridadou.ethereum.values.config.ChainId;
 import org.adridadou.ethereum.values.config.InfuraKey;
 
-//[protected ('customizedImports')]
 
 //[/protected]
 
@@ -61,6 +62,17 @@ public class EthereumInstance{
 	private static Lock instanceLock = new ReentrantLock();
 	
 	private EthereumFacade ethereum;
+
+	public static class DeployDuo<C>{
+		public EthAddress contractAddress;
+		public C constractInstance;
+		
+		public DeployDuo(EthAddress contractAddress, C constractInstance) {
+			super();
+			this.contractAddress = contractAddress;
+			this.constractInstance = constractInstance;
+		}
+	}
 
 	private EthereumInstance() {
 		try {
@@ -156,6 +168,9 @@ import org.adridadou.ethereum.values.EthAccount;
 import org.adridadou.ethereum.values.EthAddress;
 import org.adridadou.ethereum.values.SoliditySource;
 
+import de.kueken.ethereum.party.EthereumInstance;
+import de.kueken.ethereum.party.EthereumInstance.DeployDuo;
+
 import [p.getInterfacePackagePrefix()/].[p.name/].*;
 
 
@@ -166,17 +181,6 @@ import [p.getInterfacePackagePrefix()/].[p.name/].*;
  *
  */
 public class [p.name.toUpperFirst()/]Deployer {
-
-	public class DeployDuo<EA,C>{
-		public EA contractAddress;
-		public C constractInstance;
-		
-		public DeployDuo(EA contractAddress, C constractInstance) {
-			super();
-			this.contractAddress = contractAddress;
-			this.constractInstance = constractInstance;
-		}
-	}
 
 	private EthereumFacade ethereum;
 	private SoliditySource contractSource;
@@ -235,9 +239,9 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @param sender the sender address
 	 * @return the contract interface and the deployed address
 	 */
-	public DeployDuo<CompletableFuture<EthAddress>, [aClass.name/]> create[aClass.name/](EthAccount sender) throws IOException, InterruptedException, ExecutionException {
+	public DeployDuo<[aClass.name/]> create[aClass.name/](EthAccount sender) throws IOException, InterruptedException, ExecutionException {
 		CompletableFuture<EthAddress> address = deploy[aClass.name/](sender);
-		return new DeployDuo<CompletableFuture<EthAddress>, [aClass.name/]>(address, create[aClass.name/](sender, address.get()));
+		return new EthereumInstance.DeployDuo<[aClass.name/]>(address.get(), create[aClass.name/]Proxy(sender, address.get()));
 	}
 [else]
 [for (op : Operation | aClass.allConstructors())]
@@ -265,9 +269,9 @@ public class [p.name.toUpperFirst()/]Deployer {
 [/for]
 	 * @return the contract interface
 	 */
-	public DeployDuo<CompletableFuture<EthAddress>, [aClass.name/]> create[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) throws IOException, InterruptedException, ExecutionException {
+	public DeployDuo<[aClass.name/]> create[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) throws IOException, InterruptedException, ExecutionException {
 		CompletableFuture<EthAddress> address = deploy[aClass.name/](sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
-		return new DeployDuo<CompletableFuture<EthAddress>, [aClass.name/]>(address, create[aClass.name/](sender, address.get()));
+		return new EthereumInstance.DeployDuo<[aClass.name/]>(address.get(), create[aClass.name/]Proxy(sender, address.get()));
 	}
 [/for]
 [/if]
@@ -279,7 +283,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @param address the address of the contract
 	 * @return the contract interface
 	 */
-	public [aClass.name/] create[aClass.name/](EthAccount sender, EthAddress address) throws IOException, InterruptedException, ExecutionException {
+	public [aClass.name/] create[aClass.name/]Proxy(EthAccount sender, EthAddress address) throws IOException, InterruptedException, ExecutionException {
 		[aClass.name/] [aClass.name.toLowerCase()/] = ethereum
         .createContractProxy(contractSource, "[aClass.name/]", address, sender, [aClass.name/].class);
 		return [aClass.name.toLowerCase()/];
@@ -299,6 +303,11 @@ import org.adridadou.ethereum.values.EthAddress;
 import [pi.target.oclAsType(Package).toPackage()/].*;
 [/for]
 
+//[protected ('customized_imports')]
+
+//[/protected]
+
+
 [printCommentDoc(aClass.ownedComment)/]
 public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for now no struct types[/comment]
 [for (ne : NamedElement | aClass.ownedMember->filter(Enumeration)->sortedBy(indexInContainer()) )]
@@ -313,14 +322,14 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
 [if (not value.isStruct())]
 	[printCommentDoc(p.ownedComment)/]
-	[value.toJavaType()/] [p.name/]([p.toJavaType()/] key);
+	[value.solidity2javaType()/] [p.name/]([p.toJavaType()/] key);
 [/if]
 [/let][/for]
 [for (p : Property | aClass.allKeyMappingSubAttributes())]
 [let value : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
 [if (not p.type.isStruct())]
 	[printCommentDoc(p.ownedComment)/]
-	[p.toJavaType()/] [p.name/]([value.toJavaType()/] key);	
+	[p.type.solidity2javaType()/] [p.name/]([value.toJavaType()/] key);	
 [/if]
 [/let][/for]
 [for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
