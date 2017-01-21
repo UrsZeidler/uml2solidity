@@ -12,6 +12,7 @@
 [comment @main/]
 [generatePackage(aModel)/]
 [iteratePackages(aModel)/]
+[generateAbstractContractTest(aModel)/]
 [/template]
 
 [**
@@ -26,178 +27,81 @@
 [/for]
 [/template]
 
-[template private generatePackage(p : Package)?(isGeneratePackage(p))]
-[for (	aClass : Class | p.allContracts())]
-[file (p.package2Path()+'/'+ aClass.name+'Test.java'  , false, 'UTF-8')]
-package [p.toPackage()/];
+[template private generateAbstractContractTest(aModel : Model)]
+[file (aModel.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+ 'AbstractContractTest.java'  , false, 'UTF-8')]
+package [aModel.getInterfacePackagePrefix()/];
 
-import static org.junit.Assert.*;
-
-[for (pi : PackageImport | p.allImports() )]
-import [pi.target.oclAsType(Package).toPackage()/].*;
-[/for]
-
-import [p.getInterfacePackagePrefix()/].[p.name/].[aClass.name/].*;
-
-
-import java.io.File;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.stream.*;
-import java.math.*;
+import java.math.BigInteger;
 
 import org.adridadou.ethereum.EthereumFacade;
-import org.adridadou.ethereum.keystore.*;
-import org.adridadou.ethereum.provider.MainEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.RopstenEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.GenericRpcEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.StandaloneEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.TestnetEthereumFacadeProvider;
 import org.adridadou.ethereum.values.EthAccount;
 import org.adridadou.ethereum.values.EthAddress;
 import org.adridadou.ethereum.values.SoliditySource;
-import org.adridadou.ethereum.values.config.ChainId;
 import org.ethereum.crypto.ECKey;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.spongycastle.util.encoders.Hex;
 
-import [p.getInterfacePackagePrefix()/].EthereumInstance;
-
-// [protected (aClass.name+'Test.customImports')]
-
+// [protected ('AbstractContractTest.customImports')]
+//TODO: add custom imports
 // [/protected]
 
-
 /**
- * Test for the [aClass.name/] contract.
+ * The basic test.
  *
  */
-public class [aClass.name/]Test[testExtends(aClass)/]{
-	private static EthereumFacade ethereum;
-[comment]	private static ECKey sender;[/comment]
-	private static EthAccount sender;
+public abstract class AbstractContractTest {
 
-	private [aClass.name/] fixture;
-	private EthAddress fixtureAddress;
-	private SoliditySource contractSource;
-	// [protected (aClass.name+'Test.attributes')]
+	protected static EthereumFacade ethereum;
+	protected EthAccount sender;
+	protected EthAddress senderAddress;
+
+	protected EthAddress fixtureAddress;
+	protected SoliditySource contractSource;
+
+	// [protected ('AbstractContractTest.customFields')]
 	//TODO: add custom attributes
-	//for the blockchain proxy the sender is hard coded
-	private String senderAddress = "5db10750e8caff27f906b41c71b3471057dd2004";
 	// [/protected]
+
+
+	protected abstract void createFixture() throws Exception;
 
 	/**
 	 * Setup up the blockchain. Add the 'EthereumFacadeProvider' property to use 
-	 * another block chain implemenation or network.
+	 * another block chain implementation or network.
 	 */
 	@BeforeClass
 	public static void setup() {
 		ethereum = EthereumInstance.getInstance().getEthereum();
 
-[comment]		ECKey key = new ECKey();
-		sender = new EthAccount(key);
+	}
+
+	protected void initTest() throws Exception {
+		// [protected ('AbstractContractTest.initTest')]
+
 		String property = System.getProperty("EthereumFacadeProvider");
-		if(property!=null){
-			if (property.equalsIgnoreCase("main")) {
-				ethereum = new MainEthereumFacadeProvider().create();
-			}else if (property.equalsIgnoreCase("test")) {
-				ethereum = new TestnetEthereumFacadeProvider().create();
-			}else if (property.equalsIgnoreCase("ropsten")) {
-				ethereum = new RopstenEthereumFacadeProvider().create();
-			}else if (property.equalsIgnoreCase("rcp")) {
-				GenericRpcEthereumFacadeProvider rcp = new GenericRpcEthereumFacadeProvider();
-				String url = System.getProperty("rcp-url");
-				String chainId = System.getProperty("chain-id");
-				ethereum = rcp.create(url, new ChainId((byte) Integer.parseInt(chainId)));
+		if (property != null)
+			if (property.equalsIgnoreCase("ropsten") || property.equalsIgnoreCase("InfuraRopsten")) {
+
+			} else if (property.equalsIgnoreCase("private")) {
+				sender = new EthAccount(ECKey.fromPrivate(BigInteger.valueOf(100000L)));
 			}
-		}else{
-			ethereum = new StandaloneEthereumFacadeProvider().create();
-		}[/comment]
+
+		if (sender == null){// the account for the standalone blockchain
+			sender = new EthAccount(
+					ECKey.fromPrivate(Hex.decode("3ec771c31cac8c0dba77a69e503765701d3c2bb62435888d4ffa38fed60c445c")));
+			senderAddress = sender.getAddress();
+		}
+		// [/protected]
 	}
 
-	/**
-	 * Read the contract from the file and deploys the contract code.
-	 * @throws Exception
-	 */
-	@Before
-	public void prepareTest() throws Exception {
-		//[protected ('prepareTest')]
-
-        File contractSrc = new File(this.getClass().getResource("[if (p.getContractPathForJava()<>'')]/[p.getContractPathForJava()/][/if]/[p.name/].sol").toURI());
-        contractSource = SoliditySource.from(contractSrc);
-		createFixture();
-		//[/protected]
-	}
-
-
-	/**
-	 * Create a new fixture by deploying the contract source.
-	 * @throws Exception
-	 */
-	protected void createFixture() throws Exception {
-		//[protected ('createFixture')]
-[if (aClass.allConstructors()->isEmpty())]
-        CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, "[aClass.name/]", sender);
-[else]
-[let op : Operation = aClass.allConstructors()->first()]
-		//TODO: set the constructor args
-[for (p : Parameter | op.allInParameters())]
-		[p.type.toJavaType()/] [p.name/] = [p.toJavaExample()/];
-[/for]
-
-        CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, "[aClass.name/]", sender
-				[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
-[/let]
-[/if]
-        fixtureAddress = address.get();
-        setFixture(ethereum
-                .createContractProxy(contractSource, "[aClass.name/]", address.get(), sender, [aClass.name/].class));
-		//[/protected]
-	}
-
-	protected void setFixture([aClass.name/] f) {
-		this.fixture = f;
-[if (not aClass.allSuperTypesWithoutContractApi()->isEmpty())]
-		super.setFixture(f);
-[/if]
-	}
-
-
-[for (op : Operation | aClass.allConstructors())]
-	/**
-	 * Test the constructor for the [aClass.name/] contract.
-	 * @throws Exception
-	 */
-	@Test
-	public void testConstructor[op.operationParameters()/]() throws Exception {
-		//[protected ('testConstructor'+op.operationParameters())]
-		//TODO: Set the constructor args
-[for (p : Parameter | op.allInParameters())]
-		[p.type.toJavaType()/] [p.name/] = [p.toJavaExample()/];
-[/for]
-
-        CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, "[aClass.name/]", sender
-				[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
-        fixture = ethereum
-                .createContractProxy(contractSource, "[aClass.name/]", address.get(), sender, [aClass.name/].class);
-
-		//TODO: test the constructor
-		//[/protected]
-	}
-[/for]
-
-[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
-
-	[op.printTestFunction(aClass)/][/for]
-[for (op : Operation | aClass.allFunctions()->select(isPublic()))]
-
-	[op.printTestFunction(aClass)/][/for]
-
-	//[protected ('customTests')]    
-	//[/protected]
+	protected abstract String getContractName();
 }
 [/file]
+[/template]
+
+[template private generatePackage(p : Package)?(isGeneratePackage(p))]
+[for (	aClass : Class | p.allContracts())]
+[generateTestClass(p,aClass)/]
 [/for]
 [file (p.package2Path()+'/All'+ p.name.toUpperFirst()+'TestSuite.java'  , false, 'UTF-8')]
 package [p.toPackage()/];
@@ -218,6 +122,145 @@ public class All[p.name.toUpperFirst()/]TestSuite {
 [/file]
 [/template]
 
+
+[template private generateTestClass(p : Package, aClass : Class)]
+[file (p.package2Path()+'/'+ aClass.name+'Test.java'  , false, 'UTF-8')]
+package [p.toPackage()/];
+
+import static org.junit.Assert.*;
+
+[for (pi : PackageImport | p.allImports() )]
+import [pi.target.oclAsType(Package).toPackage()/].*;
+[/for]
+
+import [p.getInterfacePackagePrefix()/].[p.name/].[aClass.name/].*;
+
+
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.*;
+import java.math.*;
+
+import org.adridadou.ethereum.EthereumFacade;
+import org.adridadou.ethereum.keystore.*;
+import org.adridadou.ethereum.values.CompiledContract;
+import org.adridadou.ethereum.values.EthAccount;
+import org.adridadou.ethereum.values.EthAddress;
+import org.adridadou.ethereum.values.SoliditySource;
+import org.adridadou.ethereum.values.config.ChainId;
+import org.ethereum.crypto.ECKey;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import [p.getInterfacePackagePrefix()/].AbstractContractTest;
+import [p.getInterfacePackagePrefix()/].EthereumInstance;
+
+// [protected (aClass.name+'Test.customImports')]
+
+// [/protected]
+
+
+/**
+ * Test for the [aClass.name/] contract.
+ *
+ */
+public class [aClass.name/]Test[testExtends(aClass)/]{
+
+	private [aClass.name/] fixture;
+	// [protected (aClass.name+'Test.attributes')]
+	//TODO: add custom attributes
+
+	// [/protected]
+
+	@Override
+	protected String getContractName() {
+		return "[aClass.name/]";
+	}
+
+	/**
+	 * Read the contract from the file and deploys the contract code.
+	 * @throws Exception
+	 */
+	@Before
+	public void prepareTest() throws Exception {
+		//[protected ('prepareTest')]
+        File contractSrc = new File(this.getClass().getResource("[if (p.getContractPathForJava()<>'')]/[p.getContractPathForJava()/][/if]/[p.name/].sol").toURI());
+        contractSource = SoliditySource.from(contractSrc);
+		createFixture();
+		//[/protected]
+	}
+
+
+	/**
+	 * Create a new fixture by deploying the contract source.
+	 * @throws Exception
+	 */
+	protected void createFixture() throws Exception {
+		//[protected ('createFixture')]
+		CompiledContract compiledContract = ethereum.compile(contractSource, getContractName());
+[if (aClass.allConstructors()->isEmpty() or aClass.allConstructors()->first().allInParameters()->isEmpty())]
+		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);
+[else]
+[let op : Operation = aClass.allConstructors()->first()]
+		//TODO: set the constructor args
+[for (p : Parameter | op.allInParameters())]
+		[p.type.toJavaType()/] [p.name/] = [p.toJavaExample()/];
+[/for]
+        CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender
+				[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
+[/let]
+[/if]
+        fixtureAddress = address.get();
+		setFixture(ethereum.createContractProxy(compiledContract, fixtureAddress, sender, [aClass.name/].class));
+		//[/protected]
+	}
+
+	protected void setFixture([aClass.name/] f) {
+		this.fixture = f;
+[if (not aClass.allSuperTypesWithoutContractApi()->isEmpty())]
+		super.setFixture(f);
+[/if]
+	}
+
+[comment]
+[for (op : Operation | aClass.allConstructors())]
+	/**
+	 * Test the constructor for the [aClass.name/] contract.
+	 * @throws Exception
+	 */
+	@Test
+	public void testConstructor[op.operationParameters()/]() throws Exception {
+		//[protected ('testConstructor'+op.operationParameters())]
+		//TODO: Set the constructor args
+[for (p : Parameter | op.allInParameters())]
+		[p.type.toJavaType()/] [p.name/] = [p.toJavaExample()/];
+[/for]
+
+        CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, getContractName(), sender
+				[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
+        fixture = ethereum
+                .createContractProxy(contractSource, getContractName(), address.get(), sender, [aClass.name/].class);
+
+		//TODO: test the constructor
+		//[/protected]
+	}
+[/for]
+[/comment]
+[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
+
+	[op.printTestFunction(aClass)/][/for]
+[for (op : Operation | aClass.allFunctions()->select(isPublic()))]
+
+	[op.printTestFunction(aClass)/][/for]
+
+	//[protected ('customTests')]    
+	//[/protected]
+}
+[/file]
+[/template]
+
 [template public printTestFunction(op : Operation, aClass : Class)]
 /**
  * Test method for  [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]).
@@ -234,7 +277,7 @@ public void test[op.name.toUpperFirst()/][op.operationParameters()/]() throws Ex
 
 [template public testExtends (aClass : Class)  ]
 [if (not aClass.allSuperTypesWithoutContractApi()->selectByType(Class)->isEmpty() )]
- extends [aClass.allSuperTypesWithoutContractApi()->selectByType(Class)->first().name/]Test[/if][/template]
+ extends [aClass.allSuperTypesWithoutContractApi()->selectByType(Class)->first().name/]Test[else] extends AbstractContractTest[/if][/template]
 
 
 
