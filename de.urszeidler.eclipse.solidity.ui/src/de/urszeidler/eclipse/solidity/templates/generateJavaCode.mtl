@@ -37,14 +37,15 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.adridadou.ethereum.EthereumFacade;
-import org.adridadou.ethereum.provider.MainEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.PrivateEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.PrivateNetworkConfig;
-import org.adridadou.ethereum.provider.RopstenEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.GenericRpcEthereumFacadeProvider;
+import org.adridadou.ethereum.blockchain.BlockchainConfig;
+import org.adridadou.ethereum.blockchain.BlockchainConfig.Builder;
+import org.adridadou.ethereum.provider.EthereumFacadeProvider;
+import org.adridadou.ethereum.provider.EthereumFacadeRpcProvider;
+import org.adridadou.ethereum.provider.EthereumJConfigs;
+import org.adridadou.ethereum.provider.InfuraMainEthereumFacadeProvider;
 import org.adridadou.ethereum.provider.InfuraRopstenEthereumFacadeProvider;
 import org.adridadou.ethereum.provider.StandaloneEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.TestnetEthereumFacadeProvider;
+import org.adridadou.ethereum.values.EthAddress;
 import org.adridadou.ethereum.values.config.ChainId;
 import org.adridadou.ethereum.values.config.InfuraKey;
 
@@ -65,12 +66,12 @@ public class EthereumInstance{
 
 	public static class DeployDuo<C>{
 		public EthAddress contractAddress;
-		public C constractInstance;
+		public C contractInstance;
 		
-		public DeployDuo(EthAddress contractAddress, C constractInstance) {
+		public DeployDuo(EthAddress contractAddress, C contractInstance) {
 			super();
 			this.contractAddress = contractAddress;
-			this.constractInstance = constractInstance;
+			this.contractInstance = contractInstance;
 		}
 	}
 
@@ -115,30 +116,45 @@ public class EthereumInstance{
 		String property = System.getProperty("EthereumFacadeProvider");
 		if(property!=null){
 			if (property.equalsIgnoreCase("main")) {
-				ethereum = new MainEthereumFacadeProvider().create();
+				Builder mainNet = EthereumJConfigs.mainNet();				
+				//[protected ('for setup the main chain')]
+				//[/protected]
+				ethereum = EthereumFacadeProvider.forNetwork(mainNet).create();
 			}else if (property.equalsIgnoreCase("test")) {
-				ethereum = new TestnetEthereumFacadeProvider().create();
+				Builder testnet = EthereumJConfigs.etherCampTestnet();
+				//[protected ('for setup the test chain')]
+				//[/protected]
+				ethereum = EthereumFacadeProvider.forNetwork(testnet).create();
 			}else if (property.equalsIgnoreCase("ropsten")) {
-				ethereum = new RopstenEthereumFacadeProvider().create();
+				Builder ropsten = EthereumJConfigs.ropsten();
+				//[protected ('for setup the ropsten chain')]
+				//[/protected]
+				ethereum = EthereumFacadeProvider.forNetwork(ropsten).create();
 			}else if (property.equalsIgnoreCase("InfuraRopsten")) {
-				InfuraRopstenEthereumFacadeProvider ethereumFacadeProvider = new InfuraRopstenEthereumFacadeProvider();
 				String apiKey = System.getProperty("apiKey");
-				ethereum = ethereumFacadeProvider.create(new InfuraKey(apiKey));
+				ethereum = InfuraRopstenEthereumFacadeProvider.create(new InfuraKey(apiKey));
+			}else if (property.equalsIgnoreCase("InfuraMain")) {
+				String apiKey = System.getProperty("apiKey");
+				ethereum = new InfuraMainEthereumFacadeProvider().create(new InfuraKey(apiKey));
 			}else if (property.equalsIgnoreCase("rpc")) {
-				GenericRpcEthereumFacadeProvider rcp = new GenericRpcEthereumFacadeProvider();
+				EthereumFacadeRpcProvider rcp = new EthereumFacadeRpcProvider();
 				String url = System.getProperty("rpc-url");
 				String chainId = System.getProperty("chain-id");
 				ethereum = rcp.create(url, new ChainId((byte) Integer.parseInt(chainId)));
 			}else if (property.equalsIgnoreCase("private")){
-				PrivateEthereumFacadeProvider provider = new PrivateEthereumFacadeProvider();
-				PrivateNetworkConfig config = PrivateNetworkConfig.config();
-				//[protected ('setup the chain')]
-
+				Builder privateNet = EthereumJConfigs.privateMiner();
+				//[protected ('for setup the private chain')]
 				//[/protected]
-				ethereum = provider.create(config);
+				ethereum = EthereumFacadeProvider.forNetwork(privateNet).create();
+			}else if (property.equalsIgnoreCase("custom")){
+				Builder config = BlockchainConfig.builder();
+				//[protected ('for setup the custom chain')]
+				//[/protected]
+				ethereum = EthereumFacadeProvider.forNetwork(config).create();
 			}
-		}else{
-			ethereum = new StandaloneEthereumFacadeProvider().create();
+		}
+		if(ethereum==null){
+			ethereum = StandaloneEthereumFacadeProvider.create();
 		}
 	}
 
@@ -164,12 +180,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.adridadou.ethereum.EthereumFacade;
+import org.adridadou.ethereum.values.CompiledContract;
 import org.adridadou.ethereum.values.EthAccount;
 import org.adridadou.ethereum.values.EthAddress;
 import org.adridadou.ethereum.values.SoliditySource;
 
-import de.kueken.ethereum.party.EthereumInstance;
-import de.kueken.ethereum.party.EthereumInstance.DeployDuo;
+import [p.getInterfacePackagePrefix()/].EthereumInstance;
+import [p.getInterfacePackagePrefix()/].EthereumInstance.DeployDuo;
 
 import [p.getInterfacePackagePrefix()/].[p.name/].*;
 
@@ -186,36 +203,54 @@ public class [p.name.toUpperFirst()/]Deployer {
 	private SoliditySource contractSource;
 	private static String filename = "[if (p.getContractPathForJava()<>'')]/[p.getContractPathForJava()/][/if]/[p.name/].sol";
 
+	/**
+	 * Create an instance of the deployer with the default contract code file.
+	 * 
+	 * @param ethereum
+	 */
 	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum) {
-		this(ethereum,filename, true);
+		this(ethereum,filename);
 	}
 
-	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, String contractSourceFile, boolean plain) {
+	/**
+	 * Create an instance of the deployer.
+	 * 
+	 * @param ethereum
+	 * @param contractSourceFile
+	 */
+	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, String contractSourceFile) {
 		this.ethereum = ethereum;
 		try {
-			if(plain)
+//			if(plain)
 				contractSource = SoliditySource.from(new File(this.getClass().getResource(contractSourceFile).toURI()));
-			else
-				contractSource = SoliditySource.fromRawJson(new File(this.getClass().getResource(contractSourceFile).toURI()));
+//			else
+//				contractSource = SoliditySource.fromRawJson(new File(this.getClass().getResource(contractSourceFile).toURI()));
 				
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(e);
-		} catch (IOException e) {
+		} 
+[comment]catch (IOException e) {
 			throw new IllegalArgumentException(e);
-		}
+		}[/comment]
 	}
 
-	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, File contractSourceFile, boolean plain) {
+	/**
+	 * Create an instance of the deployer.
+	 * 
+	 * @param ethereum
+	 * @param contractSourceFile
+	 */
+	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, File contractSourceFile) {
 		this.ethereum = ethereum;
-		try {
-			if(plain)
+[comment]		try {[/comment]
+//			if(plain)
 				contractSource = SoliditySource.from(contractSourceFile);
-			else
-				contractSource = SoliditySource.fromRawJson(contractSourceFile);
+//			else
+//				contractSource = SoliditySource.fromRawJson(contractSourceFile);
 				
-		} catch (IOException e) {
+[comment]		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
-		}
+		}[/comment]
 	}
 
 
@@ -229,7 +264,8 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @return the address of the deployed contract
 	 */
 	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender) {
-		CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, "[aClass.name/]", sender);
+		CompiledContract compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
+		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);
 		return address;
 	}
 
@@ -256,7 +292,8 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @return the address of the deployed contract
 	 */
 	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) {
-		CompletableFuture<EthAddress> address = ethereum.publishContract(contractSource, "[aClass.name/]", sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
+		CompiledContract compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
+		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
 		return address;
 	}
 
@@ -284,8 +321,8 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @return the contract interface
 	 */
 	public [aClass.name/] create[aClass.name/]Proxy(EthAccount sender, EthAddress address) throws IOException, InterruptedException, ExecutionException {
-		[aClass.name/] [aClass.name.toLowerCase()/] = ethereum
-        .createContractProxy(contractSource, "[aClass.name/]", address, sender, [aClass.name/].class);
+		CompiledContract compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
+		[aClass.name/] [aClass.name.toLowerCase()/] = ethereum.createContractProxy(compiledContract, address, sender, [aClass.name/].class);
 		return [aClass.name.toLowerCase()/];
 	}
 [/for]
