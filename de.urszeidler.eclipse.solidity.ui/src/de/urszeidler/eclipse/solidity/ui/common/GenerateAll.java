@@ -300,12 +300,14 @@ public class GenerateAll {
 	 * @param gen0
 	 */
 	private void compileContracts(IProgressMonitor monitor, GenerateContracts gen0) {
+		if(gen0==null)
+			return;
 		IPreferenceStore store1 = Uml2Service.getStore(null);
 		if (store1.getBoolean(
 				de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS)) {
-
+			
 			files = gen0.getFiles();
-			if (files.isEmpty())
+			if (files==null || files.isEmpty())
 				return;
 			String compile_folder = store1.getString(
 					de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
