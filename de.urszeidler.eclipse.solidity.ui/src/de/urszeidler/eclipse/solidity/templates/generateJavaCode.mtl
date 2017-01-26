@@ -174,6 +174,8 @@ public class EthereumInstance{
 package [p.getInterfacePackagePrefix()/].deployer;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.concurrent.CompletableFuture;
@@ -184,6 +186,10 @@ import org.adridadou.ethereum.values.CompiledContract;
 import org.adridadou.ethereum.values.EthAccount;
 import org.adridadou.ethereum.values.EthAddress;
 import org.adridadou.ethereum.values.SoliditySource;
+import org.apache.commons.io.IOUtils;
+import org.ethereum.solidity.compiler.CompilationResult;
+import org.ethereum.solidity.compiler.CompilationResult.ContractMetadata;
+
 
 import [p.getInterfacePackagePrefix()/].EthereumInstance;
 import [p.getInterfacePackagePrefix()/].EthereumInstance.DeployDuo;
@@ -201,6 +207,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 
 	private EthereumFacade ethereum;
 	private SoliditySource contractSource;
+	private CompilationResult compiledContracts;
 	private static String filename = "[if (p.getContractPathForJava()<>'')]/[p.getContractPathForJava()/][/if]/[p.name/].sol";
 
 	/**
@@ -209,9 +216,58 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @param ethereum
 	 */
 	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum) {
-		this(ethereum,filename);
+		this(ethereum,filename,false);
 	}
 
+	/**
+	 * Create an instance of the deployer.
+	 * 
+	 * @param ethereum
+	 * @param contractSourceFile
+	 * @param compiled is the source code already compiled
+	 */
+	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, String contractSourceFile, boolean compiled) {
+		this.ethereum = ethereum;
+		try {
+			if (!compiled)
+				contractSource = SoliditySource.from(new File(this.getClass().getResource(contractSourceFile).toURI()));
+			else {
+				File file = new File(this.getClass().getResource(contractSourceFile).toURI());
+				String rawJson = IOUtils.toString(new FileInputStream(file), EthereumFacade.CHARSET);
+				compiledContracts = CompilationResult.parse(rawJson);
+			}
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException(e);
+		} catch (FileNotFoundException e) {
+			throw new IllegalArgumentException(e);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	/**
+	 * Create an instance of the deployer.
+	 * 
+	 * @param ethereum
+	 * @param contractSourceFile
+	 */
+	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, File contractSourceFile, boolean compiled) {
+		this.ethereum = ethereum;
+		if (!compiled)
+			contractSource = SoliditySource.from(contractSourceFile);
+		else {
+			try {
+				String rawJson = IOUtils.toString(new FileInputStream(contractSourceFile), EthereumFacade.CHARSET);
+				compiledContracts = CompilationResult.parse(rawJson);
+			} catch (FileNotFoundException e) {
+				throw new IllegalArgumentException(e);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(e);
+			}
+		}
+	}
+
+[comment]
 	/**
 	 * Create an instance of the deployer.
 	 * 
@@ -229,11 +285,11 @@ public class [p.name.toUpperFirst()/]Deployer {
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(e);
 		} 
-[comment]catch (IOException e) {
+catch (IOException e) {
 			throw new IllegalArgumentException(e);
-		}[/comment]
+		}
 	}
-
+[/comment][comment]
 	/**
 	 * Create an instance of the deployer.
 	 * 
@@ -242,22 +298,45 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 */
 	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, File contractSourceFile) {
 		this.ethereum = ethereum;
-[comment]		try {[/comment]
-//			if(plain)
+		try {[/comment]
+[comment]//			if(plain)
 				contractSource = SoliditySource.from(contractSourceFile);
 //			else
 //				contractSource = SoliditySource.fromRawJson(contractSourceFile);
 				
-[comment]		} catch (IOException e) {
+		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
-		}[/comment]
+		}
 	}
-
+[/comment]
 
 [for (	aClass : Class | p.allContracts())]
 [if (aClass.allConstructors()->isEmpty())]
 
 	/**
+	 * Deploys a '[aClass.name/]' on the blockchain.
+	 * 
+	 * @param sender
+	 *            the sender address
+	 * @return the address of the deployed contract
+	 */
+	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender) {
+		CompiledContract compiledContract = null;
+		if (compiledContracts == null)
+			compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
+		else {
+			ContractMetadata contractMetadata = compiledContracts.contracts.get("[aClass.name/]");
+			if (contractMetadata == null)
+				throw new IllegalArgumentException("Contract code for '[aClass.name/]' not found");
+
+			compiledContract = CompiledContract.from(null, "[aClass.name/]", contractMetadata);
+		}
+		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);
+		return address;
+	}
+
+
+[comment]	/**
 	 * Deploys a '[aClass.name/]' on the blockchain.
 	 *  
 	 * @param sender the sender address
@@ -267,7 +346,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 		CompiledContract compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
 		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);
 		return address;
-	}
+	}[/comment]
 
 	/**
 	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contcat proxy.
@@ -284,6 +363,32 @@ public class [p.name.toUpperFirst()/]Deployer {
 
 	/**
 	 * Deploys a '[aClass.name/]' on the blockchain.
+	 * 
+	 * @param sender
+	 *            the sender address
+[for (p : Parameter | op.allInParameters())]
+	 * @param [p.name/] [if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
+[/for]
+	 * @return the address of the deployed contract
+	 */
+	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) {
+		CompiledContract compiledContract = null;
+		if (compiledContracts == null)
+			compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
+		else {
+			ContractMetadata contractMetadata = compiledContracts.contracts.get("[aClass.name/]");
+			if (contractMetadata == null)
+				throw new IllegalArgumentException("Contract code for Organ not found");
+
+			compiledContract = CompiledContract.from(null, "[aClass.name/]", contractMetadata);
+		}
+		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
+		return address;
+	}
+
+
+[comment]	/**
+	 * Deploys a '[aClass.name/]' on the blockchain.
 	 *  
 	 * @param sender the sender address
 [for (p : Parameter | op.allInParameters())]
@@ -295,7 +400,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 		CompiledContract compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
 		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
 		return address;
-	}
+	}[/comment]
 
 	/**
 	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contcat proxy.
@@ -321,7 +426,17 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @return the contract interface
 	 */
 	public [aClass.name/] create[aClass.name/]Proxy(EthAccount sender, EthAddress address) throws IOException, InterruptedException, ExecutionException {
-		CompiledContract compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
+		CompiledContract compiledContract = null;
+		if (compiledContracts == null)
+			compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
+		else {
+			ContractMetadata contractMetadata = compiledContracts.contracts.get("[aClass.name/]");
+			if (contractMetadata == null)
+				throw new IllegalArgumentException("Contract code for '[aClass.name/]' not found");
+
+			compiledContract = CompiledContract.from(null, "[aClass.name/]", contractMetadata);
+		}
+[comment]		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);[/comment]
 		[aClass.name/] [aClass.name.toLowerCase()/] = ethereum.createContractProxy(compiledContract, address, sender, [aClass.name/].class);
 		return [aClass.name.toLowerCase()/];
 	}
@@ -405,7 +520,7 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [/if]
 [if (aProperty.getStereotypeValue('GetterSetter', 'setter').oclAsType(Boolean))]
 
-	void set[aProperty.name.toUpperFirst()/] ([aProperty.toJavaType()/] a[aProperty.name.toUpperFirst()/]);
+	[if (aProperty.generateJavaNoneBlocking())]java.util.concurrent.CompletableFuture<Void>[else]void[/if] set[aProperty.name.toUpperFirst()/] ([aProperty.toJavaType()/] a[aProperty.name.toUpperFirst()/]);
 [/if]
 [/template]
 
