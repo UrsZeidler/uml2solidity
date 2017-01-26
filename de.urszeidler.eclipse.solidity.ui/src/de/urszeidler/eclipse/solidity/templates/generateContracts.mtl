@@ -170,13 +170,13 @@ contract [aClass.name/][aClass.contractIs()/] {
 */]
 [template public printGetterSetter (aProperty : Property)?(aProperty.hasStereotype('GetterSetter')) ]
 [if (aProperty.getStereotypeValue('GetterSetter', 'getter').oclAsType(Boolean))]
-// get[aProperty.name.toUpperFirst()/]
-function get[aProperty.name.toUpperFirst()/]()[aProperty.printModifierGetterSetter()/] returns([aProperty.type.name/]) {
+// get[aProperty.name.toUpperFirst()/] getter for the field [aProperty.name/]
+function get[aProperty.name.toUpperFirst()/]()[aProperty.printModifierGetterSetter()/] constant returns([aProperty.type.name/]) {
 	return [aProperty.name/];
 }
 [/if]
 [if (aProperty.getStereotypeValue('GetterSetter', 'setter').oclAsType(Boolean))]
-// set[aProperty.name.toUpperFirst()/]
+// set[aProperty.name.toUpperFirst()/] setter for the field [aProperty.name/]
 function set[aProperty.name.toUpperFirst()/] ([aProperty.externalType()/] a[aProperty.name.toUpperFirst()/])[aProperty.printModifierGetterSetter()/] {
 	[aProperty.name/] = [if (hasStereotype(aProperty.type, 'Contract'))][aProperty.type.name/](a[aProperty.name.toUpperFirst()/]);[else]a[aProperty.name.toUpperFirst()/];[/if]
 }
