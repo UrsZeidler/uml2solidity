@@ -33,6 +33,8 @@ package [m.getInterfacePackagePrefix()/];
 
 //[protected ('customizedImports')]
 
+import static org.adridadou.ethereum.provider.PrivateNetworkConfig.config;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -142,10 +144,15 @@ public class EthereumInstance{
 				String chainId = System.getProperty("chain-id");
 				ethereum = rcp.create(url, new ChainId((byte) Integer.parseInt(chainId)));
 			}else if (property.equalsIgnoreCase("private")){
-				Builder privateNet = EthereumJConfigs.privateMiner();
+				PrivateNetworkConfig config = config();
 				//[protected ('for setup the private chain')]
+				config
+                .reset(true)
+                .initialBalance(new EthAccount(ECKey.fromPrivate(BigInteger.valueOf(100000L))), EthValue.ether(10L))
+                ;
+
 				//[/protected]
-				ethereum = EthereumFacadeProvider.forNetwork(privateNet).create();
+				ethereum = new PrivateEthereumFacadeProvider().create(config);
 			}else if (property.equalsIgnoreCase("custom")){
 				Builder config = BlockchainConfig.builder();
 				//[protected ('for setup the custom chain')]
