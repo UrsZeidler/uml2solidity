@@ -7,6 +7,7 @@
 
    <description url="https://github.com/UrsZeidler/uml2solidity">
       Basic solidity compiler support.
+Includes a solidity builder and preferences to manage the installed compilers.
    </description>
 
    <copyright>
