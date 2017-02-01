@@ -87,7 +87,7 @@ public class InstalledSolidityCompilerPreferencePage extends PreferencePage impl
 	 */
 	public InstalledSolidityCompilerPreferencePage() {
 		super();
-		setDescription("Installed Solidity Compilers");
+		setDescription("Add/remove or search solidity compilers useable with the solidity builder.");
 
 	}
 

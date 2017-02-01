@@ -18,6 +18,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringButtonFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
@@ -37,7 +38,6 @@ public class SolcBuilderPreferencePage extends AbstractProjectPreferencesPage im
 	 */
 	public SolcBuilderPreferencePage() {
 		super(GRID);
-		setDescription("The solidity builder preferences.");
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class SolcBuilderPreferencePage extends AbstractProjectPreferencesPage im
 			sourceDirectory.setEmptyStringAllowed(false);
 			addField(sourceDirectory);
 		}
-		compilerTarget = new StringFieldEditor(PreferenceConstants.COMPILER_TARGET_COMBINE_ABI, "file to write", -1,
+		compilerTarget = new StringFieldEditor(PreferenceConstants.COMPILER_TARGET_COMBINE_ABI, "compile to file", -1,
 				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent());
 		addField(compilerTarget);
 
@@ -110,24 +110,42 @@ public class SolcBuilderPreferencePage extends AbstractProjectPreferencesPage im
 		editor.setEnabled(false, getFieldEditorParent());
 		addField(editor);
 
-		addField(new BooleanFieldEditor(PreferenceConstants.ENABLE_GAS_OPTIMIZE, "Enable gas optimizion.",
+		addField(new BooleanFieldEditor(PreferenceConstants.ENABLE_GAS_OPTIMIZE, "Enable gas optimization.",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 
 		addField(new BooleanFieldEditor(PreferenceConstants.ESTIMATE_GAS_COSTS, "Write estimate gas costs.",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 	}
 
+    @Override
+	public void createControl(Composite parent){
+		if(isPropertyPage()){
+			setDescription(
+					"The project solidity builder preferences. "
+					+ "The builder compiles to a combine json format. "
+					+ "All *.sol files of the source directory are selected. Add/remove the builder via configure project.");
+			
+		}else
+		setDescription(
+				"The solidity builder preferences. "
+				+ "The builder compiles to a combine json format. When selected for a project. "
+				+ "All *.sol files of the source directory are selected. Add/remove the builder via configure project.");
+
+    	super.createControl(parent);
+    }
 	
 	@Override
 	protected void checkState() {
 		super.checkState();
 		validateInput();
 	}
+
 	/**
 	 * Initialize the preference page.
 	 */
 	public void init(IWorkbench workbench) {
 		// Initialize the preference page
+		
 	}
 
 	@Override
