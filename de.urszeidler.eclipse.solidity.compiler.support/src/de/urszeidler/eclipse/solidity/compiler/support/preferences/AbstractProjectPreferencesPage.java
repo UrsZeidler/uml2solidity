@@ -31,7 +31,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 public abstract class AbstractProjectPreferencesPage extends FieldEditorPreferencePage
 		implements IWorkbenchPropertyPage {
 
-	private IProject project;
+	protected IProject project;
 	private Button useProjectSettingsButton;
 	private Link link;
 	private List<FieldEditor> editors = new ArrayList<FieldEditor>();

@@ -3,8 +3,6 @@ package de.urszeidler.eclipse.solidity.compiler.support.preferences;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import de.urszeidler.eclipse.solidity.compiler.support.Activator;
-
 
 
 /**
@@ -25,7 +23,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(PreferenceConstants.COMPILER_TARGET,
 				"bin");
 		store.setDefault(PreferenceConstants.SOL_SRC_DIRECTORY,
-				"sol-src");
+				"sol-src/");
 		store.setDefault(PreferenceConstants.COMPILER_BIN, true);
 		store.setDefault(PreferenceConstants.COMPILER_BIN_RUNTIME, false);
 		store.setDefault(PreferenceConstants.COMPILER_ABI, true);
@@ -46,6 +44,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		
 		store.setDefault(PreferenceConstants.COMBINED_JSON_OPTIONS, "abi,bin");		 
 		store.setDefault(PreferenceConstants.COMPILER_TARGET_COMBINE_ABI, "bin/combine.json");		 
+		
+		store.setDefault(PreferenceConstants.SELECTED_COMPILER, "/usr/bin/solc");
 	}
 
 }

@@ -8,7 +8,8 @@ Bundle-Vendor: Urs Zeidler
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ org.eclipse.ui.ide
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: de.urszeidler.eclipse.solidity.compiler.support,

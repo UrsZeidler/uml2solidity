@@ -15,6 +15,12 @@
             id="de.urszeidler.eclipse.solidity.ui.preferences.BuilderPreferencePage"
             name="Solc Builder Preference Page">
       </page>
+      <page
+            category="de.urszeidler.eclipse.solidity.ui.preferences.BuilderPreferencePage"
+            class="de.urszeidler.eclipse.solidity.compiler.support.preferences.InstalledSolidityCompilerPreferencePage"
+            id="de.urszeidler.eclipse.solidity.compiler.support.page1"
+            name="Installed solidity compilers">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
@@ -96,6 +102,7 @@
          locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
       <command
             commandId="de.urszeidler.eclipse.solidity.compiler.handler.AddBuilder"
+            icon="images/sol2.png"
             label="Add Solidity Builder"
             style="push">
              <visibleWhen
@@ -124,6 +131,7 @@
 		</command>
       <command
             commandId="de.urszeidler.eclipse.solidity.compiler.handler.RemoveBuilder"
+            icon="images/sol1.png"
             label="Remove Solidity Builder"
             style="push">
             <visibleWhen

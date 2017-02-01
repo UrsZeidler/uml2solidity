@@ -94,12 +94,23 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 		String src = store.getString(PreferenceConstants.SOL_SRC_DIRECTORY);
 		if (src == null)
 			return;
+
+		String command = store.getString(PreferenceConstants.COMPILER_PROGRAMM);
+		if (command == null || command.isEmpty())
+			return;
+		File file = new File(command);
+		if (!file.exists() || !file.canExecute())
+			return;
+
 		IContainer folder;
 		if (src.startsWith("/")) {
 			folder = (IContainer) ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(src));
 		} else
 			folder = getProject().getFolder(src);
-
+		
+		if(folder==null)
+			return;
+		
 		if (!folder.exists())
 			folder.getLocation().toFile().mkdirs();
 
@@ -145,11 +156,27 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 		if (monitor != null)
 			monitor.subTask("compile solidity code:" + files);
 
-		final List<String> options = new ArrayList<String>();
-		String command = store.getString(PreferenceConstants.COMPILER_PROGRAMM);
-		if (command == null || command.isEmpty())
-			return;
+		executeCompileSource(store, command, outFile, files, new ArrayList<String>());
 
+		if (store.getBoolean(PreferenceConstants.ESTIMATE_GAS_COSTS)) {
+			executeEstimateGas(monitor, store, outPath, files, new ArrayList<String>());
+		}
+
+		if (monitor != null)
+			monitor.subTask("code compiled");
+		if (monitor != null)
+			monitor.done();
+	}
+
+	/**
+	 * @param store
+	 * @param command
+	 * @param outFile
+	 * @param files
+	 * @param options
+	 */
+	private void executeCompileSource(IPreferenceStore store, String command, final IFile outFile,
+			final List<String> files, final List<String> options) {
 		options.add(command);
 		options.add("--combined-json");
 		options.add("abi,bin");
@@ -177,44 +204,46 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 					Activator.logError(error + "  " + options, exception);
 			}
 		}, options);
+	}
 
-		if (store.getBoolean(PreferenceConstants.ESTIMATE_GAS_COSTS)) {
-			options.clear();
-			options.add(store.getString(PreferenceConstants.COMPILER_PROGRAMM));
-			if (store.getBoolean(PreferenceConstants.ENABLE_GAS_OPTIMIZE))
-				options.add("--optimize");
+	/**
+	 * @param monitor
+	 * @param store
+	 * @param outPath
+	 * @param files
+	 * @param options
+	 */
+	private void executeEstimateGas(IProgressMonitor monitor, IPreferenceStore store, final IFolder outPath,
+			final List<String> files, final List<String> options) {
+		options.add(store.getString(PreferenceConstants.COMPILER_PROGRAMM));
+		if (store.getBoolean(PreferenceConstants.ENABLE_GAS_OPTIMIZE))
+			options.add("--optimize");
 
-			options.add("--gas");
-			if (monitor != null)
-				monitor.subTask("estimate gas costs:" + files);
-
-			final IFile ofile = outPath.getFile("gas-costs.txt");
-			StartCompiler.startCompiler(files, new CompilerCallback() {
-
-				@Override
-				public void compiled(String input, String error, Exception exception) {
-					if (exception == null && (input != null && !input.isEmpty())) {
-						try {
-							File file = ofile.getRawLocation().toFile();
-							if (!file.exists())
-								file.createNewFile();
-							FileWriter fileWriter;
-							fileWriter = new FileWriter(file);
-							fileWriter.write(input);
-							fileWriter.close();
-						} catch (IOException e) {
-							Activator.logError("Error ", e);
-						}
-					} else
-						Activator.logError(error + "  " + options, exception);
-				}
-			}, options);
-		}
-
+		options.add("--gas");
 		if (monitor != null)
-			monitor.subTask("code compiled");
-		if (monitor != null)
-			monitor.done();
+			monitor.subTask("estimate gas costs:" + files);
+
+		final IFile ofile = outPath.getFile("gas-costs.txt");
+		StartCompiler.startCompiler(files, new CompilerCallback() {
+
+			@Override
+			public void compiled(String input, String error, Exception exception) {
+				if (exception == null && (input != null && !input.isEmpty())) {
+					try {
+						File file = ofile.getRawLocation().toFile();
+						if (!file.exists())
+							file.createNewFile();
+						FileWriter fileWriter;
+						fileWriter = new FileWriter(file);
+						fileWriter.write(input);
+						fileWriter.close();
+					} catch (IOException e) {
+						Activator.logError("Error ", e);
+					}
+				} else
+					Activator.logError(error + "  " + options, exception);
+			}
+		}, options);
 	}
 
 }
