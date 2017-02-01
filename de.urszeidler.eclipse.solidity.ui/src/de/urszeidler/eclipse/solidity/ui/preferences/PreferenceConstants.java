@@ -16,6 +16,7 @@ public class PreferenceConstants {
 	public static final String GENERATE_CONTRACT_FILES = "GENERATE_CONTRACT_FILES";
 	public static final String GENERATION_TARGET = "GENERATION_TARGET";
 	public static final String GENERATION_TARGET_DOC = "GENERATION_TARGET_DOC";
+	public static final String GENERATION_ALL_IN_ONE_FILE = "GENERATION_ALL_IN_ONE_FILE";
 	
 	public static final String GENERATE_JAVA_INTERFACE = "GENERATE_JAVA_INTERFACE";
 	public static final String GENERATION_JAVA_INTERFACE_TARGET = "GENERATION_JAVA_INTERFACE_TARGET";

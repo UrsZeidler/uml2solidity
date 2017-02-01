@@ -6,7 +6,6 @@ package de.urszeidler.eclipse.solidity.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.internal.expressions.InstanceofExpression;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
