@@ -179,7 +179,7 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 			final List<String> files, final List<String> options) {
 		options.add(command);
 		options.add("--combined-json");
-		options.add("abi,bin");
+		options.add(store.getString(PreferenceConstants.COMBINED_JSON_OPTIONS));
 
 		if (store.getBoolean(PreferenceConstants.ENABLE_GAS_OPTIMIZE))
 			options.add("--optimize");

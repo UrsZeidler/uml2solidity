@@ -115,6 +115,11 @@ public class SolcBuilderPreferencePage extends AbstractProjectPreferencesPage im
 
 		addField(new BooleanFieldEditor(PreferenceConstants.ESTIMATE_GAS_COSTS, "Write estimate gas costs.",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
+		
+		addField(new StringFieldEditor(PreferenceConstants.COMBINED_JSON_OPTIONS, "combined json options", -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, getFieldEditorParent()));
+		
+		
 	}
 
     @Override
