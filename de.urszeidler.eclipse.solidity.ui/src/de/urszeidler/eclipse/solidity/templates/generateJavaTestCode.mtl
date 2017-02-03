@@ -61,8 +61,8 @@ import org.spongycastle.util.encoders.Hex;
 public abstract class AbstractContractTest {
 
 	protected static EthereumFacade ethereum;
-	protected EthAccount sender;
-	protected EthAddress senderAddress;
+	protected static EthAccount sender;
+	protected static EthAddress senderAddress;
 
 	protected EthAddress fixtureAddress;
 	protected SoliditySource contractSource;
@@ -77,14 +77,15 @@ public abstract class AbstractContractTest {
 	/**
 	 * Setup up the blockchain. Add the 'EthereumFacadeProvider' property to use 
 	 * another block chain implementation or network.
+	 * @throws Exception 
 	 */
 	@BeforeClass
-	public static void setup() {
+	public static void setup() throws Exception{
 		ethereum = EthereumInstance.getInstance().getEthereum();
-
+		initTest();
 	}
 
-	protected void initTest() throws Exception {
+	protected static void initTest() throws Exception {
 		// [protected ('AbstractContractTest.initTest')]
 
 		String property = System.getProperty("EthereumFacadeProvider");
@@ -229,7 +230,7 @@ public class [aClass.name/]Test[testExtends(aClass)/]{
 	 */
 	protected void createFixture() throws Exception {
 		//[protected ('createFixture')]
-		CompiledContract compiledContract = ethereum.compile(contractSource, getContractName());
+		CompiledContract compiledContract = ethereum.compile(contractSource, getContractName()).get();
 [if (aClass.allConstructors()->isEmpty() or aClass.allConstructors()->first().allInParameters()->isEmpty())]
 		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);
 [else]

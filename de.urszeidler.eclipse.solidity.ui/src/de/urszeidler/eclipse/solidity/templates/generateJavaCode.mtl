@@ -374,6 +374,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 			ContractMetadata contractMetadata = compiledContracts.contracts.get("[aClass.name/]");
 			if (contractMetadata == null)
 				throw new IllegalArgumentException("Contract code for '[aClass.name/]' not found");
+			compiledContract = CompiledContract.from(null, "Organ", contractMetadata);
 		}
 		return compiledContract;
 	}
