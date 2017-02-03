@@ -33,24 +33,27 @@ package [m.getInterfacePackagePrefix()/];
 
 //[protected ('customizedImports')]
 
-import static org.adridadou.ethereum.provider.PrivateNetworkConfig.config;
-
+import java.math.BigInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.adridadou.ethereum.EthereumFacade;
 import org.adridadou.ethereum.blockchain.BlockchainConfig;
 import org.adridadou.ethereum.blockchain.BlockchainConfig.Builder;
+import org.adridadou.ethereum.blockchain.TestConfig;
 import org.adridadou.ethereum.provider.EthereumFacadeProvider;
 import org.adridadou.ethereum.provider.EthereumFacadeRpcProvider;
 import org.adridadou.ethereum.provider.EthereumJConfigs;
 import org.adridadou.ethereum.provider.InfuraMainEthereumFacadeProvider;
 import org.adridadou.ethereum.provider.InfuraRopstenEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.StandaloneEthereumFacadeProvider;
+import org.adridadou.ethereum.provider.PrivateEthereumFacadeProvider;
+import org.adridadou.ethereum.provider.PrivateNetworkConfig;
+import org.adridadou.ethereum.values.EthAccount;
 import org.adridadou.ethereum.values.EthAddress;
+import org.adridadou.ethereum.values.EthValue;
 import org.adridadou.ethereum.values.config.ChainId;
 import org.adridadou.ethereum.values.config.InfuraKey;
-
+import org.ethereum.crypto.ECKey;
 
 //[/protected]
 
@@ -144,7 +147,7 @@ public class EthereumInstance{
 				String chainId = System.getProperty("chain-id");
 				ethereum = rcp.create(url, new ChainId((byte) Integer.parseInt(chainId)));
 			}else if (property.equalsIgnoreCase("private")){
-				PrivateNetworkConfig config = config();
+				PrivateNetworkConfig config = PrivateNetworkConfig.config();
 				//[protected ('for setup the private chain')]
 				config
                 .reset(true)
@@ -161,7 +164,10 @@ public class EthereumInstance{
 			}
 		}
 		if(ethereum==null){
-			ethereum = StandaloneEthereumFacadeProvider.create();
+			TestConfig.Builder builder = TestConfig.builder();
+			//[protected ('for setup the standalone chain')]
+			//[/protected]
+			ethereum = EthereumFacadeProvider.forTest(builder.build());
 		}
 	}
 
@@ -180,6 +186,7 @@ public class EthereumInstance{
 [file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/deployer/'+p.name.toUpperFirst()+'Deployer.java', false, 'UTF-8')]
 package [p.getInterfacePackagePrefix()/].deployer;
 
+import rx.Observable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -274,49 +281,6 @@ public class [p.name.toUpperFirst()/]Deployer {
 		}
 	}
 
-[comment]
-	/**
-	 * Create an instance of the deployer.
-	 * 
-	 * @param ethereum
-	 * @param contractSourceFile
-	 */
-	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, String contractSourceFile) {
-		this.ethereum = ethereum;
-		try {
-//			if(plain)
-				contractSource = SoliditySource.from(new File(this.getClass().getResource(contractSourceFile).toURI()));
-//			else
-//				contractSource = SoliditySource.fromRawJson(new File(this.getClass().getResource(contractSourceFile).toURI()));
-				
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException(e);
-		} 
-catch (IOException e) {
-			throw new IllegalArgumentException(e);
-		}
-	}
-[/comment][comment]
-	/**
-	 * Create an instance of the deployer.
-	 * 
-	 * @param ethereum
-	 * @param contractSourceFile
-	 */
-	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, File contractSourceFile) {
-		this.ethereum = ethereum;
-		try {[/comment]
-[comment]//			if(plain)
-				contractSource = SoliditySource.from(contractSourceFile);
-//			else
-//				contractSource = SoliditySource.fromRawJson(contractSourceFile);
-				
-		} catch (IOException e) {
-			throw new IllegalArgumentException(e);
-		}
-	}
-[/comment]
-
 [for (	aClass : Class | p.allContracts())]
 [if (aClass.allConstructors()->isEmpty())]
 
@@ -326,34 +290,15 @@ catch (IOException e) {
 	 * @param sender
 	 *            the sender address
 	 * @return the address of the deployed contract
+	 * @throws InterruptedException
+	 * @throws ExecutionException
 	 */
-	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender) {
-		CompiledContract compiledContract = null;
-		if (compiledContracts == null)
-			compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
-		else {
-			ContractMetadata contractMetadata = compiledContracts.contracts.get("[aClass.name/]");
-			if (contractMetadata == null)
-				throw new IllegalArgumentException("Contract code for '[aClass.name/]' not found");
-
-			compiledContract = CompiledContract.from(null, "[aClass.name/]", contractMetadata);
-		}
+	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender) throws InterruptedException, ExecutionException{
+		CompiledContract compiledContract = compiledContract[aClass.name/]();
 		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);
 		return address;
 	}
 
-
-[comment]	/**
-	 * Deploys a '[aClass.name/]' on the blockchain.
-	 *  
-	 * @param sender the sender address
-	 * @return the address of the deployed contract
-	 */
-	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender) {
-		CompiledContract compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
-		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);
-		return address;
-	}[/comment]
 
 	/**
 	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contcat proxy.
@@ -377,37 +322,14 @@ catch (IOException e) {
 	 * @param [p.name/] [if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
 [/for]
 	 * @return the address of the deployed contract
+	 * @throws InterruptedException
+	 * @throws ExecutionException
 	 */
-	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) {
-		CompiledContract compiledContract = null;
-		if (compiledContracts == null)
-			compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
-		else {
-			ContractMetadata contractMetadata = compiledContracts.contracts.get("[aClass.name/]");
-			if (contractMetadata == null)
-				throw new IllegalArgumentException("Contract code for Organ not found");
-
-			compiledContract = CompiledContract.from(null, "[aClass.name/]", contractMetadata);
-		}
+	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) throws InterruptedException, ExecutionException {
+		CompiledContract compiledContract = compiledContract[aClass.name/]();
 		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
 		return address;
 	}
-
-
-[comment]	/**
-	 * Deploys a '[aClass.name/]' on the blockchain.
-	 *  
-	 * @param sender the sender address
-[for (p : Parameter | op.allInParameters())]
-	 * @param [p.name/] [if (not p.ownedComment->asSequence()->first()._body.oclIsUndefined())][p.ownedComment->asSequence()->first()._body.printInLines()/][elseif][/if]
-[/for]
-	 * @return the address of the deployed contract
-	 */
-	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) {
-		CompiledContract compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
-		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
-		return address;
-	}[/comment]
 
 	/**
 	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contcat proxy.
@@ -433,20 +355,43 @@ catch (IOException e) {
 	 * @return the contract interface
 	 */
 	public [aClass.name/] create[aClass.name/]Proxy(EthAccount sender, EthAddress address) throws IOException, InterruptedException, ExecutionException {
+		CompiledContract compiledContract = compiledContract[aClass.name/]();
+		[aClass.name/] [aClass.name.toLowerCase()/] = ethereum.createContractProxy(compiledContract, address, sender, [aClass.name/].class);
+		return [aClass.name.toLowerCase()/];
+	}
+
+	/**
+	 * Return the compiled contract for the contract '[aClass.name/]', when in source the contract code is compiled.
+	 * @return the compiled contract for '[aClass.name/]'.
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	public CompiledContract compiledContract[aClass.name/]() throws InterruptedException, ExecutionException {
 		CompiledContract compiledContract = null;
 		if (compiledContracts == null)
-			compiledContract = ethereum.compile(contractSource, "[aClass.name/]");
+			compiledContract = ethereum.compile(contractSource, "[aClass.name/]").get();
 		else {
 			ContractMetadata contractMetadata = compiledContracts.contracts.get("[aClass.name/]");
 			if (contractMetadata == null)
 				throw new IllegalArgumentException("Contract code for '[aClass.name/]' not found");
-
-			compiledContract = CompiledContract.from(null, "[aClass.name/]", contractMetadata);
 		}
-[comment]		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);[/comment]
-		[aClass.name/] [aClass.name.toLowerCase()/] = ethereum.createContractProxy(compiledContract, address, sender, [aClass.name/].class);
-		return [aClass.name.toLowerCase()/];
+		return compiledContract;
 	}
+[for (	ev : Operation | aClass.ownedOperation->select(isEvent()))]
+	/**
+	 * 
+	 * @param address
+	 * @return
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	public Observable<[ev.eventName()/]> observe[ev.eventName()/](EthAddress address) throws InterruptedException, ExecutionException {
+		CompiledContract compiledContract = compiledContract[aClass.name/]();
+		Observable<[ev.eventName()/]> observeEvents = ethereum.observeEvents(compiledContract.getAbi(), address, "[ev.name/]", [ev.eventName()/].class);
+		return observeEvents;
+	}
+[/for]
+
 [/for]
 
 }
@@ -517,6 +462,12 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [/file]
 [/if]
 [/for]
+[for (op : Operation |  aClass.ownedOperation->select(isEvent()) )]
+[file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+op.eventName()+'.java', false, 'UTF-8')]
+[printEventParameterValueObject(p, aClass, op)/]
+[/file]
+[/for]
+
 [/for]
 [/template]
 
@@ -542,6 +493,76 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 enum [en.name/] { [for (l : EnumerationLiteral | en.ownedLiteral)separator (',')][l.name/][/for] }
 [/template]
 
+
+[query public eventName(op : Operation) : String = 'Event'+op.name.toUpperFirst()+op.operationParameters() /]
+
+
+[template public printEventParameterValueObject(p : Package, aClass : Class,  op : Operation)]
+package [p.getInterfacePackagePrefix()/].[p.name/];
+
+import [p.getInterfacePackagePrefix()/].[p.name/].[aClass.name/].*;
+
+/**
+ * The Event Objects for the event [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]).
+ *
+ */
+public class [op.eventName()/]{
+[for (p : Parameter | op.allInParameters())]
+	private [p.toJavaType()/] [p.toFieldName()/];
+[/for]
+
+	public [op.eventName()/]([for (p : Parameter | op.allInParameters())separator (',')][p.toJavaType()/] [p.toFieldName()/][/for]) {
+		super();
+[for (p : Parameter | op.allInParameters())]
+		this.[p.toFieldName()/] = [p.toFieldName()/];
+[/for]
+	}
+[for (p : Parameter | op.allInParameters())]
+
+	/**
+	 * Getter for [p.toFieldName()/].
+	 * @return
+	 */
+	public [p.toJavaType()/] get[p.toFieldName().toUpperFirst()/](){
+		return [p.toFieldName()/];
+	}
+[/for]
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+[for (p : Parameter | op.allInParameters())]
+		result = prime * result + (([p.toFieldName()/] == null) ? 0 : [p.toFieldName()/].hashCode());
+[/for]
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		[op.eventName()/] other = ([op.eventName()/]) obj;
+[for (p : Parameter | op.allInParameters())]
+		if ([p.toFieldName()/] == null) {
+			if (other.[p.toFieldName()/] != null)
+				return false;
+		} else if (![p.toFieldName()/].equals(other.[p.toFieldName()/]))
+			return false;
+[/for]
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "[op.eventName()/] [ '[' /][for (p : Parameter | op.allInParameters()) separator (',')][p.toFieldName()/]=" + [p.toFieldName()/] + "[/for][ ']' /]";
+	}
+}
+[/template]
 
 [template public printReturnParameterValueObject(p : Package, aClass : Class,  op : Operation)]
 package [p.getInterfacePackagePrefix()/].[p.name/];
