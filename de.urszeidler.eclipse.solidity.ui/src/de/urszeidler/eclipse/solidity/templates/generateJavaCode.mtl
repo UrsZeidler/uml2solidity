@@ -243,17 +243,12 @@ public class [p.name.toUpperFirst()/]Deployer {
 	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, String contractSourceFile, boolean compiled) {
 		this.ethereum = ethereum;
 		try {
-			if (!compiled)
-				contractSource = SoliditySource.from(new File(this.getClass().getResource(contractSourceFile).toURI()));
-			else {
-				File file = new File(this.getClass().getResource(contractSourceFile).toURI());
-				String rawJson = IOUtils.toString(new FileInputStream(file), EthereumFacade.CHARSET);
+			if (!compiled) {
+				contractSource = SoliditySource.from(this.getClass().getResourceAsStream(contractSourceFile));
+			} else {
+				String rawJson = IOUtils.toString(this.getClass().getResourceAsStream(contractSourceFile), EthereumFacade.CHARSET);
 				compiledContracts = CompilationResult.parse(rawJson);
 			}
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException(e);
-		} catch (FileNotFoundException e) {
-			throw new IllegalArgumentException(e);
 		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
 		}
