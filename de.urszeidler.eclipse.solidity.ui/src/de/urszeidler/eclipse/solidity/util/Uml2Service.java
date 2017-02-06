@@ -324,7 +324,7 @@ public class Uml2Service {
 	}
 
 	/**
-	 * Returns the directory for the abi generation.
+	 * Returns the directory for the java test generation.
 	 * 
 	 * @param an
 	 *            element
@@ -333,6 +333,18 @@ public class Uml2Service {
 	public static String getJavaTestDirectory(NamedElement clazz) {
 		IPreferenceStore store = getStore(clazz);
 		return store.getString(PreferenceConstants.GENERATION_JAVA_TEST_TARGET);
+	}
+
+	/**
+	 * Returns the directory for the java source generation.
+	 * 
+	 * @param an
+	 *            element
+	 * @return
+	 */
+	public static String getJavaSourceDirectory(NamedElement clazz) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(PreferenceConstants.GENERATION_JAVA_INTERFACE_TARGET);
 	}
 
 	/**
@@ -346,7 +358,7 @@ public class Uml2Service {
 		IPreferenceStore store = getStore(clazz);
 		String co = store.getString(PreferenceConstants.GENERATION_TARGET);
 		Path path = new Path(co);
-		String javaTestDirectory = getJavaTestDirectory(clazz);
+		String javaTestDirectory = getJavaSourceDirectory(clazz);
 		Path path2 = new Path(javaTestDirectory);
 		IPath makeRelativeTo = path.makeRelativeTo(path2);
 		//TODO: this is a hack only working in the default test setup

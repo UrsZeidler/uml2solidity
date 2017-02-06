@@ -242,16 +242,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 */
 	public [p.name.toUpperFirst()/]Deployer(EthereumFacade ethereum, String contractSourceFile, boolean compiled) {
 		this.ethereum = ethereum;
-		try {
-			if (!compiled) {
-				contractSource = SoliditySource.from(this.getClass().getResourceAsStream(contractSourceFile));
-			} else {
-				String rawJson = IOUtils.toString(this.getClass().getResourceAsStream(contractSourceFile), EthereumFacade.CHARSET);
-				compiledContracts = CompilationResult.parse(rawJson);
-			}
-		} catch (IOException e) {
-			throw new IllegalArgumentException(e);
-		}
+		setContractSource(contractSourceFile, compiled);
 	}
 
 	/**
@@ -273,6 +264,26 @@ public class [p.name.toUpperFirst()/]Deployer {
 			} catch (IOException e) {
 				throw new IllegalArgumentException(e);
 			}
+		}
+	}
+
+	/**
+	 * Change the contract source.
+	 * 
+	 * @param contractSourceFile
+	 * @param compiled
+	 */
+	public void setContractSource(String contractSourceFile, boolean compiled) {
+		try {
+			if (!compiled) {
+				contractSource = SoliditySource.from(this.getClass().getResourceAsStream(contractSourceFile));
+			} else {
+				String rawJson = IOUtils.toString(this.getClass().getResourceAsStream(contractSourceFile),
+						EthereumFacade.CHARSET);
+				compiledContracts = CompilationResult.parse(rawJson);
+			}
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
 		}
 	}
 
