@@ -121,17 +121,17 @@ public class EthereumInstance{
 		String property = System.getProperty("EthereumFacadeProvider");
 		if(property!=null){
 			if (property.equalsIgnoreCase("main")) {
-				Builder mainNet = EthereumJConfigs.mainNet();				
+				BlockchainConfig.Builder mainNet = EthereumJConfigs.mainNet();				
 				//[protected ('for setup the main chain')]
 				//[/protected]
 				ethereum = EthereumFacadeProvider.forNetwork(mainNet).create();
 			}else if (property.equalsIgnoreCase("test")) {
-				Builder testnet = EthereumJConfigs.etherCampTestnet();
+				BlockchainConfig.Builder testnet = EthereumJConfigs.etherCampTestnet();
 				//[protected ('for setup the test chain')]
 				//[/protected]
 				ethereum = EthereumFacadeProvider.forNetwork(testnet).create();
 			}else if (property.equalsIgnoreCase("ropsten")) {
-				Builder ropsten = EthereumJConfigs.ropsten();
+				BlockchainConfig.Builder ropsten = EthereumJConfigs.ropsten();
 				//[protected ('for setup the ropsten chain')]
 				//[/protected]
 				ethereum = EthereumFacadeProvider.forNetwork(ropsten).create();
@@ -157,7 +157,7 @@ public class EthereumInstance{
 				//[/protected]
 				ethereum = new PrivateEthereumFacadeProvider().create(config);
 			}else if (property.equalsIgnoreCase("custom")){
-				Builder config = BlockchainConfig.builder();
+				BlockchainConfig.Builder config = BlockchainConfig.builder();
 				//[protected ('for setup the custom chain')]
 				//[/protected]
 				ethereum = EthereumFacadeProvider.forNetwork(config).create();
