@@ -38,21 +38,21 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.adridadou.ethereum.EthereumFacade;
-import org.adridadou.ethereum.blockchain.BlockchainConfig;
-import org.adridadou.ethereum.blockchain.BlockchainConfig.Builder;
-import org.adridadou.ethereum.blockchain.TestConfig;
-import org.adridadou.ethereum.provider.EthereumFacadeProvider;
-import org.adridadou.ethereum.provider.EthereumFacadeRpcProvider;
-import org.adridadou.ethereum.provider.EthereumJConfigs;
-import org.adridadou.ethereum.provider.InfuraMainEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.InfuraRopstenEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.PrivateEthereumFacadeProvider;
-import org.adridadou.ethereum.provider.PrivateNetworkConfig;
+import org.adridadou.ethereum.ethj.BlockchainConfig;
+import org.adridadou.ethereum.ethj.TestConfig;
+import org.adridadou.ethereum.ethj.provider.EthereumFacadeProvider;
+import org.adridadou.ethereum.ethj.provider.EthereumJConfigs;
+import org.adridadou.ethereum.ethj.provider.PrivateEthereumFacadeProvider;
+import org.adridadou.ethereum.ethj.provider.PrivateNetworkConfig;
+import org.adridadou.ethereum.rpc.provider.EthereumFacadeRpcProvider;
+import org.adridadou.ethereum.rpc.provider.InfuraMainEthereumFacadeProvider;
+import org.adridadou.ethereum.rpc.provider.InfuraRopstenEthereumFacadeProvider;
 import org.adridadou.ethereum.values.EthAccount;
 import org.adridadou.ethereum.values.EthAddress;
 import org.adridadou.ethereum.values.EthValue;
 import org.adridadou.ethereum.values.config.ChainId;
 import org.adridadou.ethereum.values.config.InfuraKey;
+import org.ethereum.crypto.ECKey;
 import org.ethereum.crypto.ECKey;
 
 //[/protected]
