@@ -37,6 +37,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.adridadou.ethereum.EthereumFacade;
 import org.adridadou.ethereum.values.CompiledContract;
