@@ -190,7 +190,7 @@
   <Contracts:StandardizedContractAPI xmi:id="_yiNbsKyuEeWQpqJCIBcpzQ" base_Interface="_rPn-4KyuEeWQpqJCIBcpzQ"/>
   <Contracts:Function xmi:id="_6JEfYKyuEeWQpqJCIBcpzQ" base_Operation="_4VRmgKyuEeWQpqJCIBcpzQ" returnType="constant"/>
   <Contracts:Function xmi:id="_JElnAKywEeWQpqJCIBcpzQ" base_Operation="_5FIgsKyvEeWQpqJCIBcpzQ" returnType="constant"/>
-  <Contracts:Function xmi:id="_MmckMKywEeWQpqJCIBcpzQ" base_Operation="_Gn5iIKywEeWQpqJCIBcpzQ" returnType="constant"/>
+  <Contracts:Function xmi:id="_MmckMKywEeWQpqJCIBcpzQ" base_Operation="_Gn5iIKywEeWQpqJCIBcpzQ"/>
   <Contracts:Function xmi:id="_JYe98KyxEeWQpqJCIBcpzQ" base_Operation="_t1SusKywEeWQpqJCIBcpzQ"/>
   <Contracts:StandardizedContractAPI xmi:id="_rOpnIKyxEeWQpqJCIBcpzQ" base_Interface="_pF_4kKyxEeWQpqJCIBcpzQ"/>
   <Contracts:Function xmi:id="_5r1CYKyxEeWQpqJCIBcpzQ" base_Operation="_39FBkKyxEeWQpqJCIBcpzQ" returnType="constant"/>
