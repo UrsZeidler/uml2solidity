@@ -183,6 +183,92 @@ public class EthereumInstance{
  * @param aModel a package
  */]
 [template private generatePackage(p : Package)?(isGeneratePackage(p))]
+[p.generateDeployer()/]
+[comment model class /]
+[for (	aClass : Class | p.allContracts())]
+[aClass.generateInterface(p)/]
+[for (op : Operation | aClass.allAbstractFunctions()->union(aClass.allFunctions()->asSequence())->select(isPublic()))]
+[if (op.allReturnParameters()->size()>1)]
+[file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+ op.returnObjectName()+'.java', false, 'UTF-8')]
+[printReturnParameterValueObject(p, aClass, op)/]
+[/file]
+[/if]
+[/for]
+[for (op : Operation |  aClass.ownedOperation->select(isEvent()) )]
+[file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+op.eventName()+'.java', false, 'UTF-8')]
+[printEventParameterValueObject(p, aClass, op)/]
+[/file]
+[/for]
+[for (c : Classifier |  aClass.nestedClassifier->select(isStruct()) )]
+[file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+c.toStructTypeName()+'.java', false, 'UTF-8')]
+[printStructValueObject(p,aClass,c)/]
+[/file]
+[/for]
+
+[/for]
+[/template]
+
+[template public generateInterface(aClass : Class,p : Package)]
+[file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+ aClass.name+'.java', false, 'UTF-8')]
+package [p.getInterfacePackagePrefix()/].[p.name/];
+
+import java.util.concurrent.CompletableFuture;
+import org.adridadou.ethereum.values.EthAddress;
+[for (pi : PackageImport | p.allImports() )]
+import [pi.target.oclAsType(Package).toPackage()/].*;
+[/for]
+
+//[protected ('customized_imports')]
+
+//[/protected]
+
+
+[printCommentDoc(aClass.ownedComment)/]
+public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for now no struct types[/comment]
+[for (ne : NamedElement | aClass.ownedMember->filter(Enumeration)->sortedBy(indexInContainer()) )]
+[if (oclIsTypeOf(Enumeration))]
+    [printEnum(ne.oclAsType(Enumeration))/]
+[/if][/for]
+[for (prop : Property | aClass.allCProperties()->select(isPublic()))]
+	[printCommentDoc(prop.ownedComment)/]
+	[prop.toJavaType()/] [prop.name/]();
+[/for]
+[for (p : Property | aClass.allMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
+[comment][if (not value.isStruct())][/comment]
+	[printCommentDoc(p.ownedComment)/]
+	[value.toJavaType()/] [p.name/]([p.toJavaType()/] key);
+[comment][/if][/comment]
+[/let][/for]
+[for (p : Property | aClass.allKeyMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
+[comment][if (not p.type.isStruct())][/comment]
+	[printCommentDoc(p.ownedComment)/]
+	[p.type.toJavaType()/] [p.name/]([value.toJavaType()/] key);	
+[comment][/if][/comment]
+[/let][/for]
+[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
+
+	[op.functionSignature()/]
+[/for][for (op : Operation | aClass.allFunctions()->select(isPublic()))]
+
+	[op.functionSignature()/][/for]
+
+[for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
+
+[printDelegateOperations(prop)/]
+[/for]
+[for (prop : Property | aClass.allGetterProperties())]
+[printGetterSetter(prop)/][/for]
+
+	//[protected ('additional_methods')]
+
+	//[/protected]
+}
+[/file]
+[/template]
+
+[template public generateDeployer(p : Package)]
 [file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/deployer/'+p.name.toUpperFirst()+'Deployer.java', false, 'UTF-8')]
 package [p.getInterfacePackagePrefix()/].deployer;
 
@@ -405,79 +491,6 @@ public class [p.name.toUpperFirst()/]Deployer {
 
 }
 [/file]
-[comment model class /]
-[for (	aClass : Class | p.allContracts())]
-[file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+ aClass.name+'.java', false, 'UTF-8')]
-package [p.getInterfacePackagePrefix()/].[p.name/];
-
-import java.util.concurrent.CompletableFuture;
-import org.adridadou.ethereum.values.EthAddress;
-[for (pi : PackageImport | p.allImports() )]
-import [pi.target.oclAsType(Package).toPackage()/].*;
-[/for]
-
-//[protected ('customized_imports')]
-
-//[/protected]
-
-
-[printCommentDoc(aClass.ownedComment)/]
-public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for now no struct types[/comment]
-[for (ne : NamedElement | aClass.ownedMember->filter(Enumeration)->sortedBy(indexInContainer()) )]
-[if (oclIsTypeOf(Enumeration))]
-    [printEnum(ne.oclAsType(Enumeration))/]
-[/if][/for]
-[for (prop : Property | aClass.allCProperties()->select(isPublic())->select( not type.isStruct() )  )]
-	[printCommentDoc(prop.ownedComment)/]
-	[prop.toJavaType()/] [prop.name/]();
-[/for]
-[for (p : Property | aClass.allMappingSubAttributes())]
-[let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
-[if (not value.isStruct())]
-	[printCommentDoc(p.ownedComment)/]
-	[value.solidity2javaType()/] [p.name/]([p.toJavaType()/] key);
-[/if]
-[/let][/for]
-[for (p : Property | aClass.allKeyMappingSubAttributes())]
-[let value : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
-[if (not p.type.isStruct())]
-	[printCommentDoc(p.ownedComment)/]
-	[p.type.solidity2javaType()/] [p.name/]([value.toJavaType()/] key);	
-[/if]
-[/let][/for]
-[for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
-
-	[op.functionSignature()/]
-[/for][for (op : Operation | aClass.allFunctions()->select(isPublic()))]
-
-	[op.functionSignature()/][/for]
-
-[for (prop : Property | aClass.attribute->select(hasStereotype('Delegate')))]
-
-[printDelegateOperations(prop)/]
-[/for]
-[for (prop : Property | aClass.allGetterProperties())]
-[printGetterSetter(prop)/][/for]
-
-	//[protected ('additional_methods')]
-
-	//[/protected]
-}
-[/file]
-[for (op : Operation | aClass.allAbstractFunctions()->union(aClass.allFunctions()->asSequence())->select(isPublic()))]
-[if (op.allReturnParameters()->size()>1)]
-[file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+ op.returnObjectName()+'.java', false, 'UTF-8')]
-[printReturnParameterValueObject(p, aClass, op)/]
-[/file]
-[/if]
-[/for]
-[for (op : Operation |  aClass.ownedOperation->select(isEvent()) )]
-[file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/'+p.name+'/'+op.eventName()+'.java', false, 'UTF-8')]
-[printEventParameterValueObject(p, aClass, op)/]
-[/file]
-[/for]
-
-[/for]
 [/template]
 
 [template public printGetterSetter (aProperty : Property)?(aProperty.hasStereotype('GetterSetter')) ]
@@ -502,31 +515,27 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 enum [en.name/] { [for (l : EnumerationLiteral | en.ownedLiteral)separator (',')][l.name/][/for] }
 [/template]
 
-
-[query public eventName(op : Operation) : String = 'Event'+op.name.toUpperFirst()+op.operationParameters() /]
-
-
-[template public printEventParameterValueObject(p : Package, aClass : Class,  op : Operation)]
+[template public printStructValueObject(p : Package, aClass : Class,  c : Classifier)]
 package [p.getInterfacePackagePrefix()/].[p.name/];
 
 import [p.getInterfacePackagePrefix()/].[p.name/].[aClass.name/].*;
 
 /**
- * The Event Objects for the event [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]).
+ * The dataholder for the struct [c.toStructTypeName()/].
  *
  */
-public class [op.eventName()/]{
-[for (p : Parameter | op.allInParameters())]
+public class [c.toStructTypeName()/]{
+[for (p : Property | c.attribute)]
 	private [p.toJavaType()/] [p.toFieldName()/];
 [/for]
 
-	public [op.eventName()/]([for (p : Parameter | op.allInParameters())separator (',')][p.toJavaType()/] [p.toFieldName()/][/for]) {
+	public [c.toStructTypeName()/]([for (p : Property | c.attribute)separator (',')][p.toJavaType()/] [p.toFieldName()/][/for]) {
 		super();
-[for (p : Parameter | op.allInParameters())]
+[for (p : Property | c.attribute)]
 		this.[p.toFieldName()/] = [p.toFieldName()/];
 [/for]
 	}
-[for (p : Parameter | op.allInParameters())]
+[for (p : Property | c.attribute)]
 
 	/**
 	 * Getter for [p.toFieldName()/].
@@ -541,7 +550,7 @@ public class [op.eventName()/]{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-[for (p : Parameter | op.allInParameters())]
+[for (p : Property | c.attribute)]
 		result = prime * result + (([p.toFieldName()/] == null) ? 0 : [p.toFieldName()/].hashCode());
 [/for]
 		return result;
@@ -555,8 +564,8 @@ public class [op.eventName()/]{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		[op.eventName()/] other = ([op.eventName()/]) obj;
-[for (p : Parameter | op.allInParameters())]
+		[c.toStructTypeName()/] other = ([c.toStructTypeName()/]) obj;
+[for (p : Property | c.attribute)]
 		if ([p.toFieldName()/] == null) {
 			if (other.[p.toFieldName()/] != null)
 				return false;
@@ -568,9 +577,23 @@ public class [op.eventName()/]{
 
 	@Override
 	public String toString() {
-		return "[op.eventName()/] [ '[' /][for (p : Parameter | op.allInParameters()) separator (',')][p.toFieldName()/]=" + [p.toFieldName()/] + "[/for][ ']' /]";
+		return "[c.toStructTypeName()/] [ '[' /][for (p : Property | c.attribute) separator (',')][p.toFieldName()/]=" + [p.toFieldName()/] + "[/for][ ']' /]";
 	}
 }
+[/template]
+
+[query public eventName(op : Operation) : String = 'Event'+op.name.toUpperFirst()+op.operationParameters() /]
+
+[template public printEventParameterValueObject(p : Package, aClass : Class,  op : Operation)]
+package [p.getInterfacePackagePrefix()/].[p.name/];
+
+import [p.getInterfacePackagePrefix()/].[p.name/].[aClass.name/].*;
+
+/**
+ * The Event Objects for the event [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]).
+ *
+ */
+[printParameterValueObject(op.eventName(), op.allInParameters())/]
 [/template]
 
 [template public printReturnParameterValueObject(p : Package, aClass : Class,  op : Operation)]
@@ -583,18 +606,22 @@ import [p.getInterfacePackagePrefix()/].[p.name/].[aClass.name/].*;
  *
  * see {@link [aClass.name/]#[op.name/]([printParametersForJavaDoc(op,ParameterDirectionKind::_in)/])}
  */
-public class [op.returnObjectName()/]{
-[for (p : Parameter | op.allReturnParameters())]
+[printParameterValueObject(op.returnObjectName(), op.allReturnParameters())/]
+[/template]
+
+[template public printParameterValueObject(name : String,plist : OrderedSet(Parameter) )]
+public class [name/]{
+[for (p : Parameter | plist)]
 	private [p.toJavaType()/] [p.toFieldName()/];
 [/for]
 
-	public [op.returnObjectName()/]([for (p : Parameter | op.allReturnParameters())separator (',')][p.toJavaType()/] [p.toFieldName()/][/for]) {
+	public [name/]([for (p : Parameter | plist)separator (',')][p.toJavaType()/] [p.toFieldName()/][/for]) {
 		super();
-[for (p : Parameter | op.allReturnParameters())]
+[for (p : Parameter | plist)]
 		this.[p.toFieldName()/] = [p.toFieldName()/];
 [/for]
 	}
-[for (p : Parameter | op.allReturnParameters())]
+[for (p : Parameter | plist)]
 
 	/**
 	 * Getter for [p.toFieldName()/].
@@ -609,7 +636,7 @@ public class [op.returnObjectName()/]{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-[for (p : Parameter | op.allReturnParameters())]
+[for (p : Parameter | plist)]
 		result = prime * result + (([p.toFieldName()/] == null) ? 0 : [p.toFieldName()/].hashCode());
 [/for]
 		return result;
@@ -623,8 +650,8 @@ public class [op.returnObjectName()/]{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		[op.returnObjectName()/] other = ([op.returnObjectName()/]) obj;
-[for (p : Parameter | op.allReturnParameters())]
+		[name/] other = ([name/]) obj;
+[for (p : Parameter | plist)]
 		if ([p.toFieldName()/] == null) {
 			if (other.[p.toFieldName()/] != null)
 				return false;
@@ -636,7 +663,7 @@ public class [op.returnObjectName()/]{
 
 	@Override
 	public String toString() {
-		return "[op.returnObjectName()/] [ '[' /][for (p : Parameter | op.allReturnParameters()) separator (',')][p.toFieldName()/]=" + [p.toFieldName()/] + "[/for][ ']' /]";
+		return "[name/] [ '[' /][for (p : Parameter | plist) separator (',')][p.toFieldName()/]=" + [p.toFieldName()/] + "[/for][ ']' /]";
 	}
 }
 [/template]
@@ -645,6 +672,12 @@ public class [op.returnObjectName()/]{
 Return[op.name.toUpperFirst()/][op.operationReturnParameters()/][/template]
 
 [template public toFieldName(p : Parameter)]
+[if (p.name.oclIsUndefined())]
+arg[p.indexInContainer()/][else]
+[p.name/][/if]
+[/template]
+
+[template public toFieldName(p : Property)]
 [if (p.name.oclIsUndefined())]
 arg[p.indexInContainer()/][else]
 [p.name/][/if]
@@ -687,17 +720,19 @@ arg[p.indexInContainer()/][else]
 
 [template public functionSignature(op : Operation)]
 [printFunctionComments(op)/]
-[if (op.hasReturnValue())][op.javaReturn()/] [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[else]
-[if (op.isReturnConstant() or not op.generateJavaNoneBlocking())]void [else]java.util.concurrent.CompletableFuture<Void> [/if][op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[/if][/template]
+[comment][if (op.hasReturnValue())][op.javaReturn()/] [op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[else][/comment]
+[if (not op.hasReturnValue() and (op.isReturnConstant() or not op.generateJavaNoneBlocking()))]void [else][op.javaReturn()/] [/if][op.name/]([printParameters(op,ParameterDirectionKind::_in)/]);[/template]
 
 [template public javaReturn(op : Operation)]
 [if (op.isReturnConstant())]
-[op.returnType()/][else]
+[op.returnType()/][elseif(op.isPayable())]
+org.adridadou.ethereum.values.Payable<[op.returnType()/]>[else]
 java.util.concurrent.CompletableFuture<[op.returnType()/]>[/if]
 [/template]
 
 [template public returnType(op : Operation)]
-[if (op.allReturnParameters()->size()=1)]
+[if (op.allReturnParameters()->size()=0)]
+Void[elseif (op.allReturnParameters()->size()=1)]
 [op.allReturnParameters()->first().toJavaType()/][else]
 [op.returnObjectName()/][/if][/template]
 
@@ -710,8 +745,14 @@ java.util.concurrent.CompletableFuture<[op.returnType()/]>[/if]
  [p.toJavaType()/][/for][/template]
 
 [template public toJavaType (t : TypedElement) ]
-[if (t.type.oclIsTypeOf(Enumeration))][t.type.name/][else][t.type.solidity2javaType()/][/if][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if]
+[if (t.type.oclIsTypeOf(Enumeration))]
+[t.type.name/][elseif(t.type.isStruct())]
+[t.type.toStructTypeName()/][else]
+[t.type.solidity2javaType()/][/if][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if]
 [/template]
+
+[query public toStructTypeName(t : Type) : String = t.owner.oclAsType(Class).name.toUpperFirst()+t.name.toUpperFirst() /]
+
 
 [**
  * Print the multiplicity as array.
@@ -720,10 +761,19 @@ java.util.concurrent.CompletableFuture<[op.returnType()/]>[/if]
 [if (t.getUpper()<>1)][ '[' /][ ']' /][/if][/template]
 
 
-[template public toJavaType (c : Classifier) ]
-[c.solidity2javaType()/][if (c.oclIsKindOf(MultiplicityElement))][printTypeM(c.oclAsType(MultiplicityElement))/][/if]
+[template public toJavaType (t : Type) ]
+[if (t.oclIsTypeOf(Enumeration))]
+[t.name/][elseif(t.isStruct())]
+[t.toStructTypeName()/][else]
+[t.solidity2javaType()/][/if][if (t.oclIsKindOf(MultiplicityElement))][printTypeM(t.oclAsType(MultiplicityElement))/][/if]
 [/template]
 
-[template public toJavaType (aType : Type) ]
+
+[comment][template public toJavaType (c : Classifier) ]
+[c.solidity2javaType()/][if (c.oclIsKindOf(MultiplicityElement))][printTypeM(c.oclAsType(MultiplicityElement))/][/if]
+[/template][/comment]
+
+[comment][template public toJavaType (aType : Type) ]
 [aType.solidity2javaType()/][if (aType.oclIsKindOf(MultiplicityElement))][printTypeM(aType.oclAsType(MultiplicityElement))/][/if]
-[/template]
+[/template][/comment]
+
