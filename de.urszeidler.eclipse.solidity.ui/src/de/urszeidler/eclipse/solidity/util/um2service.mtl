@@ -180,6 +180,13 @@ or not pa.allInterfaces()->isEmpty()
 [query public isStruct(s : Type) : Boolean = s.hasStereotype('Struct') /]
 [query public isFunction(s : Operation) : Boolean = s.hasStereotype('Function') /]
 [query public isEvent(s : Operation) : Boolean = s.hasStereotype('Event') /]
+[query public isPayable(op : Operation) : Boolean = not op.getStereotypeListValue('Function','modifiers')->select(isPayable())->isEmpty() /]
+[query public isPayable(d : OclAny) : Boolean =  if d.eGet('modifier').oclIsUndefined() then false 
+else 
+ d.eGet('modifier').eGet('qualifiedName')='types::lang::payable'
+endif
+ /]
+
 [query public isIndexed(s : Parameter) : Boolean = s.hasStereotype('Indexed') /]
 
 

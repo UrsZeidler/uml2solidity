@@ -387,7 +387,7 @@ function [aProperty.name/]_[aOperation.name/]([printParameters(aOperation)/])[aP
 [/template]
 
 [template public printModifierList (list : Sequence(OclAny))?(not list->isEmpty()) ]
-[for (d : OclAny |  list)] [d.eGet('modifier').eGet('name')/][if (not d.eGet('parameter').oclIsUndefined())]([d.eGet('parameter')/])[/if][/for]
+[for (d : OclAny |  list)] [d.eGet('modifier').eGet('name')/][if (not d.eGet('parameter').oclIsUndefined() and not d.isPayable() )]([d.eGet('parameter')/])[/if][/for]
 [/template]
 
 [template public printEventParameters (aOperation : Operation) ]
