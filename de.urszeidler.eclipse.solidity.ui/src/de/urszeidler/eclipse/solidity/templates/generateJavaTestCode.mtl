@@ -123,6 +123,24 @@ public abstract class AbstractContractTest {
 		ContractMetadata contractMetadata = result.contracts.get(getContractName());
 		return CompiledContract.from(contractSource, getContractName(), contractMetadata);
 	}
+
+	/**
+	 * Returns the compiled contract from the 'contractSource'. The name is
+	 * defined in the concrete test case.
+	 * 
+	 * @return the compiled contract
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	public CompiledContract getCompiledContract() throws InterruptedException, ExecutionException {
+		Map<String, CompiledContract> map = ethereum.compile(contractSource).get();
+		CompiledContract contract = map.get(getContractName());
+		if (contract == null)
+			throw new IllegalArgumentException(
+					"The contract '" + getContractName() + "' is not present is the map of contracts:" + map);
+		return contract;
+	}
+
 	// [protected ('AbstractContractTest.customMethods')]
 	//TODO: add custom attributes
 	// [/protected]
@@ -230,7 +248,7 @@ public class [aClass.name/]Test[testExtends(aClass)/]{
 	 */
 	protected void createFixture() throws Exception {
 		//[protected ('createFixture')]
-		CompiledContract compiledContract = ethereum.compile(contractSource, getContractName()).get();
+		CompiledContract compiledContract = getCompiledContract();
 [if (aClass.allConstructors()->isEmpty() or aClass.allConstructors()->first().allInParameters()->isEmpty())]
 		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);
 [else]
