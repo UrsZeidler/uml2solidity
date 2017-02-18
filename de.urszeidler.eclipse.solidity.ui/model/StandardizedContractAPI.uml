@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Contracts="http:///schemas/Contracts/_Ig5nQIIsEeafK64Rq2tVkA/34" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/Contracts/_Ig5nQIIsEeafK64Rq2tVkA/34 pathmap://UML_PROFILE/solidity_profiles.uml#_Ig94sIIsEeafK64Rq2tVkA">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Contracts="http:///schemas/Contracts/_rT2FgNC_Eea9y7gMoC2t4Q/36" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/Contracts/_rT2FgNC_Eea9y7gMoC2t4Q/36 pathmap://UML_PROFILE/solidity_profiles.uml#_rT6-ANC_Eea9y7gMoC2t4Q">
   <uml:Model xmi:id="_DT8wAKyuEeWQpqJCIBcpzQ" name="Standardized_Contract_API">
     <packagedElement xmi:type="uml:Interface" xmi:id="_rPn-4KyuEeWQpqJCIBcpzQ" name="TransferableFungible">
       <ownedComment xmi:type="uml:Comment" xmi:id="_dsrFUKywEeWQpqJCIBcpzQ">
@@ -34,7 +34,7 @@
         <ownedParameter xmi:type="uml:Parameter" xmi:id="_UmOeMKywEeWQpqJCIBcpzQ" name="_value">
           <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_IzVUYKyvEeWQpqJCIBcpzQ"/>
         </ownedParameter>
-        <ownedParameter xmi:type="uml:Parameter" xmi:id="_Xf9EYKywEeWQpqJCIBcpzQ" name="success">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="_Xf9EYKywEeWQpqJCIBcpzQ" name="success" direction="return">
           <type xmi:type="uml:DataType" href="pathmap://UML_LIBRARIES/solidity_types.uml#_LedxoKKuEeWvY9GWZZMftw"/>
         </ownedParameter>
       </ownedOperation>
@@ -174,15 +174,15 @@
       </ownedOperation>
     </packagedElement>
     <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_DlrZMKyuEeWQpqJCIBcpzQ">
-      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_mdUasI5AEeaiYsDomHVZMQ" source="PapyrusVersion">
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_mdUasY5AEeaiYsDomHVZMQ" key="Version" value="0.0.35"/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_mdUaso5AEeaiYsDomHVZMQ" key="Comment" value=""/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_mdUas45AEeaiYsDomHVZMQ" key="Copyright" value=""/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_mdUatI5AEeaiYsDomHVZMQ" key="Date" value="2016-09-24"/>
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_mdUatY5AEeaiYsDomHVZMQ" key="Author" value="Urs Zeidler"/>
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_H8cWAPYBEeado82z5iykmg" source="PapyrusVersion">
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_H8cWAfYBEeado82z5iykmg" key="Version" value="0.0.37"/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_H8cWAvYBEeado82z5iykmg" key="Comment" value=""/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_H8cWA_YBEeado82z5iykmg" key="Copyright" value=""/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_H8cWBPYBEeado82z5iykmg" key="Date" value="2017-01-02"/>
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_H8cWBfYBEeado82z5iykmg" key="Author" value="Urs Zeidler"/>
       </eAnnotations>
       <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_DlucgKyuEeWQpqJCIBcpzQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILE/solidity_profiles.uml#_Ig94sIIsEeafK64Rq2tVkA"/>
+        <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILE/solidity_profiles.uml#_rT6-ANC_Eea9y7gMoC2t4Q"/>
       </eAnnotations>
       <appliedProfile xmi:type="uml:Profile" href="pathmap://UML_PROFILE/solidity_profiles.uml#_uCE5EKHREeWjOZ0I8ilEXA"/>
     </profileApplication>
