@@ -91,14 +91,14 @@ public abstract class AbstractContractTest {
 		// [protected ('AbstractContractTest.initTest')]
 
 		String property = System.getProperty("EthereumFacadeProvider");
-		if (property != null)
-			if (property.equalsIgnoreCase("ropsten") || property.equalsIgnoreCase("InfuraRopsten")) {
+		if (EthereumInstance.ALL_TESTNET.contains(property)) {
 
-			} else if (property.equalsIgnoreCase("private")) {
-				sender = new EthAccount(ECKey.fromPrivate(BigInteger.valueOf(100000L)));
-			}
+		} else if (EthereumInstance.EI_PRIVATE.equalsIgnoreCase(property)) {
+			sender = new EthAccount(ECKey.fromPrivate(BigInteger.valueOf(100000L)));
+			senderAddress = sender.getAddress();
+		}
 
-		if (sender == null){// the account for the standalone blockchain
+		if (sender == null) {// the account for the standalone blockchain
 			sender = new EthAccount(
 					ECKey.fromPrivate(Hex.decode("3ec771c31cac8c0dba77a69e503765701d3c2bb62435888d4ffa38fed60c445c")));
 			senderAddress = sender.getAddress();
