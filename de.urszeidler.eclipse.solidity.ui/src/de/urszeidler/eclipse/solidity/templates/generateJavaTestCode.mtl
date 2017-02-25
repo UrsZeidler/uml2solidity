@@ -90,7 +90,7 @@ public abstract class AbstractContractTest {
 	protected static void initTest() throws Exception {
 		// [protected ('AbstractContractTest.initTest')]
 
-		String property = System.getProperty("EthereumFacadeProvider");
+		String property = System.getProperty(EthereumInstance.PROP_ETHEREUM_FACADE_PROVIDER);
 		if (EthereumInstance.ALL_TESTNET.contains(property)) {
 
 		} else if (EthereumInstance.EI_PRIVATE.equalsIgnoreCase(property)) {
@@ -144,7 +144,7 @@ public abstract class AbstractContractTest {
 	}
 
 	// [protected ('AbstractContractTest.customMethods')]
-	//TODO: add custom attributes
+	//TODO: add custom methods
 	// [/protected]
 }
 [/file]

@@ -65,6 +65,10 @@ import com.google.common.collect.Sets;
  * The created instance is controllable by system a system property 'EthereumFacadeProvider'.
  */
 public class EthereumInstance{
+	public static final String PROP_CHAIN_ID = "chain-id";
+	public static final String PROP_RPC_URL = "rpc-url";
+	public static final String PROP_API_KEY = "apiKey";
+	public static final String PROP_ETHEREUM_FACADE_PROVIDER = "EthereumFacadeProvider";
 	//the different access technologies
 	public static String EI_MAIN = "main";
 	public static String EI_TEST = "test";
@@ -132,7 +136,7 @@ public class EthereumInstance{
 	 * @throws Exception 
 	 */
 	private void setup() throws Exception {
-		String property = System.getProperty("EthereumFacadeProvider");
+		String property = System.getProperty(PROP_ETHEREUM_FACADE_PROVIDER);
 		if (EI_MAIN.equalsIgnoreCase(property)) {
 			BlockchainConfig.Builder mainNet = EthereumJConfigs.mainNet();
 			// Start of user code for setup the main chain
@@ -149,15 +153,15 @@ public class EthereumInstance{
 			// End of user code
 			ethereum = EthereumFacadeProvider.forNetwork(ropsten).create();
 		} else if (EI_INFURA_ROPSTEN.equalsIgnoreCase(property)) {
-			String apiKey = System.getProperty("apiKey");
+			String apiKey = System.getProperty(PROP_API_KEY);
 			ethereum = InfuraRopstenEthereumFacadeProvider.create(new InfuraKey(apiKey));
 		} else if (EI_INFURA_ROPSTEN.equalsIgnoreCase(property)) {
-			String apiKey = System.getProperty("apiKey");
+			String apiKey = System.getProperty(PROP_API_KEY);
 			ethereum = new InfuraMainEthereumFacadeProvider().create(new InfuraKey(apiKey));
 		} else if (EI_RPC.equalsIgnoreCase(property)) {
 			EthereumFacadeRpcProvider rcp = new EthereumFacadeRpcProvider();
-			String url = System.getProperty("rpc-url");
-			String chainId = System.getProperty("chain-id");
+			String url = System.getProperty(PROP_RPC_URL);
+			String chainId = System.getProperty(PROP_CHAIN_ID);
 			ethereum = rcp.create(url, new ChainId((byte) Integer.parseInt(chainId)));
 		} else if (EI_PRIVATE.equalsIgnoreCase(property)) {
 			PrivateNetworkConfig config = PrivateNetworkConfig.config();
