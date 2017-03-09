@@ -6,7 +6,7 @@
          <meta.schema plugin="de.urszeidler.eclipse.solidity.laucher.ui" id="de.urszeidler.eclipse.solidity.um2solidity.m2t.laucherTab" name="Uml2solidity laucher tab"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         Adds a launch configuration tab to the uml2solidity launch configuration.
       </documentation>
    </annotation>
 
@@ -48,6 +48,11 @@
    </element>
 
    <element name="uml2solidityLauchTab">
+      <annotation>
+         <documentation>
+            This extension point adds launcher tabs to the uml2solidity laucher configuration. There are used to controll the generation process and provide the parameters for a transformation.
+         </documentation>
+      </annotation>
       <complexType>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -59,7 +64,7 @@
          <attribute name="tab_class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The tab must extends the AbstractUml2SolidityLaunchConfigurationTab the tab must provide at least a boolean field to en/disable the generation and the tab configuration name must corespond to the id of the registered accele_generator.
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn="de.urszeidler.eclipse.solidity.laucher.ui.AbstractUml2SolidityLaunchConfigurationTab:"/>
@@ -74,7 +79,7 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         1.1.0
       </documentation>
    </annotation>
 
@@ -105,5 +110,13 @@
       </documentation>
    </annotation>
 
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         (c) Urs Zeidler
+      </documentation>
+   </annotation>
 
 </schema>

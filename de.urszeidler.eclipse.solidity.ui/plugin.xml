@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-   <extension-point id="de.urszeidler.eclipse.solidity.um2solidity.m2t" name="uml2Solidity model to text" schema="schema/de.urszeidler.eclipse.solidity.um2solidity.m2t.exsd"/>
+   <extension-point id="de.urszeidler.eclipse.solidity.um2solidity.m2t" name="uml2Solidity model to text transformation" schema="schema/de.urszeidler.eclipse.solidity.um2solidity.m2t.exsd"/>
    <extension
          point="org.eclipse.emf.ecore.uri_mapping">
       <mapping
@@ -119,13 +119,13 @@
                generator_target="GENERATE_JS_TEST_TARGET">
          </acceleo_generator>
          <acceleo_generator
-               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateJsTestCode"
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateJsCode"
                generator_id="GENERATE_JS_CONTROLLER"
                generator_name="generate js code"
                generator_target="GENERATE_JS_CONTROLLER_TARGET">
          </acceleo_generator>
          <acceleo_generator
-               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateJsCode"
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract"
                generator_id="GENERATE_WEB3"
                generator_name="generate web3 js"
                generator_target="GENERATE_JS_CONTROLLER_TARGET">

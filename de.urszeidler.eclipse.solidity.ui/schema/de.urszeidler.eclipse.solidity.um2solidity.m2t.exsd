@@ -6,7 +6,7 @@
          <meta.schema plugin="de.urszeidler.eclipse.solidity.ui" id="de.urszeidler.eclipse.solidity.um2solidity.m2t" name="uml2Solidity model to text"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         This extension point allows you to add acceleo transformations to the uml2solidity generation process.
       </documentation>
    </annotation>
 
@@ -59,7 +59,7 @@
          <attribute name="generator_name" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The name of the transformation.
                </documentation>
                <appInfo>
                   <meta.attribute translatable="true"/>
@@ -69,7 +69,7 @@
          <attribute name="generator_description" type="string">
             <annotation>
                <documentation>
-                  
+                  A small description.
                </documentation>
                <appInfo>
                   <meta.attribute translatable="true"/>
@@ -86,7 +86,7 @@
          <attribute name="generator_class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The class of the acceleo generator which provides the model to text transformation.
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.acceleo.engine.service.AbstractAcceleoGenerator:"/>
@@ -96,7 +96,7 @@
          <attribute name="estimated_work" type="string">
             <annotation>
                <documentation>
-                  
+                  An optional integer to indicate the work which is needed for the generator, it is used for the progress monitor.
                </documentation>
             </annotation>
          </attribute>
@@ -108,7 +108,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         1.1.0
       </documentation>
    </annotation>
 
@@ -139,5 +139,13 @@
       </documentation>
    </annotation>
 
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         (c) 2017 Urs Zeidler
+      </documentation>
+   </annotation>
 
 </schema>
