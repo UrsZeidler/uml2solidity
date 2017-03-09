@@ -12,6 +12,7 @@ package de.urszeidler.eclipse.solidity.ui.common;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +22,11 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.BasicMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -49,6 +53,8 @@ import de.urszeidler.eclipse.solidity.util.Uml2Service;
  */
 public class GenerateAll {
 
+	private static final String UM2SOLIDITY_EXTENSION_POINT_ID = "de.urszeidler.eclipse.solidity.um2solidity.m2t";
+	
 	/**
 	 * The model URI.
 	 */
@@ -65,6 +71,25 @@ public class GenerateAll {
 	List<? extends Object> arguments;
 
 	private List<String> files;
+	
+	
+	private class GeneratorAction{
+
+		String id;
+		String generatorName;
+		IFolder targetFolder;
+		AbstractAcceleoGenerator generator;
+		int work;
+		
+		public GeneratorAction(String id, String generatorName, IFolder targetFolder, AbstractAcceleoGenerator generator, int work) {
+			super();
+			this.id = id;
+			this.generatorName = generatorName;
+			this.targetFolder = targetFolder;
+			this.generator = generator;
+			this.work = work;
+		}
+	}
 
 	/**
 	 * Constructor.
@@ -85,6 +110,85 @@ public class GenerateAll {
 		this.arguments = arguments;
 	}
 
+	public void doGenerateByExtension(IProgressMonitor monitor) {
+		IPreferenceStore store = Uml2Service.getStore(null);
+
+		List<GeneratorAction> list = getGeneratorList(monitor, store);
+		int completeWork = 0;
+		for (GeneratorAction generatorAction : list) {
+			completeWork += generatorAction.work;
+		}
+		int currentWork = 0;  
+//		SubMonitor subMonitor = SubMonitor.convert(monitor, "start generation", completeWork*1000);
+		monitor.beginTask("start generation", completeWork);
+		for (GeneratorAction generatorAction : list) {
+			File file = generatorAction.targetFolder.getLocation().toFile();
+			monitor.subTask("Initalize :"+generatorAction.generatorName);
+			try {
+				generatorAction.generator.initialize(modelURI, file, arguments);
+			} catch (IOException e) {
+				Activator.logError("Error while initalize generator:" + generatorAction.id, e);
+			}
+			monitor.worked(1);
+			
+			String id = generatorAction.generator.getClass().getCanonicalName();
+			
+			String generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
+					"de.urszeidler.eclipse.solidity.ui", id, modelURI.toString(),
+					generatorAction.targetFolder.getFullPath().toString(), new ArrayList<String>());
+			generatorAction.generator.setGenerationID(generationID);
+			monitor.subTask("Generate :"+generatorAction.generatorName);
+			try {
+				generatorAction.generator.doGenerate(BasicMonitor.toMonitor(monitor));
+			} catch (IOException e) {
+				Activator.logError("Error while do generation:" + generatorAction.id);
+			}
+//			currentWork+=generatorAction.work;
+			if(monitor.isCanceled())
+				break;
+			
+			monitor.worked(generatorAction.work);
+		}
+	}
+
+	/**
+	 * Creates the list of enabled generators.
+	 * 
+	 * @param monitor
+	 * @param store
+	 * @return
+	 */
+	private List<GeneratorAction> getGeneratorList(IProgressMonitor monitor, IPreferenceStore store) {
+		IConfigurationElement[] configurationElements = Platform.getExtensionRegistry()
+				.getConfigurationElementsFor(UM2SOLIDITY_EXTENSION_POINT_ID);
+
+		List<GeneratorAction> list = new ArrayList<GeneratorAction>();
+		for (IConfigurationElement element : configurationElements) {
+			try {
+				AbstractAcceleoGenerator generator = (AbstractAcceleoGenerator) element
+						.createExecutableExtension("generator_class");
+
+				String id = element.getAttribute("generator_id");
+				String name = element.getAttribute("generator_name");
+				String work_str = element.getAttribute("estimated_work");
+				String targetFolderPref = element.getAttribute("generator_target");
+
+				IFolder folder = getGenerationTargetFolder(store, targetFolderPref, monitor);
+				int work = 10;
+				try {
+					if (work_str != null)
+						work = Integer.parseInt(work_str);
+				} catch (NumberFormatException e) {
+				}
+				if (store.getBoolean(id) && folder != null && folder.getLocation().toFile().exists())
+					list.add(new GeneratorAction(id, name, folder, generator, work));
+			} catch (Exception e) {
+				//Activator.logError("Error while instanciate generator.", e);
+			}
+		}
+		return list;
+	}
+	
 	/**
 	 * Launches the generation.
 	 *
@@ -260,19 +364,10 @@ public class GenerateAll {
 				return null;
 
 		if (store.getBoolean(runGenerator)) {
-			final String docTarget = store.getString(targetDirectory);
-			IFolder folder = null;
-			if (docTarget.startsWith("/")) {
-				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-				Path location = new Path(docTarget);
-				folder = root.getFolder(location);
-				if (!folder.exists())
-					folder.create(true, true, monitor);
-			} else {
-				folder = targetFolder.getProject().getFolder(docTarget);
-				if (!folder.exists())
-					folder.create(true, true, monitor);
-			}
+			IFolder folder = getGenerationTargetFolder(store, targetDirectory, monitor);
+			if(folder == null)
+				return null;
+						
 			if (monitor != null)
 				monitor.worked(1);
 
@@ -291,6 +386,31 @@ public class GenerateAll {
 			return acceleoGenerator;
 		}
 		return null;
+	}
+
+	/**
+	 * @param store
+	 * @param targetDirectory
+	 * @param monitor
+	 * @return
+	 * @throws CoreException
+	 */
+	private IFolder getGenerationTargetFolder(IPreferenceStore store, String targetDirectory, IProgressMonitor monitor)
+			throws CoreException {
+		final String docTarget = store.getString(targetDirectory);
+		IFolder folder = null;
+		if (docTarget.startsWith("/")) {
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			Path location = new Path(docTarget);
+			folder = root.getFolder(location);
+			if (!folder.exists())
+				folder.create(true, true, monitor);
+		} else {
+			folder = targetFolder.getProject().getFolder(docTarget);
+			if (!folder.exists())
+				folder.create(true, true, monitor);
+		}
+		return folder;
 	}
 
 	/**

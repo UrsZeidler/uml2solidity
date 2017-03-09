@@ -14,7 +14,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.IProcess;
@@ -41,6 +43,19 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 		public IProcessImplementation(ILaunch launch) {
 			this.launch = launch;
 		}
+		
+		/**
+		 * Fires the given debug event.
+		 *
+		 * @param event debug event to fire
+		 */
+		protected void fireEvent(DebugEvent event) {
+			DebugPlugin manager= DebugPlugin.getDefault();
+			if (manager != null) {
+				manager.fireDebugEventSet(new DebugEvent[]{event});
+			}
+		}
+
 
 		@Override
 		public void terminate() throws DebugException {
@@ -94,6 +109,7 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 
 		public void setTerminated(boolean terminated) {
 			this.terminated = terminated;
+			fireEvent(new DebugEvent(this, DebugEvent.TERMINATE));
 		}
 	}
 
@@ -139,12 +155,14 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 			process.label = "generation working";
 			IContainer target = file.getProject();//ResourcesPlugin.getWorkspace().getRoot();//model.getProject().getFolder(gtarget);
 			GenerateAll generator = new GenerateAll(modelURI, target, new ArrayList<Object>());
-			generator.doGenerate(monitor);
+			generator.doGenerateByExtension(monitor);
+//			generator.doGenerate(monitor);
+			
 			process.label = "generation finished.";
-		} catch (IOException e) {
-			process.label = e.getMessage();
-			process.exitValue =1;
-			throw new CoreException(Status.CANCEL_STATUS);
+//		} catch (IOException e) {
+//			process.label = e.getMessage();
+//			process.exitValue =1;
+//			throw new CoreException(Status.CANCEL_STATUS);
 		} finally {
 			file.getProject().refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		}
