@@ -3,7 +3,6 @@
  */
 package de.urszeidler.eclipse.solidity.laucher.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IContainer;
@@ -34,6 +33,63 @@ import de.urszeidler.eclipse.solidity.util.Uml2Service;
  */
 public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 
+	private final class PreferenceStoreExtension extends PreferenceStore {
+		private final ILaunchConfiguration launchConfig;
+
+		private PreferenceStoreExtension(ILaunchConfiguration con) {
+			this.launchConfig = con;
+		}
+
+		@Override
+		public String getString(String name) {
+			try {
+				String attribute = launchConfig.getAttribute(name, "");
+				return attribute;
+			} catch (CoreException e) {
+			}
+			return "";
+		}
+
+		@Override
+		public boolean getBoolean(String name) {
+			try {
+				boolean attribute = launchConfig.getAttribute(name, false);
+				return attribute;
+			} catch (CoreException e) {
+			}
+			return false;
+		}
+		
+		@Override
+		public int getInt(String name) {
+			try {
+				return launchConfig.getAttribute(name, 0);
+			} catch (CoreException e) {
+			}
+			return 0;
+		}
+		
+		@Override
+		public float getFloat(String name) {
+			try {
+				return  Float.parseFloat(launchConfig.getAttribute(name, "0.0f"));
+			} catch (NumberFormatException e) {
+			} catch (CoreException e) {
+			}
+			return 0.0f;
+		}
+		
+		@Override
+		public double getDouble(String name) {
+			try {
+				return  Double.parseDouble(launchConfig.getAttribute(name, "0.0d"));
+			} catch (NumberFormatException e) {
+			} catch (CoreException e) {
+			}
+			return 0.0d;
+		}
+	}
+
 	private final class IProcessImplementation implements IProcess {
 		private ILaunch launch;
 		private boolean terminated = false;
@@ -56,10 +112,9 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 			}
 		}
 
-
 		@Override
 		public void terminate() throws DebugException {
-			
+			setTerminated(true);
 		}
 
 		@Override
@@ -123,46 +178,20 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 														 true);
 		Path path = new Path(modelUri);
 		final IResource findMember = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-		if (findMember instanceof IFile) {
-		}else
+		if (!(findMember instanceof IFile)) 
 			throw new CoreException(Status.CANCEL_STATUS);
+		
 		final IFile file = (IFile) findMember;
-
-		final ILaunchConfiguration con1 = configuration;
-		Uml2Service.setStore(new PreferenceStore(){
-			@Override
-			public String getString(String name) {
-				try {
-					String attribute = con1.getAttribute(name, "");
-					return attribute;
-				} catch (CoreException e) {
-				}
-				return "";
-			}
-			@Override
-			public boolean getBoolean(String name) {
-				try {
-					boolean attribute = con1.getAttribute(name, false);
-					return attribute;
-				} catch (CoreException e) {
-				}
-				return false;
-			}
-		});
+		final ILaunchConfiguration launchConf = configuration;
+		Uml2Service.setStore(new PreferenceStoreExtension(launchConf));
 		IProcessImplementation process = new IProcessImplementation(launch);
 		try {
 			launch.addProcess(process);
 			process.label = "generation working";
-			IContainer target = file.getProject();//ResourcesPlugin.getWorkspace().getRoot();//model.getProject().getFolder(gtarget);
+			IContainer target = file.getProject();
 			GenerateAll generator = new GenerateAll(modelURI, target, new ArrayList<Object>());
 			generator.doGenerateByExtension(monitor);
-//			generator.doGenerate(monitor);
-			
 			process.label = "generation finished.";
-//		} catch (IOException e) {
-//			process.label = e.getMessage();
-//			process.exitValue =1;
-//			throw new CoreException(Status.CANCEL_STATUS);
 		} finally {
 			file.getProject().refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		}
