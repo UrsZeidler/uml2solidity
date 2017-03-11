@@ -38,6 +38,7 @@ import com.google.common.collect.FluentIterable;
 import de.urszeidler.eclipse.solidity.compiler.support.util.StartCompiler;
 import de.urszeidler.eclipse.solidity.templates.GenerateContracts;
 import de.urszeidler.eclipse.solidity.ui.Activator;
+import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
 import de.urszeidler.eclipse.solidity.util.Uml2Service;
 
 /**
@@ -102,16 +103,22 @@ public class GenerateAll {
 		this.arguments = arguments;
 	}
 
-	public void doGenerateByExtension(IProgressMonitor monitor1) {
+	/**
+	 * Reads the registered transformation and select the enabled ones and
+	 * starts them.
+	 * 
+	 * @param parentMonitor
+	 */
+	public void doGenerateByExtension(IProgressMonitor parentMonitor) {
 		IPreferenceStore store = Uml2Service.getStore(null);
 
-		List<GeneratorAction> list = getGeneratorList(monitor1, store);
+		List<GeneratorAction> list = getGeneratorList(parentMonitor, store);
 		int completeWork = 0;
 		for (GeneratorAction generatorAction : list) {
 			completeWork += generatorAction.work;
 		}
 
-		SubMonitor monitor = SubMonitor.convert(monitor1, "start generation", completeWork);
+		SubMonitor monitor = SubMonitor.convert(parentMonitor, "start generation", completeWork);
 		monitor.beginTask("start generation", completeWork);
 		for (GeneratorAction generatorAction : list) {
 			File file = generatorAction.targetFolder.getLocation().toFile();
@@ -142,10 +149,10 @@ public class GenerateAll {
 
 		Optional<GeneratorAction> first = FluentIterable.from(list).filter(new Predicate<GeneratorAction>() {
 			public boolean apply(GeneratorAction input) {
-				return "".equals(input);
+				return PreferenceConstants.GENERATE_CONTRACT_FILES.equals(input.id);
 			}
 		}).first();
-		if(first.isPresent())
+		if (first.isPresent())
 			compileContracts(monitor, (GenerateContracts) first.get().generator);
 	}
 
@@ -206,9 +213,8 @@ public class GenerateAll {
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 			Path location = new Path(docTarget);
 			folder = root.getFolder(location);
-			if (!folder.exists()) {
+			if (!folder.exists())
 				createFolders(ResourcesPlugin.getWorkspace().getRoot(), location, monitor, 0);
-			}
 		} else {
 			folder = targetFolder.getProject().getFolder(docTarget);
 			Path location = new Path(docTarget);
@@ -219,9 +225,9 @@ public class GenerateAll {
 	}
 
 	/**
-	 * Creates the folder.
+	 * Creates the folder at the location, all missing folders are created.
 	 * 
-	 * @param root
+	 * @param rootContainer
 	 * @param location
 	 * @param monitor
 	 * @param j
@@ -229,24 +235,24 @@ public class GenerateAll {
 	 *            root use 0
 	 * @throws CoreException
 	 */
-	private void createFolders(IContainer root, Path location, IProgressMonitor monitor, int j) throws CoreException {
+	private void createFolders(IContainer rootContainer, Path location, IProgressMonitor monitor, int j) throws CoreException {
 		String[] segments = location.segments();
 		if (segments.length < (3 - j)) {
-			IFolder folder2 = root.getFolder(location);
+			IFolder folder2 = rootContainer.getFolder(location);
 			if (!folder2.exists())
 				folder2.create(true, true, monitor);
 			return;
 		}
 
 		IPath bPath = location.removeLastSegments(segments.length - (2 - j));
-		IFolder folder = root.getFolder(bPath);
+		IFolder folder = rootContainer.getFolder(bPath);
 		if (!folder.exists())
 			folder.create(true, true, monitor);
 
 		for (int i = (2 - j); i < segments.length; i++) {
 			String string = segments[i];
 			IPath path = bPath.append(string);
-			IFolder folder2 = root.getFolder(path);
+			IFolder folder2 = rootContainer.getFolder(path);
 			if (!folder2.exists())
 				folder2.create(true, true, monitor);
 		}

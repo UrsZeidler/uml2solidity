@@ -48,11 +48,16 @@
    </element>
 
    <element name="acceleo_generator">
+      <annotation>
+         <documentation>
+            Defines a generator.
+         </documentation>
+      </annotation>
       <complexType>
          <attribute name="generator_id" type="string" use="required">
             <annotation>
                <documentation>
-                  The generator_id is used idetifiy the generator also it is the constance for the preferences for checking if the generator is used in the running generation process.
+                  The generator_id is used identify the generator also it is the constance for the preferences for checking if the generator is used in the running generation process.
                </documentation>
             </annotation>
          </attribute>
@@ -79,7 +84,7 @@
          <attribute name="generator_target" type="string" use="required">
             <annotation>
                <documentation>
-                  The generation_target is used to get the prefrence for the target folder where the generated files should be stored.
+                  The generation_target is used to get the preference for the target folder where the generated files should be stored.
                </documentation>
             </annotation>
          </attribute>
@@ -96,7 +101,7 @@
          <attribute name="estimated_work" type="string">
             <annotation>
                <documentation>
-                  An optional integer to indicate the work which is needed for the generator, it is used for the progress monitor.
+                  An optional integer to indicate the work which is needed for the generator, it is used for the progress monitor. The default value is 10.
                </documentation>
             </annotation>
          </attribute>

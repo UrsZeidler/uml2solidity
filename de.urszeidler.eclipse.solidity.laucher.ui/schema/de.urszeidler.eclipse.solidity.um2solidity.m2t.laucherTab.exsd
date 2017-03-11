@@ -64,7 +64,7 @@
          <attribute name="tab_class" type="string" use="required">
             <annotation>
                <documentation>
-                  The tab must extends the AbstractUml2SolidityLaunchConfigurationTab the tab must provide at least a boolean field to en/disable the generation and the tab configuration name must corespond to the id of the registered accele_generator.
+                  The tab must extends the AbstractUml2SolidityLaunchConfigurationTab the tab must provide at least a boolean field to en/disable the generation and the tab configuration name must correspond to the id of the registered accele_generator.
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn="de.urszeidler.eclipse.solidity.laucher.ui.AbstractUml2SolidityLaunchConfigurationTab:"/>

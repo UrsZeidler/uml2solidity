@@ -170,6 +170,10 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 
 	public static final String MODEL_URI = "modelUri";
 
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.core.model.ILaunchConfigurationDelegate#launch(org.eclipse.debug.core.ILaunchConfiguration, java.lang.String, org.eclipse.debug.core.ILaunch, org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
@@ -194,10 +198,10 @@ public class GenerateUml2Solidity extends LaunchConfigurationDelegate {
 			process.label = "generation finished.";
 		} finally {
 			file.getProject().refreshLocal(IResource.DEPTH_INFINITE, monitor);
+			if(monitor!=null)
+				monitor.done();
+			process.setTerminated(true);
 		}
-		if(monitor!=null)
-			monitor.done();
-		process.setTerminated(true);
 	}
 
 }
