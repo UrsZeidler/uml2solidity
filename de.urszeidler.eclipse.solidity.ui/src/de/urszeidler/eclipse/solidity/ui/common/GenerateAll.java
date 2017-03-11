@@ -21,25 +21,22 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.BasicMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 
 import de.urszeidler.eclipse.solidity.compiler.support.util.StartCompiler;
 import de.urszeidler.eclipse.solidity.templates.GenerateContracts;
-import de.urszeidler.eclipse.solidity.templates.GenerateHtml;
-import de.urszeidler.eclipse.solidity.templates.GenerateJavaCode;
-import de.urszeidler.eclipse.solidity.templates.GenerateJavaTestCode;
-import de.urszeidler.eclipse.solidity.templates.GenerateJsCode;
-import de.urszeidler.eclipse.solidity.templates.GenerateJsTestCode;
-import de.urszeidler.eclipse.solidity.templates.GenerateMarkDown;
-import de.urszeidler.eclipse.solidity.templates.GenerateMixConfig;
-import de.urszeidler.eclipse.solidity.templates.GenerateSingleAbiFiles;
-import de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract;
 import de.urszeidler.eclipse.solidity.ui.Activator;
 import de.urszeidler.eclipse.solidity.ui.preferences.PreferenceConstants;
 import de.urszeidler.eclipse.solidity.util.Uml2Service;
@@ -48,6 +45,8 @@ import de.urszeidler.eclipse.solidity.util.Uml2Service;
  * Main entry point of the 'Solidity' generation module.
  */
 public class GenerateAll {
+
+	private static final String UM2SOLIDITY_EXTENSION_POINT_ID = "de.urszeidler.eclipse.solidity.um2solidity.m2t";
 
 	/**
 	 * The model URI.
@@ -65,6 +64,25 @@ public class GenerateAll {
 	List<? extends Object> arguments;
 
 	private List<String> files;
+
+	private class GeneratorAction {
+
+		String id;
+		String generatorName;
+		IFolder targetFolder;
+		AbstractAcceleoGenerator generator;
+		int work;
+
+		public GeneratorAction(String id, String generatorName, IFolder targetFolder,
+				AbstractAcceleoGenerator generator, int work) {
+			super();
+			this.id = id;
+			this.generatorName = generatorName;
+			this.targetFolder = targetFolder;
+			this.generator = generator;
+			this.work = work;
+		}
+	}
 
 	/**
 	 * Constructor.
@@ -86,211 +104,158 @@ public class GenerateAll {
 	}
 
 	/**
-	 * Launches the generation.
-	 *
-	 * @param monitor
-	 *            This will be used to display progress information to the user.
-	 * @throws IOException
-	 *             Thrown when the output cannot be saved.
-	 * @generated not
+	 * Reads the registered transformation and select the enabled ones and
+	 * starts them.
+	 * 
+	 * @param parentMonitor
 	 */
-	public void doGenerate(IProgressMonitor monitor) throws IOException {
-		if (!targetFolder.getLocation().toFile().exists()) {
-			targetFolder.getLocation().toFile().mkdirs();
+	public void doGenerateByExtension(IProgressMonitor parentMonitor) {
+		IPreferenceStore store = Uml2Service.getStore(null);
+
+		List<GeneratorAction> list = getGeneratorList(parentMonitor, store);
+		int completeWork = 0;
+		for (GeneratorAction generatorAction : list) {
+			completeWork += generatorAction.work;
 		}
-		IPreferenceStore store = Uml2Service.getStore(null); // PreferenceConstants.getPreferenceStore(targetFolder.getProject());
-		if (monitor != null)
-			monitor.subTask("Loading...");
 
-		try {
-			AbstractAcceleoGenerator solGenerator = doGenerate(store, PreferenceConstants.GENERATION_TARGET, PreferenceConstants.GENERATE_CONTRACT_FILES,
-					"de.urszeidler.eclipse.solidity.templates.GenerateContracts", monitor,
-					new Function<File, AbstractAcceleoGenerator>() {
+		SubMonitor monitor = SubMonitor.convert(parentMonitor, "start generation", completeWork);
+		monitor.beginTask("start generation", completeWork);
+		for (GeneratorAction generatorAction : list) {
+			File file = generatorAction.targetFolder.getLocation().toFile();
+			monitor.subTask("Initalize :" + generatorAction.generatorName);
+			try {
+				generatorAction.generator.initialize(modelURI, file, arguments);
+			} catch (IOException e) {
+				Activator.logError("Error while initalize generator:" + generatorAction.id, e);
+			}
+			monitor.worked(1);
 
-						public AbstractAcceleoGenerator apply(File input) {
-							try {
-								return new GenerateContracts(modelURI, input, arguments);
-							} catch (IOException e) {
-							}
-							return null;
-						}
-					});
-			doGenerate(store, PreferenceConstants.GENERATION_TARGET, PreferenceConstants.GENERATE_MIX,
-					"de.urszeidler.eclipse.solidity.templates.GenerateMixConfig", monitor,
-					new Function<File, AbstractAcceleoGenerator>() {
+			String id = generatorAction.generator.getClass().getCanonicalName();
+			String generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
+					"de.urszeidler.eclipse.solidity.ui", id, modelURI.toString(),
+					generatorAction.targetFolder.getFullPath().toString(), new ArrayList<String>());
+			generatorAction.generator.setGenerationID(generationID);
+			monitor.subTask("Generate :" + generatorAction.generatorName);
+			try {
+				generatorAction.generator.doGenerate(BasicMonitor.toMonitor(monitor));
+			} catch (IOException e) {
+				Activator.logError("Error while do generation:" + generatorAction.id);
+			}
+			if (monitor.isCanceled())
+				break;
 
-						public AbstractAcceleoGenerator apply(File input) {
-							try {
-								return new GenerateMixConfig(modelURI, input, arguments);
-							} catch (IOException e) {
-							}
-							return null;
-						}
-					});
-			doGenerate(store, PreferenceConstants.GENERATION_TARGET, PreferenceConstants.GENERATE_HTML,
-					"de.urszeidler.eclipse.solidity.templates.GenerateHtml", monitor,
-					new Function<File, AbstractAcceleoGenerator>() {
-
-						public AbstractAcceleoGenerator apply(File input) {
-							try {
-								return new GenerateHtml(modelURI, input, arguments);
-							} catch (IOException e) {
-							}
-							return null;
-						}
-					});
-			doGenerate(store, PreferenceConstants.GENERATION_TARGET_DOC, PreferenceConstants.GENERATE_MARKDOWN,
-					"de.urszeidler.eclipse.solidity.templates.GenerateMarkDown", monitor,
-					new Function<File, AbstractAcceleoGenerator>() {
-
-						public AbstractAcceleoGenerator apply(File input) {
-							try {
-								return new GenerateMarkDown(modelURI, input, arguments);
-							} catch (IOException e) {
-							}
-							return null;
-						}
-					});
-
-			doGenerate(store, PreferenceConstants.GENERATE_JS_TEST_TARGET, PreferenceConstants.GENERATE_JS_TEST,
-					"de.urszeidler.eclipse.solidity.templates.GenerateJsTestCode", monitor,
-					new Function<File, AbstractAcceleoGenerator>() {
-
-						public AbstractAcceleoGenerator apply(File input) {
-							try {
-								return new GenerateJsTestCode(modelURI, input, arguments);
-							} catch (IOException e) {
-							}
-							return null;
-						}
-					});
-			doGenerate(store, PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET,
-					PreferenceConstants.GENERATE_JS_CONTROLLER,
-					"de.urszeidler.eclipse.solidity.templates.GenerateJsCode", monitor,
-					new Function<File, AbstractAcceleoGenerator>() {
-
-						public AbstractAcceleoGenerator apply(File input) {
-							try {
-								return new GenerateJsCode(modelURI, input, arguments);
-							} catch (IOException e) {
-							}
-							return null;
-						}
-					});
-			doGenerate(store, PreferenceConstants.GENERATE_JS_CONTROLLER_TARGET, PreferenceConstants.GENERATE_WEB3,
-					"de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract", monitor,
-					new Function<File, AbstractAcceleoGenerator>() {
-
-						public AbstractAcceleoGenerator apply(File input) {
-							try {
-								return new GenerateWeb3Contract(modelURI, input, arguments);
-							} catch (IOException e) {
-							}
-							return null;
-						}
-					});
-
-			doGenerate(store, PreferenceConstants.GENERATE_ABI_TARGET,
-					PreferenceConstants.GENERATE_ABI,
-					"de.urszeidler.eclipse.solidity.templates.GenerateSingleAbiFiles", monitor,
-					new Function<File, AbstractAcceleoGenerator>() {
-
-						public AbstractAcceleoGenerator apply(File input) {
-							try {
-								return new GenerateSingleAbiFiles(modelURI, input, arguments);
-							} catch (IOException e) {
-							}
-							return null;
-						}
-					});
-			
-			doGenerate(store, PreferenceConstants.GENERATION_JAVA_INTERFACE_TARGET,
-					PreferenceConstants.GENERATE_JAVA_INTERFACE,
-					"de.urszeidler.eclipse.solidity.templates.GenerateJavaCode", monitor,
-					new Function<File, AbstractAcceleoGenerator>() {
-
-						public AbstractAcceleoGenerator apply(File input) {
-							try {
-								return new GenerateJavaCode(modelURI, input, arguments);
-							} catch (IOException e) {
-							}
-							return null;
-						}
-					});
-			
-			doGenerate(store, PreferenceConstants.GENERATION_JAVA_TEST_TARGET,
-					PreferenceConstants.GENERATE_JAVA_TESTS,
-					"de.urszeidler.eclipse.solidity.templates.GenerateJavaCode", monitor,
-					new Function<File, AbstractAcceleoGenerator>() {
-
-						public AbstractAcceleoGenerator apply(File input) {
-							try {
-								return new GenerateJavaTestCode(modelURI, input, arguments);
-							} catch (IOException e) {
-							}
-							return null;
-						}
-					});
-			
-			
-			
-			compileContracts(monitor,(GenerateContracts) solGenerator );
-		} catch (CoreException e1) {
-			Activator.logError("", e1);
+			monitor.worked(generatorAction.work);
 		}
+
+		Optional<GeneratorAction> first = FluentIterable.from(list).filter(new Predicate<GeneratorAction>() {
+			public boolean apply(GeneratorAction input) {
+				return PreferenceConstants.GENERATE_CONTRACT_FILES.equals(input.id);
+			}
+		}).first();
+		if (first.isPresent())
+			compileContracts(monitor, (GenerateContracts) first.get().generator);
 	}
 
 	/**
-	 * Calls the generator generated by the function
-	 * @param store the store to use
-	 * @param targetDirectory the basic directory
-	 * @param runGenerator 
-	 * @param gen_id the id of the generator
-	 * @param monitor the monitor
-	 * @param factory a function to produce the configured generator
-	 * @return the created generator
-	 * @throws IOException
+	 * Creates the list of enabled generators.
+	 * 
+	 * @param monitor
+	 * @param store
+	 * @return
+	 */
+	private List<GeneratorAction> getGeneratorList(IProgressMonitor monitor1, IPreferenceStore store) {
+		IConfigurationElement[] configurationElements = Platform.getExtensionRegistry()
+				.getConfigurationElementsFor(UM2SOLIDITY_EXTENSION_POINT_ID);
+		SubMonitor monitor = SubMonitor.convert(monitor1, "prepare generation", 10);
+
+		List<GeneratorAction> list = new ArrayList<GeneratorAction>();
+		for (IConfigurationElement element : configurationElements) {
+			try {
+				AbstractAcceleoGenerator generator = (AbstractAcceleoGenerator) element
+						.createExecutableExtension("generator_class");
+
+				String id = element.getAttribute("generator_id");
+				String name = element.getAttribute("generator_name");
+				String work_str = element.getAttribute("estimated_work");
+				String targetFolderPref = element.getAttribute("generator_target");
+
+				IFolder folder = getGenerationTargetFolder(store, targetFolderPref, monitor);
+				int work = 10;
+				try {
+					if (work_str != null)
+						work = Integer.parseInt(work_str);
+				} catch (NumberFormatException e) {
+				}
+				if (store.getBoolean(id) && folder != null && folder.getLocation().toFile().exists())
+					list.add(new GeneratorAction(id, name, folder, generator, work));
+			} catch (Exception e) {
+				Activator.logError("Error while instantiate generator.", e);
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Get the folder for a generation target, will create the folder when not
+	 * exist.
+	 * 
+	 * @param store
+	 * @param targetDirectory
+	 * @param monitor
+	 * @return
 	 * @throws CoreException
 	 */
-	private AbstractAcceleoGenerator doGenerate(IPreferenceStore store, String targetDirectory, String runGenerator, String gen_id,
-			IProgressMonitor monitor, Function<File, AbstractAcceleoGenerator> factory)
-			throws IOException, CoreException {
-		if (monitor != null)
-			if (monitor.isCanceled())
-				return null;
-
-		if (store.getBoolean(runGenerator)) {
-			final String docTarget = store.getString(targetDirectory);
-			IFolder folder = null;
-			if (docTarget.startsWith("/")) {
-				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-				Path location = new Path(docTarget);
-				folder = root.getFolder(location);
-				if (!folder.exists())
-					folder.create(true, true, monitor);
-			} else {
-				folder = targetFolder.getProject().getFolder(docTarget);
-				if (!folder.exists())
-					folder.create(true, true, monitor);
-			}
-			if (monitor != null)
-				monitor.worked(1);
-
-			AbstractAcceleoGenerator acceleoGenerator = factory.apply(folder.getLocation().toFile());
-			if(acceleoGenerator==null)
-				return null;
-
-			String generationID = org.eclipse.acceleo.engine.utils.AcceleoLaunchingUtil.computeUIProjectID(
-					"de.urszeidler.eclipse.solidity.ui", gen_id, modelURI.toString(), folder.getFullPath().toString(),
-					new ArrayList<String>());
-			acceleoGenerator.setGenerationID(generationID);
-			if (monitor != null)
-				monitor.subTask("generate markdown");
-			acceleoGenerator.doGenerate(BasicMonitor.toMonitor(monitor));
-			
-			return acceleoGenerator;
+	private IFolder getGenerationTargetFolder(IPreferenceStore store, String targetDirectory, IProgressMonitor monitor)
+			throws CoreException {
+		final String docTarget = store.getString(targetDirectory);
+		IFolder folder = null;
+		if (docTarget.startsWith("/")) {
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			Path location = new Path(docTarget);
+			folder = root.getFolder(location);
+			if (!folder.exists())
+				createFolders(ResourcesPlugin.getWorkspace().getRoot(), location, monitor, 0);
+		} else {
+			folder = targetFolder.getProject().getFolder(docTarget);
+			Path location = new Path(docTarget);
+			if (!folder.exists())
+				createFolders(targetFolder.getProject(), location, monitor, 1);
 		}
-		return null;
+		return folder;
+	}
+
+	/**
+	 * Creates the folder at the location, all missing folders are created.
+	 * 
+	 * @param rootContainer
+	 * @param location
+	 * @param monitor
+	 * @param j
+	 *            if relative path to project use 1, when relative to workspace
+	 *            root use 0
+	 * @throws CoreException
+	 */
+	private void createFolders(IContainer rootContainer, Path location, IProgressMonitor monitor, int j) throws CoreException {
+		String[] segments = location.segments();
+		if (segments.length < (3 - j)) {
+			IFolder folder2 = rootContainer.getFolder(location);
+			if (!folder2.exists())
+				folder2.create(true, true, monitor);
+			return;
+		}
+
+		IPath bPath = location.removeLastSegments(segments.length - (2 - j));
+		IFolder folder = rootContainer.getFolder(bPath);
+		if (!folder.exists())
+			folder.create(true, true, monitor);
+
+		for (int i = (2 - j); i < segments.length; i++) {
+			String string = segments[i];
+			IPath path = bPath.append(string);
+			IFolder folder2 = rootContainer.getFolder(path);
+			if (!folder2.exists())
+				folder2.create(true, true, monitor);
+		}
 	}
 
 	/**
@@ -300,23 +265,23 @@ public class GenerateAll {
 	 * @param gen0
 	 */
 	private void compileContracts(IProgressMonitor monitor, GenerateContracts gen0) {
-		if(gen0==null)
+		if (gen0 == null)
 			return;
 		IPreferenceStore store1 = Uml2Service.getStore(null);
 		if (store1.getBoolean(
 				de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILE_CONTRACTS)) {
-			
+
 			files = gen0.getFiles();
-			if (files==null || files.isEmpty())
+			if (files == null || files.isEmpty())
 				return;
 			String compile_folder = store1.getString(
 					de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceConstants.COMPILER_TARGET);
-			
+
 			//
 			IContainer target = null;
-			if(compile_folder.startsWith("/")){
+			if (compile_folder.startsWith("/")) {
 				target = (IContainer) ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(compile_folder));
-			}else			
+			} else
 				target = targetFolder.getProject().getFolder(compile_folder);
 			if (!target.getLocation().toFile().exists()) {
 				target.getLocation().toFile().mkdirs();
@@ -326,54 +291,6 @@ public class GenerateAll {
 			StartCompiler.startCompiler(target.getLocation().toFile(), files, store1);
 		}
 	}
-
-//	/**
-//	 * Finds the template in the plug-in. Returns the template plug-in URI.
-//	 * 
-//	 * @param bundleID
-//	 *            is the plug-in ID
-//	 * @param relativePath
-//	 *            is the relative path of the template in the plug-in
-//	 * @return the template URI
-//	 * @throws IOException
-//	 * @generated
-//	 */
-//	private URI getTemplateURI(String bundleID, IPath relativePath) throws IOException {
-//		Bundle bundle = Platform.getBundle(bundleID);
-//		if (bundle == null) {
-//			// no need to go any further
-//			return URI.createPlatformResourceURI(new Path(bundleID).append(relativePath).toString(), false);
-//		}
-//		URL url = bundle.getEntry(relativePath.toString());
-//		if (url == null && relativePath.segmentCount() > 1) {
-//			Enumeration<URL> entries = bundle.findEntries("/", "*.emtl", true);
-//			if (entries != null) {
-//				String[] segmentsRelativePath = relativePath.segments();
-//				while (url == null && entries.hasMoreElements()) {
-//					URL entry = entries.nextElement();
-//					IPath path = new Path(entry.getPath());
-//					if (path.segmentCount() > relativePath.segmentCount()) {
-//						path = path.removeFirstSegments(path.segmentCount() - relativePath.segmentCount());
-//					}
-//					String[] segmentsPath = path.segments();
-//					boolean equals = segmentsPath.length == segmentsRelativePath.length;
-//					for (int i = 0; equals && i < segmentsPath.length; i++) {
-//						equals = segmentsPath[i].equals(segmentsRelativePath[i]);
-//					}
-//					if (equals) {
-//						url = bundle.getEntry(entry.getPath());
-//					}
-//				}
-//			}
-//		}
-//		URI result;
-//		if (url != null) {
-//			result = URI.createPlatformPluginURI(new Path(bundleID).append(new Path(url.getPath())).toString(), false);
-//		} else {
-//			result = URI.createPlatformResourceURI(new Path(bundleID).append(relativePath).toString(), false);
-//		}
-//		return result;
-//	}
 
 	public List<String> getFiles() {
 		return files;

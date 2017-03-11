@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension-point id="de.urszeidler.eclipse.solidity.um2solidity.m2t" name="uml2Solidity model to text transformation" schema="schema/de.urszeidler.eclipse.solidity.um2solidity.m2t.exsd"/>
    <extension
          point="org.eclipse.emf.ecore.uri_mapping">
       <mapping
@@ -83,4 +84,69 @@
          </enabledWhen>
       </page>
    </extension>
+      <extension
+            point="de.urszeidler.eclipse.solidity.um2solidity.m2t">
+         <acceleo_generator
+               estimated_work="15"
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateContracts"
+               generator_id="GENERATE_CONTRACT_FILES"
+               generator_name="generate contract code"
+               generator_target="GENERATION_TARGET">
+         </acceleo_generator>
+         <acceleo_generator
+               estimated_work="15"
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateMarkDown"
+               generator_id="GENERATE_MARKDOWN"
+               generator_name="generate markdown"
+               generator_target="GENERATION_TARGET_DOC">
+         </acceleo_generator>
+         <acceleo_generator
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateMixConfig"
+               generator_id="GENERATE_MIX"
+               generator_name="generated mix config"
+               generator_target="GENERATION_TARGET">
+         </acceleo_generator>
+         <acceleo_generator
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateHtml"
+               generator_id="GENERATE_HTML"
+               generator_name="generate html"
+               generator_target="GENERATION_TARGET">
+         </acceleo_generator>
+         <acceleo_generator
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateJsTestCode"
+               generator_id="GENERATE_JS_TEST"
+               generator_name="generate js tests"
+               generator_target="GENERATE_JS_TEST_TARGET">
+         </acceleo_generator>
+         <acceleo_generator
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateJsCode"
+               generator_id="GENERATE_JS_CONTROLLER"
+               generator_name="generate js code"
+               generator_target="GENERATE_JS_CONTROLLER_TARGET">
+         </acceleo_generator>
+         <acceleo_generator
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateWeb3Contract"
+               generator_id="GENERATE_WEB3"
+               generator_name="generate web3 js"
+               generator_target="GENERATE_JS_CONTROLLER_TARGET">
+         </acceleo_generator>
+         <acceleo_generator
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateSingleAbiFiles"
+               generator_id="GENERATE_ABI"
+               generator_name="generator abi file"
+               generator_target="GENERATE_ABI_TARGET">
+         </acceleo_generator>
+         <acceleo_generator
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateJavaCode"
+               generator_id="GENERATE_JAVA_INTERFACE"
+               generator_name="generate java interface"
+               generator_target="GENERATION_JAVA_INTERFACE_TARGET">
+         </acceleo_generator>
+         <acceleo_generator
+               generator_class="de.urszeidler.eclipse.solidity.templates.GenerateJavaTestCode"
+               generator_id="GENERATE_JAVA_TESTS"
+               generator_name="generate junit tests"
+               generator_target="GENERATION_JAVA_TEST_TARGET">
+         </acceleo_generator>
+      </extension>
 </plugin>
