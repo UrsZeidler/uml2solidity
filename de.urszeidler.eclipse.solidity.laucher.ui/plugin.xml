@@ -23,19 +23,23 @@
          point="de.urszeidler.eclipse.solidity.um2solidity.m2t.laucherTab">
       <uml2solidityLauchTab
             id="GenerateUml2SolidityCodeConfigurationTab"
-            tab_class="de.urszeidler.eclipse.solidity.laucher.ui.GenerateUml2SolidityCodeConfigurationTab">
+            tab_class="de.urszeidler.eclipse.solidity.laucher.ui.GenerateUml2SolidityCodeConfigurationTab"
+            tab_order="1">
       </uml2solidityLauchTab>
       <uml2solidityLauchTab
             id="GenerateJavaCodeConfigurationTab"
-            tab_class="de.urszeidler.eclipse.solidity.laucher.ui.GenerateJavaCodeConfigurationTab">
+            tab_class="de.urszeidler.eclipse.solidity.laucher.ui.GenerateJavaCodeConfigurationTab"
+            tab_order="2">
       </uml2solidityLauchTab>
       <uml2solidityLauchTab
             id="GenerateJSCodeConfigurationTab"
-            tab_class="de.urszeidler.eclipse.solidity.laucher.ui.GenerateJSCodeConfigurationTab">
+            tab_class="de.urszeidler.eclipse.solidity.laucher.ui.GenerateJSCodeConfigurationTab"
+            tab_order="3">
       </uml2solidityLauchTab>
       <uml2solidityLauchTab
             id="GenerateOthersConfigurationTab"
-            tab_class="de.urszeidler.eclipse.solidity.laucher.ui.GenerateOthersConfigurationTab">
+            tab_class="de.urszeidler.eclipse.solidity.laucher.ui.GenerateOthersConfigurationTab"
+            tab_order="4">
       </uml2solidityLauchTab>
    </extension>
 

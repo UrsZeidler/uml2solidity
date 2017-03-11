@@ -71,6 +71,13 @@
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="tab_order" type="string">
+            <annotation>
+               <documentation>
+                  The position the tab should be placed, when left out 10 is used. Choose a number higher as 10 as the first are reserved.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
