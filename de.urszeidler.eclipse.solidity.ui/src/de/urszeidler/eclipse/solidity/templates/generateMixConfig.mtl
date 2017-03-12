@@ -4,7 +4,7 @@
  */]
 [module generateMixConfig('http://www.eclipse.org/uml2/5.0.0/UML')]
 
-[import de::urszeidler::eclipse::solidity::util::um2service /]
+[import de::urszeidler::eclipse::solidity::util::uml2service /]
 
 [**
  * The documentation of the template generateMixConfig.

@@ -1,7 +1,7 @@
 [comment encoding = UTF-8 /]
 [module generateWeb3Contract('http://www.eclipse.org/uml2/5.0.0/UML')]
 
-[import de::urszeidler::eclipse::solidity::util::um2service /]
+[import de::urszeidler::eclipse::solidity::util::uml2service /]
 
 [**
  * Generate for each package containing a compileable instrance the coresponding Web3 JS file.
