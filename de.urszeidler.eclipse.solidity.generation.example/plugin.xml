@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="de.urszeidler.eclipse.solidity.um2solidity.m2t">
+      <acceleo_generator
+            generator_class="de.urszeidler.eclipse.solidity.generation.example.template.GenerateUseCasesDoc"
+            generator_id="de.urszeidler.eclipse.solidity.generation.example.useCaseDoc"
+            generator_name="generate usecase doc"
+            generator_target="de.urszeidler.eclipse.solidity.generation.example.usecaseDocTarget">
+      </acceleo_generator>
+   </extension>
+   <extension
+         point="de.urszeidler.eclipse.solidity.um2solidity.m2t.laucherTab">
+      <uml2solidityLauchTab
+            id="de.urszeidler.eclipse.solidity.generation.example.uml2solidityLauchTab1"
+            tab_class="de.urszeidler.eclipse.solidity.generation.example.launch.UmlDocLaunchConfigurationTab">
+      </uml2solidityLauchTab>
+   </extension>
+
+</plugin>

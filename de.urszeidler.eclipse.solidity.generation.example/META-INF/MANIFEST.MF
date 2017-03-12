@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: UML2Solidity generation Example
+Bundle-SymbolicName: de.urszeidler.eclipse.solidity.generation.example;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: de.urszeidler.eclipse.solidity.generation.example.Activator
+Bundle-Vendor: Urs Zeidler
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.uml2.uml,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.ocl,
+ org.eclipse.ocl.ecore,
+ org.eclipse.acceleo.common;bundle-version="3.3.0",
+ org.eclipse.acceleo.model;bundle-version="3.3.0",
+ org.eclipse.acceleo.profiler;bundle-version="3.3.0",
+ org.eclipse.acceleo.engine;bundle-version="3.3.0",
+ com.google.guava,
+ de.urszeidler.eclipse.solidity.ui;bundle-version="1.1.0",
+ de.urszeidler.eclipse.solidity.laucher.ui;bundle-version="1.1.0",
+ org.eclipse.debug.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Eclipse-LazyStart: true
+Export-Package: de.urszeidler.eclipse.solidity.generation.example.template
+

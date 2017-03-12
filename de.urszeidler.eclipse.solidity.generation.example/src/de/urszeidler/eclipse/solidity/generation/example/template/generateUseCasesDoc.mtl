@@ -1,0 +1,55 @@
+[comment encoding = UTF-8 /]
+[**
+ * The documentation of the module generateUseCasesDoc.
+ */]
+[module generateUseCasesDoc('http://www.eclipse.org/uml2/5.0.0/UML')]
+
+[import de::urszeidler::eclipse::solidity::util::uml2service /]
+[import de::urszeidler::eclipse::solidity::templates::generateMarkDown /]
+
+[**
+ * The documentation of the template generateElement.
+ * @param aModel
+ */]
+[template public generateElement(aModel : Model)]
+[comment @main/]
+[file (aModel.name+'-usecases.md', false, 'UTF-8')]
+# [aModel.name/] use cases
+
+## actors
+
+|Actor name|use cases|doc|
+|---|---|---|
+[for (a : Actor | Actor.allInstances())]
+|[a.name/]|[for (uc : UseCase | useCasesForActor(a))separator (', ')][uc.name/][/for]|[a.printSingleLineDoc()/]|
+[/for]
+
+
+## use cases
+
+[for (uc : UseCase | UseCase.allInstances())]
+### [uc.name/]
+
+[uc.printDoc()/]
+used by: [for (a : Actor | actorsForUseCase(uc))separator (', ')][a.name/][/for]
+
+[/for]
+
+[/file]
+[/template]
+
+
+[query public useCasesForActor(actor : Actor) : Sequence(UseCase) = Usage.allInstances()
+	->select(u: Usage| u.client->includes(actor))
+	->collect(u: Usage| u.supplier)->flatten()
+	->selectByType(UseCase)
+	->asSequence()
+   /]
+
+[query public actorsForUseCase(uc : UseCase) : Sequence(Actor) = Usage.allInstances()
+	->select(u: Usage| u.supplier->includes(uc))
+	->collect(u: Usage| u.client)->flatten()
+	->selectByType(Actor)
+	->asSequence()
+   /]
+

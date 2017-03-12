@@ -12,6 +12,8 @@
 		<module>../de.urszeidler.eclipse.solidity.laucher.core</module>
 		<module>../de.urszeidler.eclipse.solidity.laucher.ui</module>
 		<module>../de.urszeidler.eclipse.solidity.feature</module>
+		<module>../de.urszeidler.eclipse.solidity.generation.example</module>
+		<module>../de.urszeidler.eclipse.solidity.generation.example.feature</module>
 		<module>../de.urszeidler.eclipse.solidity.p2</module>
 	</modules>
 
