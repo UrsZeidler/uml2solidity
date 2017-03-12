@@ -17,10 +17,6 @@
  </parent>  
   
     <pluginRepositories>
-<!--      <pluginRepository> -->
-<!--        <id>codehaus.snapshots</id> -->
-<!--        <url>http://snapshots.repository.codehaus.org/</url> -->
-<!--      </pluginRepository> -->
       <pluginRepository>
        <id>Eclipse - Acceleo Release</id>
        <url>https://repo.eclipse.org/content/repositories/acceleo-releases</url>
@@ -104,14 +100,6 @@
        <groupId>org.eclipse.acceleo</groupId>
        <artifactId>org.eclipse.acceleo.maven</artifactId>
        <version>3.5.2</version>
-<!--        <executions> -->
-<!--           <execution> -->
-<!--             <phase>compile</phase>            -->
-<!--             <goals> -->
-<!--               <goal>acceleo-compile</goal> -->
-<!--             </goals> -->
-<!--           </execution> -->
-<!--         </executions> -->
         <configuration>
           <useBinaryResources>false</useBinaryResources>
           <usePlatformResourcePath>true</usePlatformResourcePath>
@@ -163,7 +151,6 @@
           <artifactId>maven-resources-plugin</artifactId>
           <version>2.4.1</version>
           <configuration>
-<!--             <encoding>ISO-8859-1</encoding> -->
             <encoding>UTF-8</encoding>
           </configuration>
         </plugin>
