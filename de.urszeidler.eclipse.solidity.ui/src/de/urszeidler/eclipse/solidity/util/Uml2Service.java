@@ -381,6 +381,33 @@ public class Uml2Service {
 		return store.getBoolean(PreferenceConstants.GENERATE_JAVA_NONBLOCKING);
 	}
 
+	/**
+	 * Return the value from the launch config.
+	 * 
+	 * @param an
+	 *            element
+	 * @param parameterId the name of the configuration parameter.          
+	 *      
+	 * @return
+	 */
+	public static Boolean getBooleanConfigurationParameter(NamedElement clazz, String parameterId) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getBoolean(parameterId);
+	}
+
+	/**
+	 * Return the value from the launch config.
+	 * 
+	 * @param an
+	 *            element
+	 * @param parameterId the name of the configuration parameter.          
+	 *      
+	 * @return
+	 */
+	public static String getConfigurationParameter(NamedElement clazz, String parameterId) {
+		IPreferenceStore store = getStore(clazz);
+		return store.getString(parameterId);
+	}
 	
 	/**
 	 * Get the preference store:

@@ -67,6 +67,12 @@
 [query public getContractPathForJava(class : NamedElement) : String
 	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getContractPathForJava(org.eclipse.uml2.uml.NamedElement)', Sequence{class})
 /]
+[query public getBooleanConfigurationParameter(class : NamedElement, parameterId : String) : Boolean
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getBooleanConfigurationParameter(org.eclipse.uml2.uml.NamedElement, java.lang.String)', Sequence{class, parameterId})
+/]
+[query public getConfigurationParameter(class : NamedElement, parameterId : String) : String
+	= invoke('de.urszeidler.eclipse.solidity.util.Uml2Service', 'getConfigurationParameter(org.eclipse.uml2.uml.NamedElement, java.lang.String)', Sequence{class, parameterId})
+/]
 
 [query public hasSuperTypes(aClass : Class) : Boolean = 
 not self.allSuperTypesWithoutContractApi()->isEmpty() /]
