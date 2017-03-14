@@ -16,6 +16,8 @@
 [file (aModel.name+'-usecases.md', false, 'UTF-8')]
 # [aModel.name/] use cases
 
+[printImageUrl(aModel)/]
+
 ## actors
 
 |Actor name|use cases|doc|
@@ -34,10 +36,13 @@
 used by: [for (a : Actor | actorsForUseCase(uc))separator (', ')][a.name/][/for]
 
 [/for]
-
 [/file]
 [/template]
 
+
+[template public printImageUrl(m : Model) ? (not (m.getImageUrl().oclIsUndefined() or m.getImageUrl()=''))]
+![ '[' /]modelImage[ ']' /]([m.getImageUrl()/]) 
+[/template]
 
 [query public useCasesForActor(actor : Actor) : Sequence(UseCase) = Usage.allInstances()
 	->select(u: Usage| u.client->includes(actor))
@@ -52,4 +57,7 @@ used by: [for (a : Actor | actorsForUseCase(uc))separator (', ')][a.name/][/for]
 	->selectByType(Actor)
 	->asSequence()
    /]
+
+[query public getImageUrl(element : NamedElement) : String = getConfigurationParameter(element, 'GENERATE_UML_DOC_IMAGE_URL') /]
+
 
