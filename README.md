@@ -37,6 +37,7 @@ find out more in the docs
 * [generated java code](https://github.com/UrsZeidler/uml2solidity/wiki/JavaCode)
 * [basic usage](https://github.com/UrsZeidler/uml2solidity/wiki/BasicUsage)
 
+
 Use eclipse as your main editor with the [solidity editor](https://github.com/UrsZeidler/uml2solidity/wiki/SolidityEditor) and compile the code in the background with the [solidity builder](https://github.com/UrsZeidler/uml2solidity/wiki/SolidityBuilder).
 
 Extend the generation process by [adding new model to text transformations](https://github.com/UrsZeidler/uml2solidity/wiki/ExtensionPoint).
