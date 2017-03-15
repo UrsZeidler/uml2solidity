@@ -1,6 +1,6 @@
 # uml2solidity
 
-A uml profile and a set of acceleo code generators to model smart contracts in uml and generate solidity code. Usable with the Papyrus UML modeler for eclipse.
+A uml profile and a set of acceleo code generators to model smart contracts in uml and generate [solidity](https://github.com/UrsZeidler/uml2solidity/wiki/SolidityCode), [java script](https://github.com/UrsZeidler/uml2solidity/wiki/JSCode) and [java](https://github.com/UrsZeidler/uml2solidity/wiki/JavaCode) code together with documentation. Usable with the Papyrus UML modeler for eclipse.
 
 <a href="http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=2784342" class="drag" title="Drag to your running Eclipse workspace to install Uml to Solidity"><img class="img-responsive" src="https://marketplace.eclipse.org/sites/all/themes/solstice/public/images/marketplace/btn-install.png" alt="Drag to your running Eclipse workspace to install Uml to Solidity" /></a>
 
@@ -35,6 +35,11 @@ find out more in the docs
 * [preferences](https://github.com/UrsZeidler/uml2solidity/wiki/Preferences)
 * [generated JS code](https://github.com/UrsZeidler/uml2solidity/wiki/JSCode)
 * [generated java code](https://github.com/UrsZeidler/uml2solidity/wiki/JavaCode)
+* [basic usage](https://github.com/UrsZeidler/uml2solidity/wiki/BasicUsage)
+
+Use eclipse as your main editor with the [solidity editor](https://github.com/UrsZeidler/uml2solidity/wiki/SolidityEditor) and compile the code in the background with the [solidity builder](https://github.com/UrsZeidler/uml2solidity/wiki/SolidityBuilder).
+
+Extend the generation process by [adding new model to text transformations](https://github.com/UrsZeidler/uml2solidity/wiki/ExtensionPoint).
 
 
 you can `tip the coder` by sending some ether : 0x25b2ce55746f54d88e9fc4d2f0f85e879c30bb05
