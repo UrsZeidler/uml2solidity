@@ -52,6 +52,8 @@ import de.urszeidler.eclipse.solidity.compiler.support.preferences.PreferenceCon
 import de.urszeidler.eclipse.solidity.compiler.support.util.StartCompiler;
 
 public class InstalledSolidityCompilerPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+	private static final String SOLC_VERSION_PATTERN = "((.*)Version:[ ]*(.*)$)";
+
 	private static class ContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
 			return new Object[0];
@@ -262,7 +264,7 @@ public class InstalledSolidityCompilerPreferencePage extends PreferencePage impl
 			options.add(file.getAbsolutePath());
 			options.add("--version");
 
-			final Pattern compile2 = Pattern.compile("((.*)Version:[ ]*(.*)$)", Pattern.MULTILINE | Pattern.DOTALL);
+			final Pattern compile2 = Pattern.compile(SOLC_VERSION_PATTERN, Pattern.MULTILINE | Pattern.DOTALL);
 			StartCompiler.startCompiler(Collections.<String>emptyList(), new StartCompiler.CompilerCallback() {
 
 				@Override
