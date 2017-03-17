@@ -158,4 +158,13 @@
       </command>
    </menuContribution>
 </extension>
+<extension
+      id="de.urszeidler.eclipse.solidity.compiler.solidityCodeMarker"
+      name="Solidity Code Marker"
+      point="org.eclipse.core.resources.markers">
+   <super type="org.eclipse.core.resources.textmarker"/>
+   <super type="org.eclipse.core.resources.problemmarker"/>
+   <persistent value="false"/>
+   <attribute  name="file"/>
+</extension>
 </plugin>
