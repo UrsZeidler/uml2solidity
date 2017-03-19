@@ -62,7 +62,7 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 	public static final String SOLIDITY_MARKER_ID = "de.urszeidler.eclipse.solidity.compiler.solidityCodeMarker";
 
 	public static final String ERROR_PARSER = "^([^:]*):(\\p{Digit}*):(\\p{Digit}*):(.*):(.*)";
-	public static final String MESSAGE_SPLITTER = "\\^(-*)\\^";
+	public static final String MESSAGE_SPLITTER = "\\^";//"\\^(-*)\\^";
 
 	/*
 	 * (non-Javadoc)
@@ -254,7 +254,7 @@ public class SolidityBuilder extends IncrementalProjectBuilder {
 	 * @param error
 	 */
 	private void createMarker(String error) {
-		String[] errors = error.trim().split(MESSAGE_SPLITTER);//error.trim().split("\\^");//
+		String[] errors = error.trim().split(MESSAGE_SPLITTER);
 		Pattern pattern = Pattern.compile(ERROR_PARSER, Pattern.DOTALL | Pattern.MULTILINE);
 		IPath location = getProject().getLocation();
 
