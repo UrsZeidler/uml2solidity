@@ -128,7 +128,7 @@ contract [aClass.name/][aClass.contractIs()/] {
 	// [protected (aClass.name+'.attributes')]
 	//TODO: implement
 	// [/protected]
-[for (c : Constraint | Constraint.allInstances()->select(_context=aClass) )]
+[for (c : Constraint | Constraint.allInstances()->select(_context=aClass)->sortedBy(indexInContainer()) )]
 	[c.printContraintDefinition(aClass)/]
 [/for]
 [for (op : Operation | aClass.ownedOperation->select(hasStereotype('Event')))]
