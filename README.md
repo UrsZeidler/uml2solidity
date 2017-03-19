@@ -2,6 +2,8 @@
 
 A uml profile and a set of acceleo code generators to model smart contracts in uml and generate [solidity](https://github.com/UrsZeidler/uml2solidity/wiki/SolidityCode), [java script](https://github.com/UrsZeidler/uml2solidity/wiki/JSCode) and [java](https://github.com/UrsZeidler/uml2solidity/wiki/JavaCode) code together with documentation. Usable with the Papyrus UML modeler for eclipse.
 
+[![Gitter chat](https://badges.gitter.im/eth-contract-api/Lobby.svg)](https://gitter.im/uml2solidity/Lobby)
+
 <a href="http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=2784342" class="drag" title="Drag to your running Eclipse workspace to install Uml to Solidity"><img class="img-responsive" src="https://marketplace.eclipse.org/sites/all/themes/solstice/public/images/marketplace/btn-install.png" alt="Drag to your running Eclipse workspace to install Uml to Solidity" /></a>
 
 a plugin for eclipse: 
