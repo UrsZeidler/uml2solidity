@@ -54,7 +54,6 @@ import org.adridadou.ethereum.values.EthValue;
 import org.adridadou.ethereum.values.config.ChainId;
 import org.adridadou.ethereum.values.config.InfuraKey;
 import org.ethereum.crypto.ECKey;
-import org.ethereum.crypto.ECKey;
 
 import com.google.common.collect.Sets;
 //[/protected]
@@ -139,18 +138,18 @@ public class EthereumInstance{
 		String property = System.getProperty(PROP_ETHEREUM_FACADE_PROVIDER);
 		if (EI_MAIN.equalsIgnoreCase(property)) {
 			BlockchainConfig.Builder mainNet = EthereumJConfigs.mainNet();
-			// Start of user code for setup the main chain
-			// End of user code
+			// [protected ('for setup the main chain')]
+			[/protected]
 			ethereum = EthereumFacadeProvider.forNetwork(mainNet).create();
 		} else if (EI_TEST.equalsIgnoreCase(property)) {
 			BlockchainConfig.Builder testnet = EthereumJConfigs.etherCampTestnet();
-			// Start of user code for setup the test chain
-			// End of user code
+			//[protected ('for setup the test chain')]
+			[/protected]
 			ethereum = EthereumFacadeProvider.forNetwork(testnet).create();
 		} else if (EI_ROPSTEN.equalsIgnoreCase(property)) {
 			BlockchainConfig.Builder ropsten = EthereumJConfigs.ropsten();
-			// Start of user code for setup the ropsten chain
-			// End of user code
+			// [protected ('for setup the ropsten chain')]
+			[/protected]
 			ethereum = EthereumFacadeProvider.forNetwork(ropsten).create();
 		} else if (EI_INFURA_ROPSTEN.equalsIgnoreCase(property)) {
 			String apiKey = System.getProperty(PROP_API_KEY);
@@ -165,24 +164,22 @@ public class EthereumInstance{
 			ethereum = rcp.create(url, new ChainId((byte) Integer.parseInt(chainId)));
 		} else if (EI_PRIVATE.equalsIgnoreCase(property)) {
 			PrivateNetworkConfig config = PrivateNetworkConfig.config();
-			// Start of user code for setup the private chain
+			// [protected ('for setup the private chain')]
 			config.reset(true)
 			.initialBalance(new EthAccount(ECKey.fromPrivate(BigInteger.valueOf(100000L))),
 					EthValue.ether(10L));
-
-			// End of user code
+			[/protected]
 			ethereum = new PrivateEthereumFacadeProvider().create(config);
 		} else if (EI_CUSTOM.equalsIgnoreCase(property)) {
 			BlockchainConfig.Builder config = BlockchainConfig.builder();
-			// Start of user code for setup the custom chain
-			// End of user code
+			// [protected ('for setup the custom chain')]
+			[/protected]
 			ethereum = EthereumFacadeProvider.forNetwork(config).create();
 		}
-		// take the standalone for all other cases
 		if (ethereum == null) {
 			TestConfig.Builder builder = TestConfig.builder();
-			// Start of user code for setup the standalone chain
-			// End of user code
+			// [protected ('for setup the standalone chain')]
+			[/protected]
 			ethereum = EthereumFacadeProvider.forTest(builder.build());
 		}
 	}
@@ -293,8 +290,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -480,12 +477,25 @@ public class [p.name.toUpperFirst()/]Deployer {
 		if (compiledContracts == null){
 			Map<String, CompiledContract> contracts = ethereum.compile(contractSource).get();
 			compiledContract = contracts.get("[aClass.name/]");
+			if (compiledContract == null) {
+				Optional<String> optional = contracts.keySet().stream().filter(s -> s.endsWith("[p.name/].sol:[aClass.name/]"))
+						.findFirst();
+				if (optional.isPresent())
+					compiledContract = contracts.get(optional.get());
+			}
 		} else {
 			ContractMetadata contractMetadata = compiledContracts.contracts.get("[aClass.name/]");
-			if (contractMetadata == null)
-				throw new IllegalArgumentException("Contract code for '[aClass.name/]' not found");
+			if (contractMetadata == null) {
+				Optional<String> optional = compiledContracts.contracts.keySet().stream()
+						.filter(s -> s.endsWith("[p.name/].sol:[aClass.name/]")).findFirst();
+				if (optional.isPresent())
+					contractMetadata = compiledContracts.contracts.get(optional.get());
+			}
 			compiledContract = CompiledContract.from(null, "[aClass.name/]", contractMetadata);
 		}
+		if(compiledContract == null)
+			throw new IllegalArgumentException("Contract code for '[aClass.name/]' not found");
+
 		return compiledContract;
 	}
 [for (	ev : Operation | aClass.ownedOperation->select(isEvent()))]
