@@ -171,6 +171,8 @@ or not pa.allInterfaces()->isEmpty()
  /]
 
 
+[query public isAbstractContract(aClass : Class) : Boolean = aClass.isContract() and not aClass.allFunctions()-> select(isAbstract)->isEmpty() /]
+
 [query public isPrivate(p : Property) : Boolean = p.visibility=VisibilityKind::private /]
 
 [query public isPublic(p : Property) : Boolean = p.visibility.oclIsUndefined() or p.visibility=VisibilityKind::public /]

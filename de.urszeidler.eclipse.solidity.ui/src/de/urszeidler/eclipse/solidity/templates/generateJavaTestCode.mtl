@@ -173,7 +173,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-[for (	aClass : Class | p.allContracts()) separator (',')]
+[for (	aClass : Class | p.allContracts()-> select(not isAbstractContract())) separator (',')]
 [aClass.name/]Test.class
 [/for]
 //[protected ('customTests')]    
@@ -228,8 +228,9 @@ import [p.getInterfacePackagePrefix()/].EthereumInstance;
  * Test for the [aClass.name/] contract.
  *
  */
-public class [aClass.name/]Test[testExtends(aClass)/]{
+public [if (aClass.isAbstractContract())] abstract [/if]class [aClass.name/]Test[testExtends(aClass)/]{
 
+ 
 	private [aClass.name/] fixture;
 	// [protected (aClass.name+'Test.attributes')]
 	//TODO: add custom attributes
