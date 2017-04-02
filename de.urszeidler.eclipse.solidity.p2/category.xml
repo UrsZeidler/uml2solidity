@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.urszeidler.eclipse.solidity.feature_1.1.0.qualifier.jar" id="de.urszeidler.eclipse.solidity.feature" version="1.1.0.qualifier">
+   <feature url="features/de.urszeidler.eclipse.solidity.feature_1.1.1.qualifier.jar" id="de.urszeidler.eclipse.solidity.feature" version="1.1.1.qualifier">
       <category name="solidity"/>
    </feature>
-   <feature url="features/de.urszeidler.eclipse.solidity.generation.example.feature_1.1.0.qualifier.jar" id="de.urszeidler.eclipse.solidity.generation.example.feature" version="1.1.0.qualifier">
+   <feature url="features/de.urszeidler.eclipse.solidity.generation.example.feature_1.1.1.qualifier.jar" id="de.urszeidler.eclipse.solidity.generation.example.feature" version="1.1.1.qualifier">
       <category name="examples"/>
    </feature>
-   <feature url="features/de.urszeidler.eclipse.solidity.compiler.support.feature_1.1.0.qualifier.jar" id="de.urszeidler.eclipse.solidity.compiler.support.feature" version="1.1.0.qualifier">
+   <feature url="features/de.urszeidler.eclipse.solidity.compiler.support.feature_1.1.1.qualifier.jar" id="de.urszeidler.eclipse.solidity.compiler.support.feature" version="1.1.1.qualifier">
       <category name="solidity-compiler-support"/>
    </feature>
    <category-def name="solidity" label="solidity">

@@ -2,7 +2,7 @@
 <feature
       id="de.urszeidler.eclipse.solidity.compiler.support.feature"
       label="Solidity compiler Feature"
-      version="1.1.0.qualifier"
+      version="1.1.1.qualifier"
       provider-name="Urs Zeidler">
 
    <description url="https://github.com/UrsZeidler/uml2solidity">
