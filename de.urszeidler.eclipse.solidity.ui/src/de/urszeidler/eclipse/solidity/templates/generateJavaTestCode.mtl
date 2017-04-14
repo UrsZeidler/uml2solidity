@@ -39,6 +39,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -61,6 +62,8 @@ import org.spongycastle.util.encoders.Hex;
  *
  */
 public abstract class AbstractContractTest {
+
+	private static Map<String,CompiledContract> contracts = new HashMap<String, CompiledContract>();
 
 	protected static EthereumFacade ethereum;
 	protected static EthAccount sender;
@@ -123,6 +126,10 @@ public abstract class AbstractContractTest {
 	 * @throws IOException
 	 */
 	protected CompiledContract getCompiledContract(String filePath) throws URISyntaxException, FileNotFoundException, IOException {
+		CompiledContract compiledContract = contracts.get(getQuallifiedContractName());
+		if(compiledContract!=null)
+			return compiledContract;
+
 		File file = new File(this.getClass().getResource(filePath).toURI());
 		String rawJson = IOUtils.toString(new FileInputStream(file), EthereumFacade.CHARSET);
 		CompilationResult result = CompilationResult.parse(rawJson);
@@ -134,7 +141,9 @@ public abstract class AbstractContractTest {
 			if (optional.isPresent())
 				contractMetadata = result.contracts.get(optional.get());
 		}
-		return CompiledContract.from(contractSource, getContractName(), contractMetadata);
+		compiledContract = CompiledContract.from(contractSource, getContractName(), contractMetadata);
+		contracts.put(getQuallifiedContractName(), compiledContract);
+		return compiledContract;
 	}
 
 	/**
