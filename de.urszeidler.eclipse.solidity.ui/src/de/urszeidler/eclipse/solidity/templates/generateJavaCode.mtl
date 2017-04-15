@@ -291,6 +291,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -322,6 +323,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 	private EthereumFacade ethereum;
 	private SoliditySource contractSource;
 	private CompilationResult compiledContracts;
+	private Map<String,CompiledContract> contracts = new HashMap<String, CompiledContract>();
 	private static String filename = "[if (p.getContractPathForJava()<>'')]/[p.getContractPathForJava()/][/if]/[p.name/].sol";
 
 	/**
@@ -407,7 +409,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 
 
 	/**
-	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contcat proxy.
+	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contract proxy.
 	 *  
 	 * @param sender the sender address
 	 * @return the contract interface and the deployed address
@@ -438,7 +440,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 	}
 
 	/**
-	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contcat proxy.
+	 * Deploys a '[aClass.name/]' on the blockchain and wrapps the contract proxy.
 	 *  
 	 * @param sender the sender address
 [for (p : Parameter | op.allInParameters())]
@@ -467,13 +469,17 @@ public class [p.name.toUpperFirst()/]Deployer {
 	}
 
 	/**
-	 * Return the compiled contract for the contract '[aClass.name/]', when in source the contract code is compiled.
+	 * Return the compiled contract for the contract '[aClass.name/]', when in source the contract code gets compiled.
 	 * @return the compiled contract for '[aClass.name/]'.
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
 	public CompiledContract compiledContract[aClass.name/]() throws InterruptedException, ExecutionException {
-		CompiledContract compiledContract = null;
+		String contractName = "[aClass.name/]";
+		String quallifiedName = "[p.name/].sol:[aClass.name/]";
+		return getCompiledContract(contractName, quallifiedName);
+
+[comment]		CompiledContract compiledContract = null;
 		if (compiledContracts == null){
 			Map<String, CompiledContract> contracts = ethereum.compile(contractSource).get();
 			compiledContract = contracts.get("[aClass.name/]");
@@ -496,7 +502,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 		if(compiledContract == null)
 			throw new IllegalArgumentException("Contract code for '[aClass.name/]' not found");
 
-		return compiledContract;
+		return compiledContract;[/comment]
 	}
 [for (	ev : Operation | aClass.ownedOperation->select(isEvent()))]
 	/**
@@ -515,6 +521,55 @@ public class [p.name.toUpperFirst()/]Deployer {
 
 [/for]
 
+	/**
+	 * Get the compiled contract by name or qualified name.
+	 * @param contractName
+	 * @param qualifiedName
+	 * @return
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	public CompiledContract getCompiledContract(String contractName, String qualifiedName)
+			throws InterruptedException, ExecutionException {
+		CompiledContract compiledContract = contracts.get(qualifiedName==null ? contractName : qualifiedName);
+		if(compiledContract!=null)
+			return compiledContract;
+		
+		if (compiledContracts == null) {
+			Map<String, CompiledContract> contracts = ethereum.compile(contractSource).get();
+			compiledContract = contracts.get(contractName);
+			if (compiledContract == null) {
+				if (qualifiedName == null || qualifiedName.isEmpty())
+					throw new IllegalArgumentException("Qualified name must not be null or empty.");
+
+				Optional<String> optional = contracts.keySet().stream().filter(s -> {
+					return s.endsWith(qualifiedName);
+				}).findFirst();
+				if (optional.isPresent())
+					compiledContract = contracts.get(optional.get());
+			}
+		} else {
+			ContractMetadata contractMetadata = compiledContracts.contracts.get(contractName);
+			if (contractMetadata == null) {
+				if (qualifiedName == null || qualifiedName.isEmpty())
+					throw new IllegalArgumentException("Qualified name must not be null or empty.");
+
+				Optional<String> optional = compiledContracts.contracts.keySet().stream()
+						.filter(s -> s.endsWith(qualifiedName)).findFirst();
+				if (optional.isPresent()) {
+					contractMetadata = compiledContracts.contracts.get(optional.get());
+					compiledContract = CompiledContract.from(null, contractName, contractMetadata);
+				}
+			} else
+				compiledContract = CompiledContract.from(null, contractName, contractMetadata);
+		}
+		if (compiledContract == null)
+			throw new IllegalArgumentException(
+					"Contract code for '" + contractName + "/" + qualifiedName + "' not found");
+
+		contracts.put(qualifiedName==null ? contractName : qualifiedName, compiledContract);
+		return compiledContract;
+	}
 }
 [/file]
 [/template]
