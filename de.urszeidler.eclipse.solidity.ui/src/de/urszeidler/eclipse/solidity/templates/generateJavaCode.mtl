@@ -139,17 +139,17 @@ public class EthereumInstance{
 		if (EI_MAIN.equalsIgnoreCase(property)) {
 			BlockchainConfig.Builder mainNet = EthereumJConfigs.mainNet();
 			// [protected ('for setup the main chain')]
-			[/protected]
+			// [/protected]
 			ethereum = EthereumFacadeProvider.forNetwork(mainNet).create();
 		} else if (EI_TEST.equalsIgnoreCase(property)) {
 			BlockchainConfig.Builder testnet = EthereumJConfigs.etherCampTestnet();
-			//[protected ('for setup the test chain')]
-			[/protected]
+			//  [protected ('for setup the test chain')]
+			// [/protected]
 			ethereum = EthereumFacadeProvider.forNetwork(testnet).create();
 		} else if (EI_ROPSTEN.equalsIgnoreCase(property)) {
 			BlockchainConfig.Builder ropsten = EthereumJConfigs.ropsten();
 			// [protected ('for setup the ropsten chain')]
-			[/protected]
+			// [/protected]
 			ethereum = EthereumFacadeProvider.forNetwork(ropsten).create();
 		} else if (EI_INFURA_ROPSTEN.equalsIgnoreCase(property)) {
 			String apiKey = System.getProperty(PROP_API_KEY);
@@ -168,18 +168,18 @@ public class EthereumInstance{
 			config.reset(true)
 			.initialBalance(new EthAccount(ECKey.fromPrivate(BigInteger.valueOf(100000L))),
 					EthValue.ether(10L));
-			[/protected]
+			// [/protected]
 			ethereum = new PrivateEthereumFacadeProvider().create(config);
 		} else if (EI_CUSTOM.equalsIgnoreCase(property)) {
 			BlockchainConfig.Builder config = BlockchainConfig.builder();
 			// [protected ('for setup the custom chain')]
-			[/protected]
+			// [/protected]
 			ethereum = EthereumFacadeProvider.forNetwork(config).create();
 		}
 		if (ethereum == null) {
 			TestConfig.Builder builder = TestConfig.builder();
 			// [protected ('for setup the standalone chain')]
-			[/protected]
+			// [/protected]
 			ethereum = EthereumFacadeProvider.forTest(builder.build());
 		}
 	}
