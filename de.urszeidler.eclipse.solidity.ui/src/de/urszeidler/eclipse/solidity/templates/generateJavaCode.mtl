@@ -263,7 +263,7 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
 
 	[op.functionSignature()/]
-[/for][for (op : Operation | aClass.allFunctions()->select(isPublic()))]
+[/for][for (op : Operation | aClass.allFunctions()->select(isPublic() and name<>'' and not name.oclIsUndefined() ))]
 
 	[op.functionSignature()/][/for]
 
