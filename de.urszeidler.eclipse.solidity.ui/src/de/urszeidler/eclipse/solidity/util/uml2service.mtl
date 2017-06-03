@@ -189,6 +189,7 @@ or not pa.allInterfaces()->isEmpty()
 [query public isFunction(s : Operation) : Boolean = s.hasStereotype('Function') /]
 [query public isEvent(s : Operation) : Boolean = s.hasStereotype('Event') /]
 [query public isPayable(op : Operation) : Boolean = not op.getStereotypeListValue('Function','modifiers')->select(isPayable())->isEmpty() /]
+[query public isDefaultFunction(f : Operation) : Boolean = f.name.isEmpty() /]
 [query public isPayable(d : OclAny) : Boolean =  if d.eGet('modifier').oclIsUndefined() then false 
 else 
  d.eGet('modifier').eGet('qualifiedName')='types::lang::payable'
@@ -271,6 +272,9 @@ op.getStereotypeListValue('Function','modifier')
 [for (line : String | aString.tokenizeLine())separator (' ')]
 [line/][/for]
 [/template]
+
+
+[query public isEmpty(s : String) : Boolean = s.oclIsUndefined() or s='' /]
 
 
 [comment][query public firstReturnParameter(aOperation : Operation) : Parameter = aOperation.ownedParameter->select(oclAsType(Parameter).direction=ParameterDirectionKind::return)->first() /][/comment]

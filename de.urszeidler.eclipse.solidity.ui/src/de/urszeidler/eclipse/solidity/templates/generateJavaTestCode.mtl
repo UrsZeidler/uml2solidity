@@ -328,7 +328,7 @@ public [if (aClass.isAbstractContract())] abstract [/if]class [aClass.name/]Test
 [for (op : Operation | aClass.allAbstractFunctions()->select(isPublic()))]
 
 	[op.printTestFunction(aClass)/][/for]
-[for (op : Operation | aClass.allFunctions()->select(isPublic()))]
+[for (op : Operation | aClass.allFunctions()->select(isPublic() and not isDefaultFunction()))]
 
 	[op.printTestFunction(aClass)/][/for]
 
