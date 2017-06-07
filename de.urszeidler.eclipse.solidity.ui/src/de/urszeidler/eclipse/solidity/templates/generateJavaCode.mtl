@@ -38,20 +38,22 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.adridadou.ethereum.EthereumFacade;
-import org.adridadou.ethereum.ethj.BlockchainConfig;
+import org.adridadou.ethereum.EthjEthereumFacadeProvider;
+import org.adridadou.ethereum.RpcEthereumFacadeProvider;
+import org.adridadou.ethereum.ethj.EthereumJConfigs;
 import org.adridadou.ethereum.ethj.TestConfig;
-import org.adridadou.ethereum.ethj.provider.EthereumFacadeProvider;
-import org.adridadou.ethereum.ethj.provider.EthereumJConfigs;
-import org.adridadou.ethereum.ethj.provider.PrivateEthereumFacadeProvider;
-import org.adridadou.ethereum.ethj.provider.PrivateNetworkConfig;
-import org.adridadou.ethereum.rpc.provider.EthereumFacadeRpcProvider;
-import org.adridadou.ethereum.rpc.provider.InfuraMainEthereumFacadeProvider;
-import org.adridadou.ethereum.rpc.provider.InfuraRopstenEthereumFacadeProvider;
-import org.adridadou.ethereum.values.EthAccount;
-import org.adridadou.ethereum.values.EthAddress;
-import org.adridadou.ethereum.values.EthValue;
-import org.adridadou.ethereum.values.config.ChainId;
+import org.adridadou.ethereum.ethj.privatenetwork.PrivateEthereumFacadeProvider;
+import org.adridadou.ethereum.ethj.privatenetwork.PrivateNetworkConfig;
+import org.adridadou.ethereum.propeller.EthereumConfig;
+import org.adridadou.ethereum.propeller.EthereumConfig.Builder;
+import org.adridadou.ethereum.propeller.EthereumFacade;
+import org.adridadou.ethereum.propeller.keystore.AccountProvider;
+import org.adridadou.ethereum.propeller.values.EthAccount;
+import org.adridadou.ethereum.propeller.values.EthAddress;
+import org.adridadou.ethereum.propeller.values.EthValue;
+import org.adridadou.ethereum.rpc.EthereumRpcConfig;
+import org.adridadou.ethereum.values.config.BlockchainConfig;
+import org.adridadou.ethereum.propeller.values.ChainId;
 import org.adridadou.ethereum.values.config.InfuraKey;
 import org.ethereum.crypto.ECKey;
 
@@ -69,14 +71,15 @@ public class EthereumInstance{
 	public static final String PROP_API_KEY = "apiKey";
 	public static final String PROP_ETHEREUM_FACADE_PROVIDER = "EthereumFacadeProvider";
 	//the different access technologies
-	public static String EI_MAIN = "main";
-	public static String EI_TEST = "test";
-	public static String EI_ROPSTEN = "ropsten";
-	public static String EI_PRIVATE = "private";
-	public static String EI_RPC = "rpc";
-	public static String EI_INFURA_ROPSTEN = "InfuraRopsten";
-	public static String EI_INFURA_MAIN = "InfuraMain";
-	public static String EI_CUSTOM = "custom";
+	public static final String EI_MAIN = "main";
+	public static final String EI_TEST = "test";
+	public static final String EI_ROPSTEN = "ropsten";
+	public static final String EI_PRIVATE = "private";
+	public static final String EI_RPC = "rpc";
+	public static final String EI_INFURA_ROPSTEN = "InfuraRopsten";
+	public static final String EI_INFURA_MAIN = "InfuraMain";
+	public static final String EI_INFURA_RINKEBY = "InfuraRinkeby";
+	public static final String EI_CUSTOM = "custom";
 	
 	public static Set<String> ALL_RPC = Sets.newHashSet(EI_RPC,EI_INFURA_MAIN,EI_INFURA_ROPSTEN);
 	public static Set<String> ALL_TESTNET = Sets.newHashSet(EI_ROPSTEN,EI_INFURA_ROPSTEN);
@@ -137,50 +140,65 @@ public class EthereumInstance{
 	private void setup() throws Exception {
 		String property = System.getProperty(PROP_ETHEREUM_FACADE_PROVIDER);
 		if (EI_MAIN.equalsIgnoreCase(property)) {
-			BlockchainConfig.Builder mainNet = EthereumJConfigs.mainNet();
+			BlockchainConfig bConfig = EthereumJConfigs.mainNet();
+			Builder config = EthereumConfig.builder();
 			// [protected ('for setup the main chain')]
 			// [/protected]
-			ethereum = EthereumFacadeProvider.forNetwork(mainNet).create();
+			ethereum = EthjEthereumFacadeProvider.forNetwork(bConfig).create(config.build());
 		} else if (EI_TEST.equalsIgnoreCase(property)) {
-			BlockchainConfig.Builder testnet = EthereumJConfigs.etherCampTestnet();
+			BlockchainConfig bConfig = EthereumJConfigs.etherCampTestnet();
+			Builder config = EthereumConfig.builder();
 			//  [protected ('for setup the test chain')]
 			// [/protected]
-			ethereum = EthereumFacadeProvider.forNetwork(testnet).create();
+			ethereum = EthjEthereumFacadeProvider.forNetwork(bConfig).create(config.build());
 		} else if (EI_ROPSTEN.equalsIgnoreCase(property)) {
-			BlockchainConfig.Builder ropsten = EthereumJConfigs.ropsten();
+			BlockchainConfig bConfig = EthereumJConfigs.ropsten();
+			Builder config = EthereumConfig.builder();
 			// [protected ('for setup the ropsten chain')]
 			// [/protected]
-			ethereum = EthereumFacadeProvider.forNetwork(ropsten).create();
-		} else if (EI_INFURA_ROPSTEN.equalsIgnoreCase(property)) {
-			String apiKey = System.getProperty(PROP_API_KEY);
-			ethereum = InfuraRopstenEthereumFacadeProvider.create(new InfuraKey(apiKey));
-		} else if (EI_INFURA_ROPSTEN.equalsIgnoreCase(property)) {
-			String apiKey = System.getProperty(PROP_API_KEY);
-			ethereum = new InfuraMainEthereumFacadeProvider().create(new InfuraKey(apiKey));
-		} else if (EI_RPC.equalsIgnoreCase(property)) {
-			EthereumFacadeRpcProvider rcp = new EthereumFacadeRpcProvider();
-			String url = System.getProperty(PROP_RPC_URL);
-			String chainId = System.getProperty(PROP_CHAIN_ID);
-			ethereum = rcp.create(url, new ChainId((byte) Integer.parseInt(chainId)));
-		} else if (EI_PRIVATE.equalsIgnoreCase(property)) {
-			PrivateNetworkConfig config = PrivateNetworkConfig.config();
-			// [protected ('for setup the private chain')]
-			config.reset(true)
-			.initialBalance(new EthAccount(ECKey.fromPrivate(BigInteger.valueOf(100000L))),
-					EthValue.ether(10L));
-			// [/protected]
-			ethereum = new PrivateEthereumFacadeProvider().create(config);
+			ethereum = EthjEthereumFacadeProvider.forNetwork(bConfig).create(config.build());
 		} else if (EI_CUSTOM.equalsIgnoreCase(property)) {
-			BlockchainConfig.Builder config = BlockchainConfig.builder();
+			BlockchainConfig mainNet = EthereumJConfigs.ropsten();
+			Builder config = EthereumConfig.builder();
 			// [protected ('for setup the custom chain')]
 			// [/protected]
-			ethereum = EthereumFacadeProvider.forNetwork(config).create();
+			ethereum = EthjEthereumFacadeProvider.forNetwork(mainNet).create(config.build());
+		} else if (EI_INFURA_MAIN.equalsIgnoreCase(property)) {
+			String apiKey = System.getProperty(PROP_API_KEY);
+			EthereumRpcConfig config = EthereumRpcConfig.config().build();
+			RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createMain();
+			ethereum = RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRopsten();
+		} else if (EI_INFURA_ROPSTEN.equalsIgnoreCase(property)) {
+			String apiKey = System.getProperty(PROP_API_KEY);
+			EthereumRpcConfig config = EthereumRpcConfig.config().build();
+			RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRopsten();
+			ethereum = RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRopsten();
+		} else if (EI_INFURA_RINKEBY.equalsIgnoreCase(property)) {
+			String apiKey = System.getProperty(PROP_API_KEY);
+			EthereumRpcConfig config = EthereumRpcConfig.config().build();
+			RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRinkeby();
+			ethereum = RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRopsten();
+		} else if (EI_RPC.equalsIgnoreCase(property)) {
+			String url = System.getProperty(PROP_RPC_URL);
+			String chainId = System.getProperty(PROP_CHAIN_ID);
+			EthereumRpcConfig config = EthereumRpcConfig.config().build();
+			ethereum = RpcEthereumFacadeProvider.forRemoteNode(url, ChainId.id(Integer.parseInt(chainId)), config);
+		} else if (EI_PRIVATE.equalsIgnoreCase(property)) {
+			PrivateNetworkConfig config = PrivateNetworkConfig.config();
+			BlockchainConfig builder = BlockchainConfig.builder();
+			// [protected ('for setup the private chain')]
+			config.reset(true)
+			.initialBalance(AccountProvider.fromPrivateKey(BigInteger.valueOf(100000L)),
+					EthValue.ether(10L));
+			// [/protected]
+			PrivateEthereumFacadeProvider ethereumFacadeProvider = new PrivateEthereumFacadeProvider();
+			ethereum = ethereumFacadeProvider.create(config, EthereumConfig.builder().build());
 		}
 		if (ethereum == null) {
 			TestConfig.Builder builder = TestConfig.builder();
 			// [protected ('for setup the standalone chain')]
 			// [/protected]
-			ethereum = EthereumFacadeProvider.forTest(builder.build());
+			ethereum = EthjEthereumFacadeProvider.forTest(builder.build());
 		}
 	}
 
@@ -226,7 +244,7 @@ public class EthereumInstance{
 package [p.getInterfacePackagePrefix()/].[p.name/];
 
 import java.util.concurrent.CompletableFuture;
-import org.adridadou.ethereum.values.EthAddress;
+import org.adridadou.ethereum.propeller.values.EthAddress;
 [for (pi : PackageImport | p.allImports() )]
 import [pi.target.oclAsType(Package).toPackage()/].*;
 [/for]
@@ -285,33 +303,34 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/deployer/'+p.name.toUpperFirst()+'Deployer.java', false, 'UTF-8')]
 package [p.getInterfacePackagePrefix()/].deployer;
 
-import rx.Observable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Map;
+import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.adridadou.ethereum.EthereumFacade;
-import org.adridadou.ethereum.values.CompiledContract;
-import org.adridadou.ethereum.values.EthAccount;
-import org.adridadou.ethereum.values.EthAddress;
-import org.adridadou.ethereum.values.SoliditySource;
+import org.adridadou.ethereum.propeller.EthereumFacade;
+import org.adridadou.ethereum.propeller.solidity.SolidityContractDetails;
+import org.adridadou.ethereum.propeller.solidity.SolidityEvent;
+import org.adridadou.ethereum.propeller.values.EthAccount;
+import org.adridadou.ethereum.propeller.values.EthAddress;
+import org.adridadou.ethereum.propeller.values.SoliditySource;
+import org.adridadou.ethereum.propeller.values.SoliditySourceFile;
 import org.apache.commons.io.IOUtils;
 import org.ethereum.solidity.compiler.CompilationResult;
 import org.ethereum.solidity.compiler.CompilationResult.ContractMetadata;
 
+import rx.Observable;
 
 import [p.getInterfacePackagePrefix()/].EthereumInstance;
 import [p.getInterfacePackagePrefix()/].EthereumInstance.DeployDuo;
 
 import [p.getInterfacePackagePrefix()/].[p.name/].*;
-
-
 
 
 /**
@@ -321,9 +340,9 @@ import [p.getInterfacePackagePrefix()/].[p.name/].*;
 public class [p.name.toUpperFirst()/]Deployer {
 
 	private EthereumFacade ethereum;
-	private SoliditySource contractSource;
+	private SoliditySourceFile contractSource;
 	private CompilationResult compiledContracts;
-	private Map<String,CompiledContract> contracts = new HashMap<String, CompiledContract>();
+	private Map<String, SolidityContractDetails> contracts = new HashMap<>();
 	private static String filename = "[if (p.getContractPathForJava()<>'')]/[p.getContractPathForJava()/][/if]/[p.name/].sol";
 
 	/**
@@ -378,13 +397,14 @@ public class [p.name.toUpperFirst()/]Deployer {
 	public void setContractSource(String contractSourceFile, boolean compiled) {
 		try {
 			if (!compiled) {
-				contractSource = SoliditySource.from(this.getClass().getResourceAsStream(contractSourceFile));
+		        File contractSrc = new File(this.getClass().getResource(contractSourceFile).toURI());
+				contractSource = SoliditySource.from(contractSrc);
 			} else {
 				String rawJson = IOUtils.toString(this.getClass().getResourceAsStream(contractSourceFile),
 						EthereumFacade.CHARSET);
 				compiledContracts = CompilationResult.parse(rawJson);
 			}
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
@@ -402,7 +422,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @throws ExecutionException
 	 */
 	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender) throws InterruptedException, ExecutionException{
-		CompiledContract compiledContract = compiledContract[aClass.name/]();
+		SolidityContractDetails compiledContract = compiledContract[aClass.name/]();
 		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender);
 		return address;
 	}
@@ -434,7 +454,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @throws ExecutionException
 	 */
 	public CompletableFuture<EthAddress> deploy[aClass.name/](EthAccount sender[for (p : Parameter | op.allInParameters())], [p.type.toJavaType()/] [p.name/][/for]) throws InterruptedException, ExecutionException {
-		CompiledContract compiledContract = compiledContract[aClass.name/]();
+		SolidityContractDetails compiledContract = compiledContract[aClass.name/]();
 		CompletableFuture<EthAddress> address = ethereum.publishContract(compiledContract, sender[for (p : Parameter | op.allInParameters())], [p.name/][/for]);
 		return address;
 	}
@@ -463,7 +483,7 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @return the contract interface
 	 */
 	public [aClass.name/] create[aClass.name/]Proxy(EthAccount sender, EthAddress address) throws IOException, InterruptedException, ExecutionException {
-		CompiledContract compiledContract = compiledContract[aClass.name/]();
+		SolidityContractDetails compiledContract = compiledContract[aClass.name/]();
 		[aClass.name/] [aClass.name.toLowerCase()/] = ethereum.createContractProxy(compiledContract, address, sender, [aClass.name/].class);
 		return [aClass.name.toLowerCase()/];
 	}
@@ -474,35 +494,10 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public CompiledContract compiledContract[aClass.name/]() throws InterruptedException, ExecutionException {
+	public SolidityContractDetails compiledContract[aClass.name/]() throws InterruptedException, ExecutionException {
 		String contractName = "[aClass.name/]";
 		String quallifiedName = "[p.name/].sol:[aClass.name/]";
 		return getCompiledContract(contractName, quallifiedName);
-
-[comment]		CompiledContract compiledContract = null;
-		if (compiledContracts == null){
-			Map<String, CompiledContract> contracts = ethereum.compile(contractSource).get();
-			compiledContract = contracts.get("[aClass.name/]");
-			if (compiledContract == null) {
-				Optional<String> optional = contracts.keySet().stream().filter(s -> s.endsWith("[p.name/].sol:[aClass.name/]"))
-						.findFirst();
-				if (optional.isPresent())
-					compiledContract = contracts.get(optional.get());
-			}
-		} else {
-			ContractMetadata contractMetadata = compiledContracts.contracts.get("[aClass.name/]");
-			if (contractMetadata == null) {
-				Optional<String> optional = compiledContracts.contracts.keySet().stream()
-						.filter(s -> s.endsWith("[p.name/].sol:[aClass.name/]")).findFirst();
-				if (optional.isPresent())
-					contractMetadata = compiledContracts.contracts.get(optional.get());
-			}
-			compiledContract = CompiledContract.from(null, "[aClass.name/]", contractMetadata);
-		}
-		if(compiledContract == null)
-			throw new IllegalArgumentException("Contract code for '[aClass.name/]' not found");
-
-		return compiledContract;[/comment]
 	}
 [for (	ev : Operation | aClass.ownedOperation->select(isEvent()))]
 	/**
@@ -513,12 +508,14 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @throws ExecutionException
 	 */
 	public Observable<[ev.eventName()/]> observe[ev.eventName()/](EthAddress address) throws InterruptedException, ExecutionException {
-		CompiledContract compiledContract = compiledContract[aClass.name/]();
-		Observable<[ev.eventName()/]> observeEvents = ethereum.observeEvents(compiledContract.getAbi(), address, "[ev.name/]", [ev.eventName()/].class);
-		return observeEvents;
+		SolidityContractDetails compiledContract = compiledContractJavaEventExample();
+		Optional<SolidityEvent<[ev.eventName()/]>> eventDefinition = ethereum.findEventDefinition(compiledContract, "Event1", [ev.eventName()/].class);
+		if(!eventDefinition.isPresent())
+			throw new IllegalArgumentException("Event 'Event1' not found in contract definition."); 
+			
+		return ethereum.observeEvents(eventDefinition.get(), address);
 	}
 [/for]
-
 [/for]
 
 	/**
@@ -529,24 +526,23 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public CompiledContract getCompiledContract(String contractName, String qualifiedName)
+	public SolidityContractDetails getCompiledContract(String contractName, String qualifiedName)
 			throws InterruptedException, ExecutionException {
-		CompiledContract compiledContract = contracts.get(qualifiedName==null ? contractName : qualifiedName);
-		if(compiledContract!=null)
+		SolidityContractDetails solidityContractDetails = null;
+		SolidityContractDetails compiledContract = contracts.get(qualifiedName == null ? contractName : qualifiedName);
+		if (compiledContract != null)
 			return compiledContract;
-		
-		if (compiledContracts == null) {
-			Map<String, CompiledContract> contracts = ethereum.compile(contractSource).get();
-			compiledContract = contracts.get(contractName);
-			if (compiledContract == null) {
-				if (qualifiedName == null || qualifiedName.isEmpty())
-					throw new IllegalArgumentException("Qualified name must not be null or empty.");
 
-				Optional<String> optional = contracts.keySet().stream().filter(s -> {
-					return s.endsWith(qualifiedName);
-				}).findFirst();
-				if (optional.isPresent())
-					compiledContract = contracts.get(optional.get());
+		if (compiledContracts == null) {
+			org.adridadou.ethereum.propeller.solidity.CompilationResult compilationResult = ethereum
+					.compile(contractSource);
+			Optional<SolidityContractDetails> contract = compilationResult.findContract(contractName);
+			if (contract.isPresent()) {
+				solidityContractDetails = contract.get();
+			} else {
+				contract = compilationResult.findContract(qualifiedName);
+				if (contract.isPresent())
+					solidityContractDetails = contract.get();
 			}
 		} else {
 			ContractMetadata contractMetadata = compiledContracts.contracts.get(contractName);
@@ -558,16 +554,16 @@ public class [p.name.toUpperFirst()/]Deployer {
 						.filter(s -> s.endsWith(qualifiedName)).findFirst();
 				if (optional.isPresent()) {
 					contractMetadata = compiledContracts.contracts.get(optional.get());
-					compiledContract = CompiledContract.from(null, contractName, contractMetadata);
 				}
-			} else
-				compiledContract = CompiledContract.from(null, contractName, contractMetadata);
+			}
+			solidityContractDetails = new SolidityContractDetails(contractMetadata.abi, contractMetadata.bin,
+					contractMetadata.metadata);
 		}
-		if (compiledContract == null)
+		if (solidityContractDetails == null)
 			throw new IllegalArgumentException(
 					"Contract code for '" + contractName + "/" + qualifiedName + "' not found");
 
-		contracts.put(qualifiedName==null ? contractName : qualifiedName, compiledContract);
+		contracts.put(qualifiedName == null ? contractName : qualifiedName, solidityContractDetails);
 		return compiledContract;
 	}
 }
@@ -807,7 +803,7 @@ arg[p.indexInContainer()/][else]
 [template public javaReturn(op : Operation)]
 [if (op.isReturnConstant())]
 [op.returnType()/][elseif(op.isPayable())]
-org.adridadou.ethereum.values.Payable<[op.returnType()/]>[else]
+org.adridadou.ethereum.propeller.values.Payable<[op.returnType()/]>[else]
 java.util.concurrent.CompletableFuture<[op.returnType()/]>[/if]
 [/template]
 
