@@ -500,18 +500,21 @@ public class [p.name.toUpperFirst()/]Deployer {
 		return getCompiledContract(contractName, quallifiedName);
 	}
 [for (	ev : Operation | aClass.ownedOperation->select(isEvent()))]
+
 	/**
-	 * 
+	 *  Create an observable for the event [ev.name/] of the contract [aClass.name/]
+	 *  deployed at the given address.
+	 *
 	 * @param address
 	 * @return
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
 	public Observable<[ev.eventName()/]> observe[ev.eventName()/](EthAddress address) throws InterruptedException, ExecutionException {
-		SolidityContractDetails compiledContract = compiledContractJavaEventExample();
-		Optional<SolidityEvent<[ev.eventName()/]>> eventDefinition = ethereum.findEventDefinition(compiledContract, "Event1", [ev.eventName()/].class);
+		SolidityContractDetails compiledContract = compiledContract[aClass.name/]();
+		Optional<SolidityEvent<[ev.eventName()/]>> eventDefinition = ethereum.findEventDefinition(compiledContract, "[ev.name/]", [ev.eventName()/].class);
 		if(!eventDefinition.isPresent())
-			throw new IllegalArgumentException("Event 'Event1' not found in contract definition."); 
+			throw new IllegalArgumentException("Event '[ev.name/]' not found in contract definition."); 
 			
 		return ethereum.observeEvents(eventDefinition.get(), address);
 	}
@@ -528,7 +531,6 @@ public class [p.name.toUpperFirst()/]Deployer {
 	 */
 	public SolidityContractDetails getCompiledContract(String contractName, String qualifiedName)
 			throws InterruptedException, ExecutionException {
-		SolidityContractDetails solidityContractDetails = null;
 		SolidityContractDetails compiledContract = contracts.get(qualifiedName == null ? contractName : qualifiedName);
 		if (compiledContract != null)
 			return compiledContract;
@@ -538,11 +540,11 @@ public class [p.name.toUpperFirst()/]Deployer {
 					.compile(contractSource);
 			Optional<SolidityContractDetails> contract = compilationResult.findContract(contractName);
 			if (contract.isPresent()) {
-				solidityContractDetails = contract.get();
+				compiledContract = contract.get();
 			} else {
 				contract = compilationResult.findContract(qualifiedName);
 				if (contract.isPresent())
-					solidityContractDetails = contract.get();
+					compiledContract = contract.get();
 			}
 		} else {
 			ContractMetadata contractMetadata = compiledContracts.contracts.get(contractName);
@@ -556,14 +558,14 @@ public class [p.name.toUpperFirst()/]Deployer {
 					contractMetadata = compiledContracts.contracts.get(optional.get());
 				}
 			}
-			solidityContractDetails = new SolidityContractDetails(contractMetadata.abi, contractMetadata.bin,
+			compiledContract = new SolidityContractDetails(contractMetadata.abi, contractMetadata.bin,
 					contractMetadata.metadata);
 		}
-		if (solidityContractDetails == null)
+		if (compiledContract == null)
 			throw new IllegalArgumentException(
 					"Contract code for '" + contractName + "/" + qualifiedName + "' not found");
 
-		contracts.put(qualifiedName == null ? contractName : qualifiedName, solidityContractDetails);
+		contracts.put(qualifiedName == null ? contractName : qualifiedName, compiledContract);
 		return compiledContract;
 	}
 }
