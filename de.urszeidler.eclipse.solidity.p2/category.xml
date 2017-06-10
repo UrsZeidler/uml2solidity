@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.urszeidler.eclipse.solidity.feature_1.1.1.qualifier.jar" id="de.urszeidler.eclipse.solidity.feature" version="1.1.1.qualifier">
+   <feature url="features/de.urszeidler.eclipse.solidity.feature_1.1.2.qualifier.jar" id="de.urszeidler.eclipse.solidity.feature" version="1.1.2.qualifier">
       <category name="solidity"/>
    </feature>
-   <feature url="features/de.urszeidler.eclipse.solidity.generation.example.feature_1.1.1.qualifier.jar" id="de.urszeidler.eclipse.solidity.generation.example.feature" version="1.1.1.qualifier">
+   <feature url="features/de.urszeidler.eclipse.solidity.generation.example.feature_1.1.2.qualifier.jar" id="de.urszeidler.eclipse.solidity.generation.example.feature" version="1.1.2.qualifier">
       <category name="examples"/>
    </feature>
-   <feature url="features/de.urszeidler.eclipse.solidity.compiler.support.feature_1.1.1.qualifier.jar" id="de.urszeidler.eclipse.solidity.compiler.support.feature" version="1.1.1.qualifier">
+   <feature url="features/de.urszeidler.eclipse.solidity.compiler.support.feature_1.1.2.qualifier.jar" id="de.urszeidler.eclipse.solidity.compiler.support.feature" version="1.1.2.qualifier">
       <category name="solidity-compiler-support"/>
+   </feature>
+   <feature url="features/de.urszeidler.eclipse.solidity.dependencies.feature_1.1.2.qualifier.jar" id="de.urszeidler.eclipse.solidity.dependencies.feature" version="1.1.2.qualifier">
+      <category name="dependencies"/>
    </feature>
    <category-def name="solidity" label="solidity">
       <description>
@@ -22,6 +25,11 @@
    <category-def name="examples" label="examples">
       <description>
          Some additional example model to text transformations.
+      </description>
+   </category-def>
+   <category-def name="dependencies" label="dependency feature">
+      <description>
+         The dependency feature. Installs papyrus sdk when not already installed.
       </description>
    </category-def>
    <repository-reference location="http://download.eclipse.org/releases/mars/" enabled="true" />
