@@ -63,7 +63,20 @@ import com.google.common.collect.Sets;
 
 /**
  * A simple singleton to control the access for the ethereum instance.<br/>
- * The created instance is controllable by system a system property 'EthereumFacadeProvider'.
+ * The created instance is controllable by system a system property
+ * 'EthereumFacadeProvider'.<br/>
+ * main - for the main net<br/>
+ * test - for the main net<br/>
+ * ropsten - for the new testnet<br/>
+ * InfuraMain - for the main net over infura rcp<br/>
+ * InfuraRopsten - for the ropsten testnet over infura rcp<br/>
+ * InfuraRinkeby - for the rinkeby testnet over infura rcp<br/>
+ * InfuraKovan - for the kovan testnet over infura rcp<br/>
+ * -- apiKey - for all infura connection you will need an aip key<br/>
+ * rpc - to use a rpc instance<br/>
+ * -- rpc-url - the url<br/>
+ * -- chain-id - the chain id<br/>
+ * private - for a private chain<br/>
  */
 public class EthereumInstance{
 	public static final String PROP_CHAIN_ID = "chain-id";
@@ -72,17 +85,22 @@ public class EthereumInstance{
 	public static final String PROP_ETHEREUM_FACADE_PROVIDER = "EthereumFacadeProvider";
 	//the different access technologies
 	public static final String EI_MAIN = "main";
-	public static final String EI_TEST = "test";
+	public static final String EI_TEST = "camptestnet";
 	public static final String EI_ROPSTEN = "ropsten";
 	public static final String EI_PRIVATE = "private";
 	public static final String EI_RPC = "rpc";
 	public static final String EI_INFURA_ROPSTEN = "InfuraRopsten";
 	public static final String EI_INFURA_MAIN = "InfuraMain";
 	public static final String EI_INFURA_RINKEBY = "InfuraRinkeby";
+	public static final String EI_INFURA_KOVAN = "InfuraKovan";
 	public static final String EI_CUSTOM = "custom";
 	
-	public static Set<String> ALL_RPC = Sets.newHashSet(EI_RPC,EI_INFURA_MAIN,EI_INFURA_ROPSTEN);
-	public static Set<String> ALL_TESTNET = Sets.newHashSet(EI_ROPSTEN,EI_INFURA_ROPSTEN);
+	public final static Set<String> ALL_RPC = Sets.newHashSet(EI_RPC, EI_INFURA_MAIN, EI_INFURA_ROPSTEN, EI_INFURA_RINKEBY,
+			EI_INFURA_KOVAN);
+	public final static Set<String> ALL_INFURA = Sets.newHashSet(EI_INFURA_MAIN, EI_INFURA_ROPSTEN, EI_INFURA_RINKEBY,
+			EI_INFURA_KOVAN);
+	public final static Set<String> ALL_TESTNET = Sets.newHashSet(EI_ROPSTEN, EI_TEST, EI_INFURA_ROPSTEN, EI_INFURA_RINKEBY,
+			EI_INFURA_KOVAN);
 
 	private static EthereumInstance instance;
 	private static Lock instanceLock = new ReentrantLock();
@@ -128,9 +146,13 @@ public class EthereumInstance{
 	 * Setup up the blockchain. Add the 'EthereumFacadeProvider' property to use 
 	 * another block chain implementation or network.<br/>
 	 * main - for the main net<br/>
-	 * test - for the main net<br/>
+	 * test - for the CampTest net<br/>
 	 * ropsten - for the new testnet<br/>
-	 * InfuraRopsten - for the new testnet over infura rcp<br/>
+	 * InfuraMain - for the main net over infura rcp<br/>
+	 * InfuraRopsten - for the ropsten testnet over infura rcp<br/>
+	 * InfuraRinkeby - for the rinkeby testnet over infura rcp<br/>
+	 * InfuraKovan - for the kovan testnet over infura rcp<br/>
+	 * -- apiKey - for all infura connection you will need an aip key<br/>
 	 * rpc - to use a rpc instance<br/>
 	 * -- rpc-url - the url<br/>
 	 * -- chain-id - the chain id<br/>
@@ -166,18 +188,19 @@ public class EthereumInstance{
 		} else if (EI_INFURA_MAIN.equalsIgnoreCase(property)) {
 			String apiKey = System.getProperty(PROP_API_KEY);
 			EthereumRpcConfig config = EthereumRpcConfig.config().build();
-			RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createMain();
-			ethereum = RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRopsten();
+			ethereum = RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createMain();
 		} else if (EI_INFURA_ROPSTEN.equalsIgnoreCase(property)) {
 			String apiKey = System.getProperty(PROP_API_KEY);
 			EthereumRpcConfig config = EthereumRpcConfig.config().build();
-			RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRopsten();
 			ethereum = RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRopsten();
 		} else if (EI_INFURA_RINKEBY.equalsIgnoreCase(property)) {
 			String apiKey = System.getProperty(PROP_API_KEY);
 			EthereumRpcConfig config = EthereumRpcConfig.config().build();
-			RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRinkeby();
-			ethereum = RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRopsten();
+			ethereum = RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createRinkeby();
+		} else if (EI_INFURA_KOVAN.equalsIgnoreCase(property)) {
+			String apiKey = System.getProperty(PROP_API_KEY);
+			EthereumRpcConfig config = EthereumRpcConfig.config().build();
+			ethereum = RpcEthereumFacadeProvider.forInfura(InfuraKey.of(apiKey), config).createKovan();
 		} else if (EI_RPC.equalsIgnoreCase(property)) {
 			String url = System.getProperty(PROP_RPC_URL);
 			String chainId = System.getProperty(PROP_CHAIN_ID);
