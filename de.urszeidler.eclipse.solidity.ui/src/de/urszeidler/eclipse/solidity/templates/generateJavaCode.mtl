@@ -72,7 +72,7 @@ import com.google.common.collect.Sets;
  * InfuraRopsten - for the ropsten testnet over infura rcp<br/>
  * InfuraRinkeby - for the rinkeby testnet over infura rcp<br/>
  * InfuraKovan - for the kovan testnet over infura rcp<br/>
- * -- apiKey - for all infura connection you will need an aip key<br/>
+ * -- apiKey - for all infura connection you will need an api key<br/>
  * rpc - to use a rpc instance<br/>
  * -- rpc-url - the url<br/>
  * -- chain-id - the chain id<br/>
@@ -152,7 +152,7 @@ public class EthereumInstance{
 	 * InfuraRopsten - for the ropsten testnet over infura rcp<br/>
 	 * InfuraRinkeby - for the rinkeby testnet over infura rcp<br/>
 	 * InfuraKovan - for the kovan testnet over infura rcp<br/>
-	 * -- apiKey - for all infura connection you will need an aip key<br/>
+	 * -- apiKey - for all infura connection you will need an api key<br/>
 	 * rpc - to use a rpc instance<br/>
 	 * -- rpc-url - the url<br/>
 	 * -- chain-id - the chain id<br/>
