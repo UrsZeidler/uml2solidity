@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="de.urszeidler.eclipse.solidity.um2solidity.m2t">
+      <acceleo_generator
+            estimated_work="10"
+            generator_class="de.urszeidler.eclipse.solidity.generation.primefaces.templates.GenerateTaglibs"
+            generator_description="Generates taglibs and templates for all contracts."
+            generator_id="de.urszeidler.eclipse.solidity.generation.primefaces.taglib.generator"
+            generator_name="generateTaglib"
+            generator_target="de.urszeidler.eclipse.solidity.generation.primefaces.taglib.target">
+      </acceleo_generator>
+      <acceleo_generator
+            estimated_work="10"
+            generator_class="de.urszeidler.eclipse.solidity.generation.primefaces.templates.GenerateContractBeans"
+            generator_description="Generates a session bean to hold the contract state."
+            generator_id="de.urszeidler.eclipse.solidity.generation.primefaces.contractBean.generator"
+            generator_name="generateContracurszeidler.tBean"
+            generator_target="de.urszeidler.eclipse.solidity.generation.primefaces.contractBean.target">
+      </acceleo_generator>
+   </extension>
+   <extension
+         point="de.urszeidler.eclipse.solidity.um2solidity.m2t.laucherTab">
+      <uml2solidityLauchTab
+            id="de.urszeidler.eclipse.solidity.generation.primefaces.LauchTab"
+            tab_class="de.urszeidler.eclipse.solidity.generation.primefaces.launch.PrimefacesLaunchConfigurationTab">
+      </uml2solidityLauchTab>
+   </extension>
+
+</plugin>

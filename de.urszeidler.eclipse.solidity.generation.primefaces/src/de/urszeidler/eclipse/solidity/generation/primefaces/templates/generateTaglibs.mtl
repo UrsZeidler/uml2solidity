@@ -1,0 +1,296 @@
+[comment encoding = UTF-8 /]
+[module generateTaglibs('http://www.eclipse.org/uml2/5.0.0/UML')/]
+
+[import de::urszeidler::eclipse::solidity::util::uml2service /]
+[import de::urszeidler::eclipse::solidity::generation::primefaces::templates::generateContractBeans /]
+[import de::urszeidler::eclipse::solidity::templates::generateJavaCode /]
+
+[**
+ * The documentation of the template generateElement.
+ * @param aClass
+ */]
+[template public generateElement(aModel : Model)]
+[comment @main/]
+[comment][generatePackage(aModel)/][/comment]
+[iteratePackages(aModel)/]
+[/template]
+
+[**
+ * Iterates over the packages.
+*/]
+[template private iteratePackages(p : Package)]
+[for (p1 : Package | p.nestedPackage)]
+[if (isGeneratePackage(p1))]
+[generatePackage(p1)/]
+[/if]
+[iteratePackages(p1)/]
+[/for]
+[/template]
+
+[template private generatePackage(p : Package)?(isGeneratePackage(p))]
+[generateTaglibFile(p)/]
+[for (c : Class | p.allContracts())]
+[generateDefaultTemplateFile(c)/]
+[generateAttributesTemplateFile(c)/]
+[for (o : Operation | c.allPublicInterfaceFunctionsNonConst())]
+[o.generateOperationTemplateFile()/]
+[/for]
+[for (s : Classifier |  c.nestedClassifier->select(isStruct()) )]
+[s.generateStructTemplateFile()/]
+[/for]
+[/for]
+[/template]
+
+
+[template public generateTaglibFile(p : Package)]
+[file (p.toTaglibFileName(), false, 'UTF-8')]
+<?xml version="1.0"?>
+<!DOCTYPE facelet-taglib PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+  "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
+<facelet-taglib>
+	<namespace>[p.toNameSpace()/]</namespace>
+[for (c : Class | p.allContracts())]
+	<tag>
+		<tag-name>[c.toDefaultTagName()/]</tag-name>
+		<source>[c.toDefaultTemplatePath()/]</source>
+	</tag>
+	<tag>
+		<tag-name>[c.toAttributeTagName()/]</tag-name>
+		<source>[c.toAttributeTemplatePath()/]</source>
+	</tag>
+[for (o : Operation | c.allPublicInterfaceFunctionsNonConst())]
+	<tag>
+		<tag-name>[o.toOperationTagName()/]</tag-name>
+		<source>[o.toOperationTemplatePath()/]</source>
+	</tag>
+[/for]
+[for (s : Classifier |  c.nestedClassifier->select(isStruct()) )]
+	<tag>
+		<tag-name>[s.toStructTagName()/]</tag-name>
+		<source>[s.toStructTemplatePath()/]</source>
+	</tag>
+[/for]
+[/for]
+</facelet-taglib>
+[/file]
+	
+[/template]
+
+
+[template public generateStructTemplateFile(s: Classifier)]
+[file (s.toStructTemplatePath(), false, 'UTF-8')]
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+	<ui:composition>
+		<p:tab title="[s.toStructTypeName() /]" class="ui-g">
+			[s.printStructPlain()/]
+		</p:tab>
+	</ui:composition>
+</h:body>
+</html>		
+[/file]
+[/template]
+
+[template public generateOperationTemplateFile(o: Operation)]
+[file (o.toOperationTemplatePath(), false, 'UTF-8')]
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+	<ui:composition>
+		[o.printOperationPlain()/]
+	</ui:composition>
+</h:body>
+</html>		
+[/file]
+[/template]
+
+
+[template private iterateMapping(c : Class, string : String)]
+[for (p : Property | c.allMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
+[ string /]
+[p.printMapping(value)/]
+[/let]
+[/for]
+[for (p : Property | c.allKeyMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
+[p.printMapping(value)/]
+[/let]
+[/for]
+
+[/template]
+
+[template public generateDefaultTemplateFile(c : Class)]
+	
+[file (c.toDefaultTemplatePath(), false, 'UTF-8')]
+<html xmlns="http://www.w3.org/1999/xhtml"
+ 	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:[c._package.toNameSpacePrefix()/]="[c._package.toNameSpace()/]">
+    <h:body>
+       <ui:composition>
+
+			<p:tabView id="contract_#{contract.address}">
+				<[c._package.toNameSpacePrefix()/]:[c.toAttributeTagName()/] contract="#{contract}"/>
+
+[for (p : Property | c.allMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
+[p.printMapping(value)/]
+[/let]
+[/for]
+[for (p : Property | c.allKeyMappingSubAttributes())]
+[let value : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
+[p.printMapping(value)/]
+[/let]
+[/for]
+[for (op : Operation | c.allPublicInterfaceFunctionsNonConst())]
+[op.printOperation()/]
+[/for]
+
+[comment][for (prop : Property | c.attribute->select(hasStereotype('Delegate')))]
+
+[printDelegateOperations(prop)/]
+[/for]
+[for (prop : Property | aClass.allGetterProperties())]
+[printGetterSetter(prop)/][/for][/comment]
+			</p:tabView>
+       </ui:composition>
+    </h:body>
+</html>
+[/file]
+	
+[/template]
+
+[template public printOperation(o : Operation)]
+				<p:tab title="[o.name/]" class="ui-g"
+					id="contract_operation_[o.toOperationId()/]">
+					[o.printOperationPlain()/]
+				</p:tab>
+[/template]
+
+
+[template public printOperationPlain(o : Operation)]
+<h:form id="contract_[o.toOperationId()/]_operation">
+[for (p : Parameter | o.allInParameters())]
+	<div id="contract.[p.name.toLower()/]">
+		<div class="ui-g-4">[p.name/]</div>
+		<div class="ui-g-8">
+			<p:inputText id="contract_[o.toOperationId()/]_[p.name/]"
+				value="#{contract.[o.toOperationId()/].[p.name/]}"></p:inputText>
+		</div>
+	</div>
+[/for]
+	<p:commandButton update="#{update}" value="[o.toOperationId()/]"
+		actionListener="#{contract.[o.toOperationId()/].execute}" />
+</h:form>
+[/template]
+
+
+[template public printStructPlain(s : Classifier)]
+[for (p : Property | s.attribute)]
+<div class="ui-g-3">[p.name/]</div>
+<div class="ui-g-9">#{e.[p.name/]}</div>
+[/for][/template]
+
+[template public printMapping (p : Property, c : Classifier) ]
+
+				<p:tab title="[p.name /]">
+					<div class="ui-g" id="conttract_[p.name/]List">
+						<c:forEach items="#{contract.[p.name/]}" var="e">
+							<div class="ui-g-3">version</div>
+							<div class="ui-g-9">#{e.version}</div>
+							<div class="ui-g-3">at</div>
+							<div class="ui-g-9">#{e.date}</div>
+							<div class="ui-g-3">checksum</div>
+							<div class="ui-g-9">#{e.checksum}</div>
+							<p:separator style="" class="ui-g-12" />
+						</c:forEach>
+					</div>
+				</p:tab>
+[/template]
+
+[template public generateAttributesTemplateFile(c : Class)]
+[file (c.toAttributeTemplatePath(), false, 'UTF-8')]
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+	<ui:composition>
+		[c.printAttributesTab()/]
+	</ui:composition>
+</h:body>
+</html>		
+[/file]
+[/template]
+
+
+[template public printAttributesTab(c : Class)]
+<p:tab closable="false" id="contract_attributes1_#{contract.address}"
+	title="Attribute #{contract.name()}">
+	<div class="ui-g" id="contract_address">
+		<div class="ui-g-4">address</div>
+		<div id="contract_address_value_#{contract.address}" class="ui-g-8">#{contract.address}</div>
+	</div>
+	[c.printAttributesPlain()/]
+</p:tab>
+[/template]
+
+
+[template public printAttributesPlain(c : Class)]
+[for (p : Property | c.allAttributes())]
+<div class="ui-g" id="[p.toContractAttributeId()/]">
+	<div class="ui-g-4">[p.name/]</div>
+	<div id="[p.toContractAttributeValue()/]_#{contract.address}"  class="ui-g-8">#{contract.[p.name/]()}</div>
+</div>
+[/for]
+[/template]
+
+[query public toNameSpace(p : Package) : String = 'http://urszeidler.de/facelets/ethereum/'+p.name.toLower() /]
+[query public toNameSpacePrefix(p : Package) : String = p.name.toLower()/]
+
+
+[query public toContractAttributeValue(p : Property) : String = p.toContractAttributeId()+'_value' /]
+[query public toContractAttributeId(p : Property) : String = 'contract_'+p.toContractAttribute() /]
+[query public toContractAttribute(p : Property) : String = p.name.toLower() /]
+
+
+[query public toTaglibFileName(p : Package) : String = p.name.toLowerFirst().concat('.taglib.xml') /]
+
+[query public toAttributeTagName(c : Class) : String = c.name.toLowerFirst().concat('Attributes') /]
+[query public toAttributeTemplatePath(c : Class) : String = c.templatePath()+ '/'+c.toAttributeTagName()+'.xhtml' /]
+
+[query public toOperationTagName(o : Operation) : String = o.toOperationId() /]
+[query public toOperationTemplatePath(o : Operation) : String = o.templatePath()+ '/'+o.toOperationTagName()+'.xhtml' /]
+
+[query public toStructTagName(s : Classifier) : String = s.name.toLowerFirst() /]
+[query public toStructTemplatePath(s : Classifier) : String = s.templatePath()+ '/'+s.toStructTagName()+'.xhtml' /]
+
+[query public toDefaultTagName(c : Class) : String = c.name.toLowerFirst() /]
+[query public toDefaultTemplatePath(c : Class) : String = c.templatePath()+ '/'+c.toDefaultTagName()+'.xhtml' /]
+[query public templatePath(c : OclAny) : String = 'templates' /]
+
