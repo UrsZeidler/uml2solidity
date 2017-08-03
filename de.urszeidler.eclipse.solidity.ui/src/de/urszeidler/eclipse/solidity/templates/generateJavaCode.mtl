@@ -322,6 +322,12 @@ public interface [aClass.name/][aClass.contractExtends()/]{[comment]TODO: for no
 [/file]
 [/template]
 
+[query public deployerName(p : Package) : String = p.name.toUpperFirst()+'Deployer' /]
+[query public deployerPackage(p : Package) : String = p.getInterfacePackagePrefix()+'.deployer' /]
+
+[query public hasConstructors(c : Class) : Boolean = not c.allConstructors()->isEmpty() /]
+
+
 [template public generateDeployer(p : Package)]
 [file (p.getInterfacePackagePrefix().replaceAll('\\.', '/')+'/deployer/'+p.name.toUpperFirst()+'Deployer.java', false, 'UTF-8')]
 package [p.getInterfacePackagePrefix()/].deployer;
@@ -360,7 +366,7 @@ import [p.getInterfacePackagePrefix()/].[p.name/].*;
  * The deployer for the [p.name/] package.
  *
  */
-public class [p.name.toUpperFirst()/]Deployer {
+public class [p.deployerName()/] {
 
 	private EthereumFacade ethereum;
 	private SoliditySourceFile contractSource;
