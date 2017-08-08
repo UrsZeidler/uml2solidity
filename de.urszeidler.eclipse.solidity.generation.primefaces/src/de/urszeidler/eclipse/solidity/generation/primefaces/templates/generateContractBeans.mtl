@@ -57,6 +57,9 @@
 [query public beanPackagePath(p : Package) : String = p.beanPackage().replaceAll('\\.', '/') /]
 
 
+[query public contractAddressField(c : Class) : String = c.name.toLowerFirst()+'Address' /]
+
+
 [query public allPublicInterfaceFunctions(c : Class) : Sequence(Operation) = c.allFunctions()->select(isPublic() and not isDefaultFunction() )
 -> asSequence()->union(c.allAbstractFunctions()->select(isPublic()))
  /]
@@ -174,7 +177,7 @@ import [p.deployerPackage()/].[p.deployerName()/];
 
 
 /**
- * @author urszeidler
+ * The session bean managing the account and the contract addresses for this session.
  *
  */
 @Named
@@ -183,8 +186,6 @@ public class SessionBean {
 
 	private static final Logger log = LoggerFactory.getLogger(SessionBean.class);
 
-	@Inject
-	private ApplicationBean application;
 	@Value("${keyFile}")
 	private String keyFile;
 	private String keyPass;
@@ -192,7 +193,9 @@ public class SessionBean {
 	private EthAccount account = AccountProvider.fromPrivateKey(BigInteger.valueOf(100000L));
 [for (p : Package | m.nestedPackage->select(isGeneratePackage()))]
 [for (c : Class | p.allContracts())]
-	private EthAddress [c.name.toLowerFirst()/];
+	@Value("${[c.name.toLowerFirst()/]Address}")
+	private String [c.name.toLowerFirst()/]Adr;
+	private EthAddress [c.contractAddressField()/];
 [/for]
 	private [p.deployerName()/] [p.deployerName().toLowerFirst()/];
 	@Value("${[p.deployerName().toLowerFirst()/]-file}")
@@ -220,6 +223,9 @@ public class SessionBean {
 		EthereumInstance instance = EthereumInstance.getInstance();
 [for (p : Package | m.nestedPackage->select(isGeneratePackage()))]
 		[p.deployerName().toLowerFirst()/] = new [p.deployerName()/](instance.getEthereum(),[p.deployerName().toLowerFirst()/]CopiledContractsFile , true);
+[for (c : Class | p.allContracts())]
+		[c.contractAddressField()/] = [c.name.toLowerFirst()/]Adr == null ? EthAddress.empty() : EthAddress.of([c.name.toLowerFirst()/]Adr);
+[/for]
 [/for]
 	}
 
@@ -234,6 +240,13 @@ public class SessionBean {
 		changeListeners.add(listner);
 	}
 
+	public void removeAccountChangeListner(AccountChangeListener listner) {
+		changeListeners.remove(listner);
+	}
+
+	/**
+	 * Unlock the key with the password.
+	 */
 	public void unlockKey() {
 		if (log.isDebugEnabled()) {
 			log.debug("Unlock Key:" + keyFile);
@@ -253,7 +266,6 @@ public class SessionBean {
 		} catch (Exception e) {
 			log.error("Error unlocking key.", e);
 			context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error unlocking Key", e.getMessage()));
-
 		}
 	}
 
@@ -317,16 +329,15 @@ public class SessionBean {
 	}
 [for (c : Class | p.allContracts())]
 
-	public EthAddress get[c.name.toUpperFirst()/]() {
-		return [c.name.toLowerFirst()/];
+	public EthAddress get[c.contractAddressField().toUpperFirst()/]() {
+		return [c.contractAddressField()/];
 	}
 
-	public void set[c.name.toUpperFirst()/](EthAddress [c.name.toLowerFirst()/]) {
-		this.[c.name.toLowerFirst()/] = [c.name.toLowerFirst()/];
+	public void set[c.contractAddressField().toUpperFirst()/](EthAddress [c.contractAddressField()/]) {
+		this.[c.contractAddressField()/] = [c.contractAddressField()/];
 	}
 [/for]
 [/for]
-
 }
 [/file]	
 [/template]
@@ -347,6 +358,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -361,7 +373,7 @@ import [quallifiedName(c._package)/].*;
 import [c._package.beanPackage() /].*;
 
 /**
- *[c._package.toPackage()/]
+ * Manage a [c.name/] contract. This session bean provide access to the [c.name/] contract  on the blockchain.
  */
 @Named
 @SessionScoped
@@ -371,40 +383,70 @@ public class [c.toBeanName()/] {
 
 	@Inject
 	private SessionBean session;
+	private Collection<String> contractMessages = new ArrayList<>();
 
 	private [c.name/] [c.toProxyName()/];
 [for (o : Operation | c.allPublicInterfaceFunctionsNonConst())]
 	private [o.toFunctionWrapperName()/]  [o.toFunctionWrapperName().toLowerFirst()/] = new [o.toFunctionWrapperName()/]();
 [/for]
-
 [for (o : Operation | c.allPublicInterfaceFunctionsNonConst())]
+
+	/**
+	 * Function Bean. Executes the [o.name/] function on the contract.
+	 *
+	 */
 	public class [o.toFunctionWrapperName()/] {
 [for (p : Parameter | o.allInParameters())]
 		private [p.toJavaType()/] [p.name.toLowerFirst()/];
 [/for]
-
 [for (p : Parameter | o.allInParameters())]
+
+		/**
+		 * The getter [p.name/] parameter.
+		 * 
+		 * @return
+		 */
 		public [p.toJavaType()/] [p.toGetter()/]() {
 			return [p.name.toLowerFirst()/];
 		}
 
+		/**
+		 * The setter for the [p.name/].
+		 * @param [p.name.toLowerFirst()/]
+		 */
 		public void [p.toSetter()/]([p.toJavaType()/] [p.name.toLowerFirst()/]) {
 			this.[p.name.toLowerFirst()/] = [p.name.toLowerFirst()/];
 		}
 [/for]
 
+		/**
+		 * Execute the function [o.name/] on the contract.
+		 */
 		public void execute() {
-			FacesContext context = FacesContext.getCurrentInstance();
 			try {
-				[c.toGetter()/]().[o.name/]([for (p : Parameter | o.allInParameters()) separator (',')][p.toGetter()/]()[/for]).get(200, TimeUnit.SECONDS);
-			} catch (InterruptedException | ExecutionException | TimeoutException e) {
+				addContractMessage("The transaction [o.toFunctionWrapperName()/] is send.", null, null);
+				[c.toGetter()/]().[o.name/]([for (p : Parameter | o.allInParameters()) separator (',')][p.toGetter()/]()[/for]).thenApply(
+						t -> {
+							if(log.isInfoEnabled()){
+								log.info("Transaction mined.");
+							}
+							addContractMessage("The transaction [o.toFunctionWrapperName()/] is mined.", null, null);
+							//[protected (o.toFunctionWrapperName()+'_execute')]
+
+							//[/protected]
+							return null;
+						});
+			} catch (Exception e) {
 				log.error("Error changing owner.", e);
-				context.addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error calling [o.name/].", e.getMessage()));
+				addContractMessage("Error calling [o.name/].", FacesMessage.SEVERITY_ERROR, e);
 			}
 		}
 	}
 
+	/**
+	 * Return the [o.toFunctionWrapperName()/] function bean.
+	 * @return
+	 */
 	public [o.toFunctionWrapperName()/] get[o.toFunctionWrapperName()/]() {
 		return [o.toFunctionWrapperName().toLowerFirst()/] ;
 	}
@@ -412,6 +454,11 @@ public class [c.toBeanName()/] {
 [/for]
 [for (p : Property | c.allCProperties()->select(isPublic()))]
 
+	/**
+	 * The attribute [p.name/] of the contract.
+	 * 
+	 * @return
+	 */
 	public [p.toJavaType()/] [p.name/]() {
 		if ([c.toGetter()/]() == null)
 			return [p.toJavaDefaultValue()/];
@@ -421,16 +468,38 @@ public class [c.toBeanName()/] {
 [/for]
 [for (p : Property | c.allMappingSubAttributes())]
 [let value : Classifier = p.getStereotypeValue('Mapping', 'value').oclAsType(Classifier)]
+
 [p.printCollection(value,c)/]
 [/let]
 [/for]
 [for (p : Property | c.allKeyMappingSubAttributes())]
 [let value : Classifier = p.getStereotypeValue('KeyMapping', 'key').oclAsType(Classifier)]
+
 [p.printCollection(p.type,c)/]
 [/let]
 [/for]
 
+	/**
+	 * Add a contact message.
+	 * 
+	 * @param log the log message
+	 * @param severity can be null
+	 * @param e the exception can be null
+	 */
+	public void addContractMessage(String log, Severity severity, Exception e) {
+		FacesContext context = FacesContext.getCurrentInstance();
 
+//		contractMessages.add(log);
+		context.addMessage(null, new FacesMessage(severity == null ? FacesMessage.SEVERITY_INFO : severity, log,
+				e != null ? e.getMessage() : ""));
+		//[protected (c.name+'_addContractMessage')]
+
+		//[/protected]
+	}
+
+	/**
+	 * Initialize the bean. Register as {@link AccountChangeListener}.
+	 */
 	@PostConstruct
 	public void init() {
 		session.addAccountChangeListner(new SessionBean.AccountChangeListener() {
@@ -440,19 +509,29 @@ public class [c.toBeanName()/] {
 				[c.toProxyName()/] = null;
 			}
 		});
+		//[protected (c.name+'_init')]
 
+		//[/protected]
 	}
 
+	/**
+	 * Cleans the contract proxy.
+	 */
 	public void cleanContract() {
 		[c.toProxyName()/] = null;
 	}
 
+	/**
+	 * Return a contract proxy.
+	 * 
+	 * @return the created proxy.
+	 */
 	public [c.name/] [c.toGetter()/]() {
 		if ([c.toProxyName()/] == null) {
 
 			try {
 				[c.toProxyName()/] = session.get[c._package.deployerName()/]()
-						.create[c.name/]Proxy(session.getAccount(), session.get[c.name.toUpperFirst()/]());
+						.create[c.name/]Proxy(session.getAccount(), session.get[c.contractAddressField().toUpperFirst()/]());
 			} catch (IOException | InterruptedException | ExecutionException e) {
 				log.error("Error creating contractProx.", e);
 			}
@@ -460,6 +539,22 @@ public class [c.toBeanName()/] {
 		return [c.toProxyName()/];
 	}
 
+	/**
+	 * The address of the current contract instance.
+	 * 
+	 * @return the address with leading zero
+	 */
+	public String getAddress() {
+		return session.get[c.contractAddressField().toUpperFirst()/]().withLeading0x();
+	}
+
+	public Collection<String> getContractMessages() {
+		return contractMessages;
+	}
+
+	//[protected ('additonal_methods')]
+
+	//[/protected]
 
 [comment]	public List<ChecksumDatabaseChecksumEntry> getEntries() {
 		if(getChecksumDatabase()==null)
@@ -478,12 +573,18 @@ public class [c.toBeanName()/] {
 [/template]
 
 [template public printCollection(p : Property, t : Type, c : Class)]
+	/**
+	 * Return a collection for a mapping.
+	 * @return a collection of {@link [t.toJavaType()/]}
+	 */
 	public Collection<[t.toJavaType()/]> get[p.name.toUpperFirst()/]() {
 		if([c.toGetter()/]()==null)
 			return Collections.emptyList();
 
 		Collection<[t.toJavaType()/]> c = new ArrayList<>();
-
+		//[protected (p.name.toUpperFirst()+'_collection')]
+		// TODO : implement the collection
+		//[/protected]
 		return c;
 	}
 [/template]

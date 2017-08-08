@@ -163,7 +163,7 @@
 [/let]
 [/for]
 [for (op : Operation | c.allPublicInterfaceFunctionsNonConst())]
-[op.printOperation()/]
+			[op.printOperation()/]
 [/for]
 
 [comment][for (prop : Property | c.attribute->select(hasStereotype('Delegate')))]
@@ -181,10 +181,10 @@
 [/template]
 
 [template public printOperation(o : Operation)]
-				<p:tab title="[o.name/]" class="ui-g"
-					id="contract_operation_[o.toOperationId()/]">
-					[o.printOperationPlain()/]
-				</p:tab>
+<p:tab title="[o.name/]" class="ui-g"
+	id="contract_operation_[o.toOperationId()/]">
+	[o.printOperationPlain()/]
+</p:tab>
 [/template]
 
 
@@ -262,7 +262,7 @@
 
 
 [template public printAttributesPlain(c : Class)]
-[for (p : Property | c.allAttributes())]
+[for (p : Property | c.allAttributes()->select(not(isKeyMapping() or isMapping()) ))]
 <div class="ui-g" id="[p.toContractAttributeId()/]">
 	<div class="ui-g-4">[p.name/]</div>
 	<div id="[p.toContractAttributeValue()/]_#{contract.address}"  class="ui-g-8">#{contract.[p.name/]()}</div>
