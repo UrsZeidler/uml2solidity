@@ -1,0 +1,66 @@
+[comment encoding = UTF-8 /]
+[module generateApplicationFiles('http://www.eclipse.org/uml2/5.0.0/UML')/]
+
+[import de::urszeidler::eclipse::solidity::util::uml2service /]
+[import de::urszeidler::eclipse::solidity::templates::generateJavaCode /]
+[import de::urszeidler::eclipse::solidity::generation::primefaces::templates::generateContractBeans /]
+
+[**
+ * The documentation of the template generateElement.
+ * @param aClass
+ */]
+[template public generateElement(aModel : Model)]
+[comment @main/]
+[generatePackage(aModel)/]
+[iteratePackages(aModel)/]
+[/template]
+
+[**
+ * Iterates over the packages.
+*/]
+[template private iteratePackages(p : Package)]
+[for (p1 : Package | p.nestedPackage)]
+[if (isGeneratePackage(p1))]
+[generatePackage(p1)/]
+[/if]
+[iteratePackages(p1)/]
+[/for]
+[/template]
+
+[template private generatePackage(p : Package)?(isGeneratePackage(p))]
+
+[for (c : Class | p.allContracts())]
+[comment][generateContractBean(c)/][/comment]
+[/for]
+[/template]
+
+[template private generatePackage(m : Model)]
+[comment][m.generateApplicationBean()/][/comment]
+[m.generateApplicationProperties()/]
+[/template]
+
+[template public generateApplicationProperties(m : Model)]
+[file ('resources/application.properties', false, 'UTF-8')]
+# [protected (m.name+'_properties')]
+
+## the access technologies
+EthereumFacadeProvider=rpc
+## the url when connection to rpc
+rpc-url=http://127.0.0.1:8545
+chain-id=33
+## the api key when connection to infrua
+apiKey=
+##
+##
+keyFile=
+#
+[for (p : Package | m.nestedPackage->select(isGeneratePackage()))]
+[p.deployerName().toLowerFirst()/]-file=/combined.json
+[for (c : Class | p.allContracts())]
+[c.name.toLowerFirst()/]Address=
+[/for]
+[/for]
+# [/protected]
+[/file]
+[/template]
+

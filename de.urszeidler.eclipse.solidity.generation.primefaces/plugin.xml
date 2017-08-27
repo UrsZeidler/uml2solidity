@@ -16,8 +16,15 @@
             generator_class="de.urszeidler.eclipse.solidity.generation.primefaces.templates.GenerateContractBeans"
             generator_description="Generates a session bean to hold the contract state."
             generator_id="de.urszeidler.eclipse.solidity.generation.primefaces.contractBean.generator"
-            generator_name="generateContracurszeidler.tBean"
+            generator_name="generateContractBean"
             generator_target="de.urszeidler.eclipse.solidity.generation.primefaces.contractBean.target">
+      </acceleo_generator>
+      <acceleo_generator
+            estimated_work="10"
+            generator_class="de.urszeidler.eclipse.solidity.generation.primefaces.templates.GenerateApplicationFiles"
+            generator_id="de.urszeidler.eclipse.solidity.generation.primefaces.GenerateApplicationFiles"
+            generator_name="generateApplicationFiles"
+            generator_target="de.urszeidler.eclipse.solidity.generation.primefaces.GenerateApplicationFiles.target">
       </acceleo_generator>
    </extension>
    <extension

@@ -36,7 +36,7 @@
 
 [template private generatePackage(m : Model)]
 [m.generateSessionBean()/]
-[comment][m.generateApplicationBean()/][/comment]
+[m.generateApplicationBean()/]
 [/template]
 
 [query public toFunctionWrapperName(o : Operation) : String = o.toOperationId().toUpperFirst() /]
@@ -55,7 +55,6 @@
 [query public contractPackagePath(p : Package) : String = p.contractPackage().replaceAll('\\.', '/') /]
 [query public beanPackage(p : Package) : String = p.basePackage()+'.beans' /]
 [query public beanPackagePath(p : Package) : String = p.beanPackage().replaceAll('\\.', '/') /]
-
 
 [query public contractAddressField(c : Class) : String = c.name.toLowerFirst()+'Address' /]
 
@@ -76,16 +75,10 @@
 [file (m.beanPackagePath().concat('/ApplicationBean.java'), false, 'UTF-8')]
 package [m.beanPackage()/];
 
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.concurrent.ExecutionException;
+import javax.faces.bean.ApplicationScoped;
 
 import javax.annotation.PostConstruct;
 
-import org.adridadou.ethereum.propeller.keystore.AccountProvider;
-import org.adridadou.ethereum.propeller.values.EthAccount;
-import org.adridadou.ethereum.propeller.values.EthAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,13 +86,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import de.urszeidler.checksum.EthereumInstance;
-import de.urszeidler.checksum.deployer.ContractDeployer;
 
 /**
- * @author urszeidler
  *
  */
 @Component
+@ApplicationScoped
 public class ApplicationBean {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationBean.class);
@@ -107,14 +99,8 @@ public class ApplicationBean {
 	@Autowired
 	private Environment env;
 
-	private de.urszeidler.checksum.contract.ChecksumDatabase database;
-	private ContractDeployer contractDeployer;
-
-	private EthAddress contractAddress;
-
 	@PostConstruct
 	public void init() {
-		String ca = env.getProperty("contractAddress");
 		// copy the application properties to system properties for the ethereum
 		// instance
 		System.setProperty(EthereumInstance.PROP_ETHEREUM_FACADE_PROVIDER,
@@ -124,20 +110,13 @@ public class ApplicationBean {
 		System.setProperty(EthereumInstance.PROP_API_KEY, env.getProperty(EthereumInstance.PROP_API_KEY));
 
 		EthereumInstance instance = EthereumInstance.getInstance();
-		contractDeployer = new ContractDeployer(instance.getEthereum(), "/combined.json", true);
+		//[protected (m.name+'_init')]
 
-		contractAddress = EthAddress.of(ca);
+		//[/protected]
 	}
+	//[protected (m.name+'_additional_methods')]
 
-
-	public ContractDeployer getContractDeployer() {
-		return contractDeployer;
-	}
-
-	public EthAddress getContractAddress() {
-		return contractAddress;
-	}
-
+	//[/protected]
 }
 [/file]
 [/template]
