@@ -860,6 +860,7 @@ Void[elseif (op.allReturnParameters()->size()=1)]
 [/template]
 
 [query public toStructTypeName(t : Type) : String = t.owner.oclAsType(Class).name.toUpperFirst()+t.name.toUpperFirst() /]
+[query public toEventTypeName(o : Operation) : String = o.eventName() /]
 
 
 [**

@@ -171,6 +171,10 @@ or not pa.allInterfaces()->isEmpty()
  /]
 
 
+[query public allEvents(aClass : Class) : OrderedSet(Operation) = aClass.ownedOperation->select(isEvent()) /]
+[query public hasEvents(aClass : Class) : Boolean = not aClass.allEvents()->isEmpty() /]
+
+
 [query public isAbstractContract(aClass : Class) : Boolean = aClass.isContract() and not aClass.allFunctions()-> select(isAbstract)->isEmpty() /]
 
 [query public isPrivate(p : Property) : Boolean = p.visibility=VisibilityKind::private /]

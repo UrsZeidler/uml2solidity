@@ -69,7 +69,7 @@
 -> select(isReturnConstant())/]
 
 
-[query public toOperationId(o : Operation) : String = o.name+o.allInParameters()  ->collect('_'+type.name.toLower()) /]
+[query public toOperationId(o : Operation) : String = o.name.toLowerFirst()+o.allInParameters()  ->collect('_'+type.name.toLower()) /]
 
 
 [template public generateApplicationBean(m : Model)]
@@ -368,6 +368,7 @@ import org.adridadou.ethereum.propeller.values.EthAccount;
 import org.adridadou.ethereum.propeller.values.EthAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rx.Observable;
 
 import [quallifiedName(c._package)/].*;
 import [c._package.beanPackage() /].*;
@@ -384,74 +385,25 @@ public class [c.toBeanName()/] {
 	@Inject
 	private SessionBean session;
 	private Collection<String> contractMessages = new ArrayList<>();
+	private Collection<Object> events = new ArrayList<>();
 
 	private [c.name/] [c.toProxyName()/];
+[for (o : Operation | c.allEvents())]
+	private boolean subscribe[o.toEventTypeName()/] = true;
+[/for]
 [for (o : Operation | c.allPublicInterfaceFunctionsNonConst())]
 	private [o.toFunctionWrapperName()/]  [o.toFunctionWrapperName().toLowerFirst()/] = new [o.toFunctionWrapperName()/]();
 [/for]
+[for (o : Operation | c.allConstructors())]
+	private [o.toFunctionWrapperName()/]  [o.toFunctionWrapperName().toLowerFirst()/] = new [o.toFunctionWrapperName()/]();
+[/for]
 [for (o : Operation | c.allPublicInterfaceFunctionsNonConst())]
-
-	/**
-	 * Function Bean. Executes the [o.name/] function on the contract.
-	 *
-	 */
-	public class [o.toFunctionWrapperName()/] {
-[for (p : Parameter | o.allInParameters())]
-		private [p.toJavaType()/] [p.name.toLowerFirst()/];
+[o.generateFunctionBean(c, o.functionExecution(c))/]
 [/for]
-[for (p : Parameter | o.allInParameters())]
-
-		/**
-		 * The getter [p.name/] parameter.
-		 * 
-		 * @return
-		 */
-		public [p.toJavaType()/] [p.toGetter()/]() {
-			return [p.name.toLowerFirst()/];
-		}
-
-		/**
-		 * The setter for the [p.name/].
-		 * @param [p.name.toLowerFirst()/]
-		 */
-		public void [p.toSetter()/]([p.toJavaType()/] [p.name.toLowerFirst()/]) {
-			this.[p.name.toLowerFirst()/] = [p.name.toLowerFirst()/];
-		}
+[for (o : Operation | c.allConstructors())]
+[o.generateFunctionBean(c, o.constructorExecution(c))/]
 [/for]
 
-		/**
-		 * Execute the function [o.name/] on the contract.
-		 */
-		public void execute() {
-			try {
-				addContractMessage("The transaction [o.toFunctionWrapperName()/] is send.", null, null);
-				[c.toGetter()/]().[o.name/]([for (p : Parameter | o.allInParameters()) separator (',')][p.toGetter()/]()[/for]).thenApply(
-						t -> {
-							if(log.isInfoEnabled()){
-								log.info("Transaction mined.");
-							}
-							addContractMessage("The transaction [o.toFunctionWrapperName()/] is mined.", null, null);
-							//[protected (o.toFunctionWrapperName()+'_execute')]
-
-							//[/protected]
-							return null;
-						});
-			} catch (Exception e) {
-				log.error("Error changing owner.", e);
-				addContractMessage("Error calling [o.name/].", FacesMessage.SEVERITY_ERROR, e);
-			}
-		}
-	}
-
-	/**
-	 * Return the [o.toFunctionWrapperName()/] function bean.
-	 * @return
-	 */
-	public [o.toFunctionWrapperName()/] get[o.toFunctionWrapperName()/]() {
-		return [o.toFunctionWrapperName().toLowerFirst()/] ;
-	}
-
-[/for]
 [for (p : Property | c.allCProperties()->select(isPublic()))]
 
 	/**
@@ -487,12 +439,11 @@ public class [c.toBeanName()/] {
 	 * @param e the exception can be null
 	 */
 	public void addContractMessage(String log, Severity severity, Exception e) {
+		//[protected (c.name+'_addContractMessage')]
 		FacesContext context = FacesContext.getCurrentInstance();
-
-//		contractMessages.add(log);
+		contractMessages.add(log);
 		context.addMessage(null, new FacesMessage(severity == null ? FacesMessage.SEVERITY_INFO : severity, log,
 				e != null ? e.getMessage() : ""));
-		//[protected (c.name+'_addContractMessage')]
 
 		//[/protected]
 	}
@@ -502,13 +453,7 @@ public class [c.toBeanName()/] {
 	 */
 	@PostConstruct
 	public void init() {
-		session.addAccountChangeListner(new SessionBean.AccountChangeListener() {
-
-			@Override
-			public void accountChanged(EthAccount account) {
-				[c.toProxyName()/] = null;
-			}
-		});
+		session.addAccountChangeListner(a-> cleanContract());
 		//[protected (c.name+'_init')]
 
 		//[/protected]
@@ -532,6 +477,14 @@ public class [c.toBeanName()/] {
 			try {
 				[c.toProxyName()/] = session.get[c._package.deployerName()/]()
 						.create[c.name/]Proxy(session.getAccount(), session.get[c.contractAddressField().toUpperFirst()/]());
+[for (o : Operation | c.allEvents())]
+				if (subscribe[o.toEventTypeName()/]) {
+					Observable<[o.eventName()/]> eo = session
+							.getContractDeployer()
+							.observe[o.eventName()/](session.getChecksumDatabaseAddress());
+					eo.subscribe(e -> events.add(e));
+				}
+[/for]
 			} catch (IOException | InterruptedException | ExecutionException e) {
 				log.error("Error creating contractProx.", e);
 			}
@@ -552,6 +505,10 @@ public class [c.toBeanName()/] {
 		return contractMessages;
 	}
 
+	public Collection<Object> getEvents() {
+		return events;
+	}
+ 
 	//[protected ('additonal_methods')]
 
 	//[/protected]
@@ -570,6 +527,101 @@ public class [c.toBeanName()/] {
 	}[/comment]
 }
 [/file]	
+[/template]
+
+[template public functionExecution(o : Operation, c : Class)]
+
+		/**
+		 * Execute the function [o.name/] on the contract.
+		 */
+		public void execute() {
+			try {
+				addContractMessage("The transaction [o.toFunctionWrapperName()/] is send.", null, null);
+				[c.toGetter()/]().[o.name/]([for (p : Parameter | o.allInParameters()) separator (',')][p.toGetter()/]()[/for]).thenApply(
+						t -> {
+							if(log.isInfoEnabled()){
+								log.info("Transaction mined.");
+							}
+							addContractMessage("The transaction [o.toFunctionWrapperName()/] is mined.[ '[' /]"+ [for (p : Parameter | o.allInParameters()) separator ('+ " ,"+')][p.toGetter()/]()[/for] +"[ ']' /] ", null, null);
+							//[protected (o.toFunctionWrapperName()+'_execute')]
+
+							//[/protected]
+							return null;
+						});
+			} catch (Exception e) {
+				log.error("Error executing [o.name/].", e);
+				addContractMessage("Error calling [o.name/].", FacesMessage.SEVERITY_ERROR, e);
+			}
+		}
+	}
+[/template]
+
+[template public constructorExecution(o : Operation, c : Class)]
+
+		/**
+		 * Execute the constructor [o.name/] on the contract.
+		 */
+		public void execute() {
+			try {
+				addContractMessage("The Contract [c.name/] is deployed.", null, null);
+				session.getContractDeployer()
+					.deployChecksumDatabase(session.getAccount(), [for (p : Parameter | o.allInParameters()) separator (',')][p.toGetter()/]()[/for])
+					.thenApply(	e->{
+						addContractMessage("The Contract [c.name/] is mined.[ '[' /]"+ [for (p : Parameter | o.allInParameters()) separator ('+ " ,"+')][p.toGetter()/]()[/for] 
+							+"[ ']' /] address: "+e.withLeading0x(), null, null);
+						//[protected (o.toFunctionWrapperName()+'_executeConstructor')]
+
+						//[/protected]
+						return e;
+					}
+				);
+			} catch (Exception e) {
+				log.error("Error deploying [c.name/].", e);
+				addContractMessage("Error calling [o.name/].", FacesMessage.SEVERITY_ERROR, e);
+			}
+		}
+	}
+[/template]
+
+
+[template public generateFunctionBean(o : Operation, c : Class, executeCode : String)]
+
+	/**
+	 * Function Bean. Executes the [o.name/] function on the contract.
+	 *
+	 */
+	public class [o.toFunctionWrapperName()/] {
+[for (p : Parameter | o.allInParameters())]
+		private [p.toJavaType()/] [p.name.toLowerFirst()/];
+[/for]
+[for (p : Parameter | o.allInParameters())]
+
+		/**
+		 * The getter [p.name/] parameter.
+		 * 
+		 * @return
+		 */
+		public [p.toJavaType()/] [p.toGetter()/]() {
+			return [p.name.toLowerFirst()/];
+		}
+
+		/**
+		 * The setter for the [p.name/].
+		 * @param [p.name.toLowerFirst()/]
+		 */
+		public void [p.toSetter()/]([p.toJavaType()/] [p.name.toLowerFirst()/]) {
+			this.[p.name.toLowerFirst()/] = [p.name.toLowerFirst()/];
+		}
+[/for]
+[executeCode/]
+
+	/**
+	 * Return the [o.toFunctionWrapperName()/] function bean.
+	 * @return
+	 */
+	public [o.toFunctionWrapperName()/] get[o.toFunctionWrapperName()/]() {
+		return [o.toFunctionWrapperName().toLowerFirst()/] ;
+	}
 [/template]
 
 [template public printCollection(p : Property, t : Type, c : Class)]
